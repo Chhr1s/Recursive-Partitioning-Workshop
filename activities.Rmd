@@ -1,0 +1,398 @@
+---
+title: "activity"
+author: "Christopher Loan"
+date: "2022-12-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# data sources
+# https://data.worldbank.org/topic/education?locations=TH
+```
+
+```{r}
+set.seed(4444)
+library(tidyverse)
+library(janitor)
+dat <- 
+  rio::import(
+    here::here(
+      'data/thai_education',
+      'world_bank_thai_education.csv'
+    ),
+    skip = 4,
+  ) %>% 
+  tibble() %>% 
+  row_to_names(row_number = 1) %>% 
+  clean_names() %>% 
+  select(
+    country_name, 
+    indicator_name, 
+    indicator_code, 
+    x1990:x2021
+  )
+
+# make a key so we have all variables easily searchable
+key <- 
+  dat %>% 
+  select(
+    indicator_name, 
+    indicator_code
+    ) %>% 
+  mutate(
+    janitor_version = janitor::make_clean_names(indicator_code)
+  )
+```
+
+
+
+```{r}
+library(sjmisc)
+cleaned <- 
+  dat %>% 
+  mutate(
+    janitor_version = janitor::make_clean_names(indicator_code)
+  ) %>% 
+  select(-indicator_name, -indicator_code, -country_name) %>% 
+  relocate(janitor_version, .before = everything()) %>% 
+  rotate_df() %>% 
+  row_to_names(row_number = 1) %>% 
+  rownames_to_column(var = 'year') %>% 
+  tibble() %>% 
+  mutate(
+    year = str_extract(string = year, regex('\\d\\d\\d\\d')),
+    across(.cols = everything(), as.numeric)
+  )
+```
+
+Share of youth not in education, employment or training, total (% of youth population)
+
+sl_uem_neet_zs
+
+
+Secondary education, duration (years)
+
+se_sec_durs
+
+```{r}
+key
+```
+
+```{r}
+df_to_impute <- 
+  cleaned %>% 
+  # only retain rows with < 10% missingness
+  select(where(~sum(is.na(.x))<0.1*nrow(cleaned))) 
+
+# select an outcome with no missingness
+
+full_variables <- 
+  cleaned %>% 
+  # only retain rows with < 10% missingness
+  select(where(~sum(is.na(.x))==0)) %>% 
+  names()
+
+nzv_vars <- 
+  names(which(apply(cleaned, 2, var) == 0))
+
+
+outcome_key <- 
+  key %>% 
+  filter(
+     janitor_version %in% full_variables & 
+       !janitor_version %in% nzv_vars
+  )
+
+
+# https://ilostat.ilo.org/resources/concepts-and-definitions/ilo-modelled-estimates/
+
+
+outcome_descriptor <-
+  outcome_key %>% 
+  filter(janitor_version == 'sl_tlf_cact_zs') %>% 
+  pull(indicator_name)
+
+# more information at:
+# https://ilostat.ilo.org/resources/concepts-and-definitions/ilo-modelled-estimates/
+
+```
+
+
+we're going to use median impute
+
+```{r}
+plt <-
+  cleaned %>% 
+  pivot_longer(
+    cols = -year
+  ) %>% 
+  ggplot(
+    aes(
+      x = value, 
+      color = name, 
+      fill = name
+    )
+  ) + 
+  geom_density(
+    show.legend = FALSE
+  ) 
+
+plt +
+  lims(x = c(0, 25))
+``` 
+
+```{r}
+# differences between mean and median aren't that great (in most cases)
+cleaned %>% 
+  summarize(
+    across(.cols = everything(),.fns = ~median(.x) - mean(.x))
+  ) 
+```
+
+
+```{r}
+sum(is.na(cleaned$sl_tlf_cact_zs))
+imputed <- 
+  df_to_impute %>% 
+  mutate(
+    across(
+      # no missigness in the outcome
+      .cols = everything(), 
+      .fns = 
+         ~ifelse(
+           is.na(.x),
+           median(.x, na.rm = T),
+           .x)
+    )
+  )
+```
+
+```{r}
+sum(is.na(imputed))
+```
+
+```{r}
+library(rsample)
+set.seed(123)
+split_data <- initial_split(imputed)
+
+
+
+training_data_tmp <- 
+  training(split_data) 
+
+training_data_outcome <- 
+  training_data_tmp %>% 
+  select(sl_tlf_cact_zs)
+
+training_xs <- 
+  training_data_tmp %>% 
+  select(-sl_tlf_cact_zs)
+
+training_means <- 
+  training_xs %>% 
+  mutate(
+    across(
+      .cols = everything(), 
+      .fns = ~mean(.x, na.rm = T)
+    )
+  )
+
+training_sds <- 
+  training_xs %>% 
+  mutate(
+    across(
+      .cols = everything(), 
+      .fns = ~sd(.x, na.rm = T)
+    )
+  )
+
+training_tmp <- 
+  (training_xs - training_means
+    
+    )/training_sds
+
+training_data <- 
+  training_data_outcome %>% 
+  bind_cols(training_tmp)
+```
+
+
+```{r}
+testing_data_tmp <- 
+  testing(split_data) 
+
+testing_data 
+```
+
+```{r}
+library(rpart)
+```
+
+```{r}
+dt_training <- 
+  rpart(
+    data = training_data, 
+    formula = sl_tlf_cact_zs ~ .
+  )
+```
+
+```{r}
+dt_training
+```
+
+```{r}
+library(pdp)
+library(ranger)
+```
+
+```{r}
+rf_training <- 
+  ranger(
+    data = training_data, 
+    formula = sl_tlf_cact_zs ~ .,
+    importance = 'permutation'
+  )
+```
+
+```{r}
+library(vip)
+vi <- vi(rf_training)
+investigate_v <- vi$Variable[1:3]
+vip(rf_training)
+```
+
+
+```{r}
+library(pdp)
+partial <- pdp::partial
+
+partial(
+  rf_training, 
+  pred.var = investigate_v[1], 
+  plot = T
+)
+
+partial(
+  rf_training, 
+  pred.var = investigate_v[2], 
+  plot = T
+)
+
+partial(
+  rf_training, 
+  pred.var = investigate_v[3], 
+  plot = T
+)
+```
+
+
+```{r}
+combos <- 
+  data.frame(
+    t(combn(investigate_v, 2))
+    )
+```
+
+
+```{r}
+f <- function(i) {
+    partial(
+      rf_training, 
+      pred.var = unlist(combos[i,]),
+      plot = F
+    )
+}
+```
+
+
+```{r}
+library(parallel)
+start_time <- Sys.time()
+partial_list <- mclapply(1:3, f, mc.cores = 3)
+stop_time <- Sys.time()
+stop_time - start_time
+```
+
+```{r}
+plts_3d <- 
+  map(
+  .x = partial_list,
+  .y = combos, 
+  .f = ~{
+    form <- 
+      formula(
+        paste(
+          "yhat ~", 
+          paste(
+            names(.x)[1L:2L], 
+            collapse = "*")
+          )
+      )
+    
+    wireframe(
+      form, 
+      data = .x, 
+      drape =T, 
+      scale = list(arrows = F)
+    )
+  }
+  
+)
+
+plts_3d
+```
+
+
+```{r}
+# lapply(
+#   unique(partial_list[[1]]$year),
+#   function(x) {wireframe(
+#     form, 
+#     data = partial_list[[1]] %>% filter(year == x), 
+#     drape =T, 
+#     #zlab = "Price", 
+#     scale = list(arrows = F)
+#   )}
+# )
+
+```
+
+
+```{r}
+library(rgl)
+
+# This is to output a rgl plot in a rmarkdown document.
+# setupKnitr()
+
+# Data: the iris data is provided by R
+
+
+# Add a new column with color
+mycolors <- c('royalblue1', 'darkcyan', 'oldlace')
+pdp_3$color <- mycolors[ as.numeric(pdp_3$Species) ]
+
+# Plot
+plot3d( 
+  x= pdp_3$sp_pop_2024_ma_5y, y=pdp_3$ny_gds_totl_cn, z=pdp_3$yhat, 
+  #col = pdp_3$year, 
+  type = 's', 
+  radius = 2,
+  
+  )
+
+# To display in an R Markdown document:
+# rglwidget()
+
+# To save to a file:
+htmlwidgets::saveWidget(rglwidget(width = 520, height = 520), 
+                        file = "HtmlWidget/3dscatter.html",
+                        libdir = "libs",
+                        selfcontained = FALSE
+                        )
+```
+
