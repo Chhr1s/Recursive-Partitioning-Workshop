@@ -166,6 +166,19 @@ ___
 
 * Basis of decision trees, random forests, and other Machine Learning (ML) methods
 
+___
+
+Many consider the automated interaction detection proposed in 1963 to be the seminal reference in this field.
+
+`Morgan, J. N., & Sonquist, J. A. (1963). Problems in the analysis of survey data, and a proposal. Journal of the American Statis- tical Association, 58, 415–434.`
+
+This was (in some ways) superseded by 
+
+`Breiman, L., Friedman, J. H., Olshen, R. A., & Stone, C. J. (1984). Classification and regression trees. New York: Chapman & Hall.`
+
+and later
+
+`Breiman, L. (2001a). Random forests. Machine Learning, 45, 5–32.`
 ---
 class: center, middle
 
@@ -206,6 +219,10 @@ They have many benefits:
 * Easy to interpret
     * Are not an "ML Black Box", a complaint with more complex models
     * Understanding DTs makes understanding complex extensions (e.g., bagging, boosting, random forests) easier
+    
+* Useful when number of variables > number of observations (especially in ensemble)
+  * Do not "lose power" with more variables
+  * Can use observed varaibles without dimension reduction (e.g., PCA/SEM)
 
 ---
 class: middle, center
@@ -225,9 +242,6 @@ Need <u>"features" / predictor variables</u> & <u> **corresponding "response" / 
 # Designed for Prediction 
 
 ![](imgs/predicting_tree.png)
-
-
-
 ---
 # Understanding Predictions
 
@@ -242,6 +256,7 @@ In this software (`rpart`) "yes" to the splitting rule is on the left & "no" is 
 ![](imgs/labeled_img.png)
 
 ---
+
 ## Let's look at an example: 
 
 `?rpart.plot::ptitanic`
@@ -286,11 +301,10 @@ ptitanic <-
   mutate(
     survived = relevel(survived, ref = 'died')
   )
+
 split_data <- initial_split(ptitanic)
 training_data <- training(split_data)
 testing_data <- testing(split_data)
-
-
 ```
 
 We will start with 2 variables to predict `survival`: `age` & `sex`
@@ -312,7 +326,6 @@ Sex (from full data):
 Age (from full data):
   * Mean = `r round(descriptives$mean, 2)` years
   * Std. Dev. = `r round(descriptives$sd, 2)` years
-  
 
 ---
 
@@ -344,7 +357,6 @@ surv_by_sex <-
 ```
 
 ---
-
 
 # Decision Tree Results
 
@@ -401,6 +413,73 @@ rpart.plot(
 ]
 ---
 
+# Another way to look at it
+
+.left-column[
+Visually, the model is finding the best split to separate the shapes. 
+
+This case is intuitive (2 splittig varibles & 2 total splits)
+
+Higher dimensional models do the same thing, but harder to conceptualize.
+
+]
+
+.right-column[
+```{r echo=FALSE, fig.align='center'}
+training_data %>% 
+  drop_na() %>% 
+  mutate(
+    prediction = 
+      if_else(
+        round(predict(two_var_DT, newdata = .)[,'survived']) == 1, 'survived', 'died'
+        ), 
+    accuracy = if_else(prediction == survived, 'accurate', 'inaccurate')
+  ) %>% 
+  ggplot() +
+   geom_jitter(
+    aes(
+      shape = prediction,
+      x = age,
+      y = sex,
+      alpha = accuracy
+    ),
+    width = 0,
+    height = 0.2
+      ) +
+  geom_rect(
+    inherit.aes = FALSE,
+    data = 
+      tibble(
+        y = c(1.5, 0, 1.5),
+        ymax = c(3, 1.5, 3),
+        x = c(0, 0, 13), 
+        xmax = c(13, 80, 80),
+        prediction = c('survived', 'survived', 'died')
+      ),
+    aes(
+      xmin = x,
+      xmax = xmax,
+      fill = prediction,
+      ymin = y, 
+      ymax = ymax
+    ),
+      alpha = 0.4,
+    color = 'black'
+  )  +
+  scale_alpha_discrete(range = c(0.9, 0.4)) +
+  theme_bw(base_size = 15) 
+```
+]
+---
+
+Here's an animated graphic of a decision tree (on another dataset)
+
+```{r eval=FALSE, include=FALSE}
+# https://github.com/ryanholbrook/decision-boundaries-animations/blob/master/README.md
+knitr::include_graphics('imgs/rpart_mix.gif')
+```
+
+---
 # How well does it perform? 
 
 We can see how well the trained model performs with the withheld testing data. The model has not seen this. 
@@ -465,26 +544,28 @@ kbl(tmp_tbl, caption = 'Performance of 2-variable DT')
 
 ```{r}
 library(pdp)
-## purrr has a `partial` command
-## let's make sure it uses the one from `pdp`
+## purrr also 
+## has a `partial` command
 partial <- pdp::partial
+```
+]
 
+.pull-right[
+
+```{r}
 univariate_pdp_sex <- 
   partial(
     two_var_DT, 
     pred.var = 'sex',
     type = 'classification',
-    which.class = 'survived'
+    which.class = 'survived',
+    # pred prob not logits
+    prob = TRUE
     )
 ```
 ]
-.pull-right[
-
-```{r echo=FALSE}
-
-## something is wrong here
-
-
+.center[
+```{r echo=FALSE, fig.width=10, fig.height=3}
 univariate_pdp_sex %>% 
   ggplot(
     aes(y = sex, x = yhat, fill = sex)
@@ -512,7 +593,8 @@ univariate_pdp_age <-
     two_var_DT, 
     pred.var = 'age',
     type = 'classification',
-    which.class = 'survived'
+    which.class = 'survived',
+    prob = TRUE
     )
 ```
 
@@ -531,8 +613,8 @@ age_plt1 <-
     ) +
   theme(plot.title.position = 'plot') +
   scale_y_continuous(
-    limits = c(-0.5, 1),
-    breaks = seq(-0.4, 1, 0.2)
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.25)
     )
 ```
 
@@ -550,7 +632,8 @@ bivariate_pdp <-
     two_var_DT, 
     pred.var = c('age', 'sex'),
     type = 'classification',
-    which.class = 'survived'
+    which.class = 'survived',
+    prob = TRUE,
     )
 ```
 
@@ -579,8 +662,8 @@ bi_pdp_plt <-
     plot.title.position = 'plot'
     ) +
   scale_y_continuous(
-    limits = c(-1, 1),
-    breaks = seq(-1, 1, 0.25)
+    limits = c(0, 1),
+    breaks = seq(0, 1 , 0.25)
     )
 
 ```
@@ -615,45 +698,117 @@ three_variable_pdp <-
     all_var_DT, 
     pred.var = c('age', 'sex', 'pclass'),
     type = 'classification',
-    which.class = 'survived'
+    which.class = 'survived',
+    prob = TRUE
     )
 ```
 
+---
+
+```{r, fig.align='center'}
+rpart.plot(all_var_DT)
+```
 
 ---
 
 ```{r}
-#three_variable_plt <- 
+three_variable_plt <- 
   three_variable_pdp %>% 
   ggplot(
     aes(
       y = yhat, 
       x = age,
-      shape = sex
+      color = pclass
     )
   ) + 
-  theme_bw() +
-  geom_point(
-    size = 4, 
-    alpha = 0.4
-  ) +
+  theme_bw() + 
+  geom_jitter(
+    width = 0.02, 
+    height = 0.02,
+    alpha = 0.5
+    ) + 
   theme_bw(base_size = 15) +
   labs(
     x = 'Passenger Age', 
     y = 'Predicted Probability of Surviving', 
-    title = 'Women & younger men (>= 15) display a substantially\n higher probability of survival',
-    fill = 'Passenger\nSex'
+    title = 'Women & younger men display a substantially\n higher probability of survival',
+    fill = 'Passenger\nClass',
+    color = 'Passenger\nClass'
     ) +
   theme(
     plot.title.position = 'plot'
     ) +
-  facet_wrap(vars(pclass), ncol = 1)
+  facet_wrap(vars(sex), ncol = 2)
 ```
 
 ---
 
-```{r}
+```{r, fig.align='center'}
 three_variable_plt
+```
+
+---
+
+Why are 1st class young men not seeing the younger protection effect?
+
+```{r echo=FALSE, fig.align='center', fig.width=10, fig.height=7.5}
+
+three_variable_plt + 
+  theme_bw(base_size = 20) +
+  geom_point(
+    inherit.aes = FALSE,
+    data = 
+      tibble(
+        x = 7.5, 
+        y = 0.34, 
+        sex = 'male'
+      ),
+    aes(x = x, y = y, fill = sex),
+    size = 23,
+    shape = 1,
+    show.legend = FALSE
+  )
+```
+
+---
+
+All observed cases survived, so **they did get the same protection** but **the model prioritized other effects** (with our current hyperparameters and sample)
+
+```{r}
+training_data %>% 
+  filter(
+    pclass == '1st', 
+    sex == 'male', 
+    age < 13
+  ) %>% 
+  tibble()
+```
+
+With only 3 cases in the observed training data, this is not surprising.
+
+---
+
+# Look back at the decision tree
+
+If you're a 2nd or 3rd class male, the model split on other variables, however, in first class males it assigns everyone the same class. 
+
+```{r, fig.align='center', fig.height=6,fig.width=11}
+rpart.plot(all_var_DT)
+```
+
+---
+
+# Why did the model do that?
+
+Well, there aren't that many young, 1st class men. Basically, it's not a priority to the model.
+
+```{r fig.align='center', fig.height=3, fig.width=8}
+training_data %>% 
+  filter(sex == 'male') %>% 
+  ggplot(aes(y = pclass, x = age, fill = pclass)) + 
+  ggridges::geom_density_ridges(alpha = 0.2) + 
+  theme_bw(base_size = 15) + 
+  theme(legend.position = 'none')
 ```
 
 ---
@@ -835,24 +990,42 @@ comp_acc_plt <-
   )
 ```
 
+---
+
+class: center
+
 ```{r}
 comp_acc_plt
 ```
 
-We can look at this in more detail
+---
 
-```{r eval=FALSE, include=FALSE}
-#tmp_tbl <- 
+```{r}
+glm_dt_tbl <- 
   tmp_plt_df %>%
   mutate(
    type_of_prediction =
      case_when(
-       actual == 'died' & predicted_class == 'died' ~ 'true negative',
-       actual == 'died' & predicted_class == 'survived' ~ 'false negative',
-       actual == 'survived' & predicted_class == 'died' ~ 'false positive',
-       actual == 'survived' & predicted_class == 'survived' ~ 'true positive'
+       actual == 'died' & predicted_class == 'died' ~ 
+         'true negative',
+       actual == 'died' & predicted_class == 'survived' ~ 
+         'false negative',
+       actual == 'survived' & predicted_class == 'died' ~ 
+         'false positive',
+       actual == 'survived' & predicted_class == 'survived' ~ 
+         'true positive'
      )
-  ) 
+  ) %>% 
+  group_by(model) %>% 
+  count(type_of_prediction) %>% 
+  mutate(
+    percent = paste0(round(100*n/sum(n)), '%')
+  )
+```
+---
+
+```{r}
+kbl(glm_dt_tbl, caption = 'Performance of DT vs. GLM')
 ```
 
 ---
@@ -860,9 +1033,11 @@ We can look at this in more detail
 Let's look at predicted probabilities for a random sampling of points
 
 ```{r}
+library(ggrepel)
 set.seed(2) 
 
-tmp_tbl %>%
+sml_df <-
+  tmp_tbl %>%
   mutate(id = 1:n()) %>% 
   drop_na() %>% 
   sample_n(4) %>% 
@@ -875,13 +1050,22 @@ tmp_tbl %>%
   mutate(
     predicted_class = 
       if_else(round(predicted) == 1, 'survived', 'died'),
+    matched = if_else(actual == predicted_class, 'Correct', 'Incorrect'),
     actual = paste0('Reality: ', actual)
-  ) %>% 
+  )
+```
+
+---
+
+```{r}
+plt_of_smple <- 
+  sml_df %>% 
   ggplot(
     aes(
       x = predicted, 
       y = predicted_class, 
       color = model,
+      shape = matched,
       label = 
         paste0(
           'ID ', id, ':\n',
@@ -889,7 +1073,7 @@ tmp_tbl %>%
         )
       )
     ) +
-  geom_point() +
+  geom_point(size = 5) +
   geom_label_repel(
     aes(fill = model),
     color = 'black'
@@ -898,26 +1082,110 @@ tmp_tbl %>%
     limits = c(-0.25, 1.25), 
     labels = seq(0, 1, 0.25)
   ) +
+  facet_wrap(vars(actual), nrow = 1) 
+```
+
+---
+
+```{r, fig.width=8,fig.height=6,fig.align='center'}
+plt_of_smple +
   theme_bw() +
-  facet_wrap(vars(actual), nrow = 1) +
   labs(
-    y = 'Prediction'
+    y = 'Prediction',
+    shape = 'Accuracy'
   )
 ```
 
 ---
 
+# Another random sampling
+
+
+```{r include=FALSE}
+set.seed(6)
+plt_of_smple2 <- 
+  tmp_tbl %>%
+  mutate(id = 1:n()) %>% 
+  drop_na() %>% 
+  sample_n(4) %>% 
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %>% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    matched = if_else(actual == predicted_class, 'Correct', 'Incorrect'),
+    actual = paste0('Reality: ', actual)
+  ) %>% 
+  ggplot(
+    aes(
+      x = predicted, 
+      y = predicted_class, 
+      color = model,
+      shape = matched,
+      label = 
+        paste0(
+          'ID ', id, ':\n',
+          'prob = ', round(predicted, 2)
+        )
+      )
+    ) +
+  geom_point(size = 5) +
+  geom_label_repel(
+    aes(fill = model),
+    color = 'black'
+  ) +
+  scale_x_continuous(
+    limits = c(-0.25, 1.25), 
+    labels = seq(0, 1, 0.25)
+  ) +
+  facet_wrap(vars(actual), nrow = 1) + 
+  theme_bw() +
+  labs(
+    y = 'Prediction',
+    shape = 'Accuracy'
+  )
+```
+
+
+```{r, fig.width=8,fig.height=6,fig.align='center'}
+plt_of_smple2
+```
+
+
+---
 # Benefits of decision trees
 
 * work for many outcome types
     * dichotomous = "classification" tree
     * continuous = "regression" tree
     
-    
 ---
 
+class: center, middle
+
+# Random Forests
+
+---
+
+# Random Forests
+
+Random forests are an **ensemble** method designed to improve several shortcomings of decision trees.
+
+The logic is relatively simple: 
+  * 
 
 ```{r}
 
 ```
 
+---
+
+# Benefits of Random Forests
+
+* when number of predictors > number of observed units
+  * established protocols for variable importance; can compare relative importance of all variables
+  * not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)

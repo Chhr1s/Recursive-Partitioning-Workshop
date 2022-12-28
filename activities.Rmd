@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 set.seed(4444)
 library(tidyverse)
 library(janitor)
+source(here::here('functions.R'))
 dat <- 
   rio::import(
     here::here(
@@ -33,7 +34,7 @@ dat <-
     country_name, 
     indicator_name, 
     indicator_code, 
-    x1990:x2021
+    x1990:x2018
   )
 
 # make a key so we have all variables easily searchable
@@ -47,8 +48,6 @@ key <-
     janitor_version = janitor::make_clean_names(indicator_code)
   )
 ```
-
-
 
 ```{r}
 library(sjmisc)
@@ -69,35 +68,35 @@ cleaned <-
   )
 ```
 
-Share of youth not in education, employment or training, total (% of youth population)
+`sl_tlf_cact_zs` = Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)
 
-sl_uem_neet_zs
+`sl_uem_neet_zs` = Share of youth not in education, employment or training, total (% of youth population)
 
-
-Secondary education, duration (years)
-
-se_sec_durs
+`se_sec_durs` = Secondary education, duration (years)
 
 ```{r}
 key
 ```
 
 ```{r}
+nzv_vars <- 
+  names(which(apply(cleaned, 2, var) < 0.1))
+
 df_to_impute <- 
   cleaned %>% 
   # only retain rows with < 10% missingness
-  select(where(~sum(is.na(.x))<0.1*nrow(cleaned))) 
+  select(
+    where(~sum(is.na(.x)) < 0.1*nrow(cleaned)) &
+      -all_of(nzv_vars)
+  )
 
 # select an outcome with no missingness
 
 full_variables <- 
-  cleaned %>% 
+  df_to_impute %>% 
   # only retain rows with < 10% missingness
   select(where(~sum(is.na(.x))==0)) %>% 
   names()
-
-nzv_vars <- 
-  names(which(apply(cleaned, 2, var) == 0))
 
 
 outcome_key <- 
@@ -124,7 +123,7 @@ outcome_descriptor <-
 
 we're going to use median impute
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 plt <-
   cleaned %>% 
   pivot_longer(
@@ -156,8 +155,14 @@ cleaned %>%
 
 ```{r}
 sum(is.na(cleaned$sl_tlf_cact_zs))
+
 imputed <- 
   df_to_impute %>% 
+  arrange(year) %>% 
+  mutate(
+    outcome_next_year = lead(sl_tlf_cact_zs, order_by = year)
+    ) %>% 
+  drop_na(outcome_next_year) %>% 
   mutate(
     across(
       # no missigness in the outcome
@@ -169,6 +174,7 @@ imputed <-
            .x)
     )
   )
+
 ```
 
 ```{r}
@@ -180,21 +186,53 @@ library(rsample)
 set.seed(123)
 split_data <- initial_split(imputed)
 
-
-
 training_data_tmp <- 
   training(split_data) 
 
 training_data_outcome <- 
   training_data_tmp %>% 
-  select(sl_tlf_cact_zs)
+  select(outcome_next_year)
+
+
+training_sds <- 
+  training_data_tmp %>% 
+  select(
+    -outcome_next_year, 
+    -contains('tlf_cact'),
+    -contains('sl_emp'),
+    -contains('tlf_acti')
+    ) %>% 
+  mutate(
+    across(
+      .cols = everything(), 
+      .fns = ~sd(.x, na.rm = T)
+    )
+  )
+# even though these had variance, they don't in the training set
+# we cannot learn from them
+
+nzv_training <- 
+  training_sds %>% 
+  select(where(~sum(.x) == 0)) %>% 
+  names()
+
+training_sds <- 
+  training_sds %>% 
+  select(-any_of(nzv_training))
 
 training_xs <- 
   training_data_tmp %>% 
-  select(-sl_tlf_cact_zs)
+  select(
+    -any_of(nzv_training), 
+    -outcome_next_year, 
+    -contains('tlf_cact'),
+    -contains('sl_emp'),
+    -contains('tlf_acti')
+    ) 
 
 training_means <- 
   training_xs %>% 
+  select(-any_of(nzv_training)) %>% 
   mutate(
     across(
       .cols = everything(), 
@@ -202,19 +240,12 @@ training_means <-
     )
   )
 
-training_sds <- 
-  training_xs %>% 
-  mutate(
-    across(
-      .cols = everything(), 
-      .fns = ~sd(.x, na.rm = T)
-    )
-  )
 
 training_tmp <- 
   (training_xs - training_means
     
     )/training_sds
+
 
 training_data <- 
   training_data_outcome %>% 
@@ -226,7 +257,28 @@ training_data <-
 testing_data_tmp <- 
   testing(split_data) 
 
-testing_data 
+testing_data_outcome <- 
+  testing_data_tmp %>% 
+  select(outcome_next_year)
+
+testing_xs <- 
+  testing_data_tmp %>% 
+  select(
+    -outcome_next_year, 
+    -any_of(nzv_training),
+    -contains('tlf_cact'),
+    -contains('sl_emp'),
+    -contains('tlf_acti')
+    )
+
+testing_tmp <- 
+  (testing_xs - training_means[1:nrow(testing_xs),]
+    
+    )/training_sds[1:nrow(testing_xs),]
+
+testing_data <- 
+  testing_data_outcome %>% 
+  bind_cols(testing_tmp)
 ```
 
 ```{r}
@@ -237,8 +289,12 @@ library(rpart)
 dt_training <- 
   rpart(
     data = training_data, 
-    formula = sl_tlf_cact_zs ~ .
+    formula = outcome_next_year ~ .
   )
+```
+
+```{r}
+rpart.plot::rpart.plot(dt_training)
 ```
 
 ```{r}
@@ -254,7 +310,7 @@ library(ranger)
 rf_training <- 
   ranger(
     data = training_data, 
-    formula = sl_tlf_cact_zs ~ .,
+    formula = outcome_next_year ~ .,
     importance = 'permutation'
   )
 ```
@@ -319,6 +375,7 @@ stop_time - start_time
 ```
 
 ```{r}
+library(lattice)
 plts_3d <- 
   map(
   .x = partial_list,
@@ -333,7 +390,6 @@ plts_3d <-
             collapse = "*")
           )
       )
-    
     wireframe(
       form, 
       data = .x, 
@@ -341,58 +397,286 @@ plts_3d <-
       scale = list(arrows = F)
     )
   }
-  
 )
 
 plts_3d
 ```
 
-
 ```{r}
-# lapply(
-#   unique(partial_list[[1]]$year),
-#   function(x) {wireframe(
-#     form, 
-#     data = partial_list[[1]] %>% filter(year == x), 
-#     drape =T, 
-#     #zlab = "Price", 
-#     scale = list(arrows = F)
-#   )}
-# )
-
+mae <- function(observed_y, predicted_y) 
+  {mean(abs(observed_y - predicted_y))/length(observed_y)}
 ```
 
 
 ```{r}
-library(rgl)
+actual_vs_pred <- 
+  testing_data %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(dt_training, newdata = testing_data), 
+    predicted_RF = 
+      predict(rf_training, data = testing_data)$predictions
+  ) %>% 
+  pivot_longer(
+    cols = starts_with('predicted'), 
+    names_to = 'model',
+    values_to = 'prediction',
+    names_prefix = 'predicted_'
+  ) %>% 
+  select(
+    outcome_next_year,
+    model, 
+    prediction, 
+    year
+  )
+```
 
-# This is to output a rgl plot in a rmarkdown document.
-# setupKnitr()
 
-# Data: the iris data is provided by R
+```{r}
+actual_vs_pred %>% 
+  mutate(
+    year = (year * training_sds$year[1]) + training_means$year[1]
+  ) %>% 
+  ggplot(
+    aes(
+      x = prediction,
+      y = outcome_next_year,
+      color = model, 
+      fill = model
+    )
+  ) + 
+  geom_abline(
+    intercept = 0, 
+    slope = 1, 
+    linetype = 2,
+    size = 2,
+    color = 'gray70'
+  ) +
+  geom_point(
+    shape = 21, 
+    color = 'black',
+    size = 5,
+    alpha = 0.5
+  ) +
+  ggrepel::geom_label_repel(
+    aes(label = year), 
+    color = 'black', 
+    max.overlaps = 14,
+    min.segment.length = 0.01
+  ) +
+  labs(
+    y = 'True Workforce (%)\n(Next Year)',
+    x = 'Predited Workforce (%)\n(Next Year)',
+    
+  ) +
+  theme_bw()
+```
 
 
-# Add a new column with color
-mycolors <- c('royalblue1', 'darkcyan', 'oldlace')
-pdp_3$color <- mycolors[ as.numeric(pdp_3$Species) ]
-
-# Plot
-plot3d( 
-  x= pdp_3$sp_pop_2024_ma_5y, y=pdp_3$ny_gds_totl_cn, z=pdp_3$yhat, 
-  #col = pdp_3$year, 
-  type = 's', 
-  radius = 2,
-  
+```{r}
+fit_to_data <- 
+  actual_vs_pred %>% 
+  group_by(model) %>% 
+  summarize(
+    MAE = mae(
+      observed_y = outcome_next_year, 
+      predicted_y = prediction
+    ), 
+    RMSE = rmse(
+      observed_y = outcome_next_year, 
+      predicted_y = prediction
+    )
   )
 
-# To display in an R Markdown document:
-# rglwidget()
+fit_to_data
+```
 
-# To save to a file:
-htmlwidgets::saveWidget(rglwidget(width = 520, height = 520), 
-                        file = "HtmlWidget/3dscatter.html",
-                        libdir = "libs",
-                        selfcontained = FALSE
-                        )
+```{r}
+cv_obj <- vfold_cv(training_data, v = 5)
+```
+
+```{r}
+library(dials)
+```
+
+```{r}
+max_entropy_grid <- 
+  grid_max_entropy(
+    # default = floor(sqrt(ncol(training_data))) = 24
+    mtry(range = c(18, 100)),
+    trees(range = c(400, 1000)), 
+    size = 10
+  )
+
+tuned_res <- 
+  cv_it(
+    cv_obj = cv_obj, 
+    outcome_string = 'outcome_next_year',
+    seed = 333,
+    mod_formula = outcome_next_year ~ .,
+    tuning_grid = max_entropy_grid
+  ) 
+```
+
+
+```{r}
+pos_d <- 
+  position_dodge(width = 1)
+
+
+
+plot_df <- 
+  tuned_res %>% 
+  pivot_longer(
+    cols = c(mean_rmse:se_mae),
+    names_to = c('.value', 'metric'),
+    names_sep = '_'
+  ) 
+
+plot_df %>% 
+  ggplot(
+    aes(
+      x = grid_index, 
+      y = mean, 
+      fill = metric,
+      color = metric,
+      group = metric, 
+      ymin = mean - 1.96*se, 
+      ymax = mean + 1.96*se,
+    )
+  ) +
+  scale_x_continuous(
+    breaks = 1:10
+  ) +
+  geom_errorbar(position = pos_d) + 
+  geom_point(position = pos_d) + 
+  geom_label(
+    aes(
+      label = round(mean, 3)
+    ),
+      color = 'black',
+    position = pos_d,
+  ) +
+  theme_bw() + 
+  coord_flip() +
+  labs(
+    caption = 
+      'CIs drawn with t-distribution; use to conceptualize spread, not assess significance'
+  ) +
+  theme(
+    plot.caption.position = 'plot',
+    plot.title.position = 'plot'
+    )
+```
+
+```{r}
+final_mtry <- 
+  tuned_res %>% 
+  filter(mean_rmse == min(mean_rmse)) %>% 
+  pull(mtry)
+
+final_trees <- 
+  tuned_res %>% 
+  filter(mean_rmse == min(mean_rmse)) %>% 
+  pull(trees)
+```
+
+```{r}
+rf_tuned <- 
+  ranger(
+    data = training_data, 
+    formula = outcome_next_year ~ .,
+    importance = 'permutation',
+    mtry = final_mtry,
+    num.trees = final_trees
+  )
+```
+
+```{r}
+
+actual_vs_pred <- 
+  testing_data %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(dt_training, newdata = testing_data), 
+    predicted_RF = 
+      predict(rf_training, data = testing_data)$predictions,
+    predicted_RF.tuned = 
+      predict(rf_tuned, data = testing_data)$predictions,
+  ) %>% 
+  pivot_longer(
+    cols = starts_with('predicted'), 
+    names_to = 'model',
+    values_to = 'prediction',
+    names_prefix = 'predicted_'
+  ) %>% 
+  select(
+    outcome_next_year,
+    model, 
+    prediction, 
+    year
+  )
+
+```
+
+```{r}
+actual_vs_pred %>% 
+  mutate(
+    year = (year * training_sds$year[1]) + training_means$year[1]
+  ) %>% 
+  ggplot(
+    aes(
+      x = prediction,
+      y = outcome_next_year,
+      color = model, 
+      fill = model
+    )
+  ) + 
+  geom_abline(
+    intercept = 0, 
+    slope = 1, 
+    linetype = 2,
+    size = 2,
+    color = 'gray70'
+  ) +
+  geom_point(
+    shape = 21, 
+    color = 'black',
+    size = 5,
+    alpha = 0.5
+  ) +
+  ggrepel::geom_label_repel(
+    aes(label = year), 
+    color = 'black', 
+    max.overlaps = 14,
+    min.segment.length = 0.01
+  ) +
+  labs(
+    y = 'True Workforce (%)\n(Next Year)',
+    x = 'Predited Workforce (%)\n(Next Year)',
+    
+  ) +
+  theme_bw()
+```
+
+```{r}
+actual_vs_pred %>% 
+  mutate(
+    year = (year * training_sds$year[1]) + training_means$year[1]
+  ) %>% 
+  group_by(model) %>% 
+  group_by(model) %>% 
+  summarize(
+    MAE = mae(
+      observed_y = outcome_next_year, 
+      predicted_y = prediction
+    ), 
+    RMSE = rmse(
+      observed_y = outcome_next_year, 
+      predicted_y = prediction
+    )
+  )
 ```
 
