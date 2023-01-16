@@ -7,174 +7,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r}
-# data sources
-# https://data.worldbank.org/topic/education?locations=TH
-```
-
-```{r}
-set.seed(4444)
 library(tidyverse)
-library(janitor)
-source(here::here('functions.R'))
-dat <- 
-  rio::import(
-    here::here(
-      'data/thai_education',
-      'world_bank_thai_education.csv'
-    ),
-    skip = 4,
-  ) %>% 
-  tibble() %>% 
-  row_to_names(row_number = 1) %>% 
-  clean_names() %>% 
-  select(
-    country_name, 
-    indicator_name, 
-    indicator_code, 
-    x1990:x2018
-  )
-
-# make a key so we have all variables easily searchable
-key <- 
-  dat %>% 
-  select(
-    indicator_name, 
-    indicator_code
-    ) %>% 
-  mutate(
-    janitor_version = janitor::make_clean_names(indicator_code)
-  )
 ```
 
 ```{r}
-library(sjmisc)
-cleaned <- 
-  dat %>% 
-  mutate(
-    janitor_version = janitor::make_clean_names(indicator_code)
-  ) %>% 
-  select(-indicator_name, -indicator_code, -country_name) %>% 
-  relocate(janitor_version, .before = everything()) %>% 
-  rotate_df() %>% 
-  row_to_names(row_number = 1) %>% 
-  rownames_to_column(var = 'year') %>% 
-  tibble() %>% 
-  mutate(
-    year = str_extract(string = year, regex('\\d\\d\\d\\d')),
-    across(.cols = everything(), as.numeric)
-  )
-```
-
-`sl_tlf_cact_zs` = Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)
-
-`sl_uem_neet_zs` = Share of youth not in education, employment or training, total (% of youth population)
-
-`se_sec_durs` = Secondary education, duration (years)
-
-```{r}
-key
-```
-
-```{r}
-nzv_vars <- 
-  names(which(apply(cleaned, 2, var) < 0.1))
-
-df_to_impute <- 
-  cleaned %>% 
-  # only retain rows with < 10% missingness
-  select(
-    where(~sum(is.na(.x)) < 0.1*nrow(cleaned)) &
-      -all_of(nzv_vars)
-  )
-
-# select an outcome with no missingness
-
-full_variables <- 
-  df_to_impute %>% 
-  # only retain rows with < 10% missingness
-  select(where(~sum(is.na(.x))==0)) %>% 
-  names()
-
-
-outcome_key <- 
-  key %>% 
-  filter(
-     janitor_version %in% full_variables & 
-       !janitor_version %in% nzv_vars
-  )
-
-
-# https://ilostat.ilo.org/resources/concepts-and-definitions/ilo-modelled-estimates/
-
-
-outcome_descriptor <-
-  outcome_key %>% 
-  filter(janitor_version == 'sl_tlf_cact_zs') %>% 
-  pull(indicator_name)
-
-# more information at:
-# https://ilostat.ilo.org/resources/concepts-and-definitions/ilo-modelled-estimates/
-
-```
-
-
-we're going to use median impute
-
-```{r eval=FALSE, include=FALSE}
-plt <-
-  cleaned %>% 
-  pivot_longer(
-    cols = -year
-  ) %>% 
-  ggplot(
-    aes(
-      x = value, 
-      color = name, 
-      fill = name
-    )
-  ) + 
-  geom_density(
-    show.legend = FALSE
-  ) 
-
-plt +
-  lims(x = c(0, 25))
-``` 
-
-```{r}
-# differences between mean and median aren't that great (in most cases)
-cleaned %>% 
-  summarize(
-    across(.cols = everything(),.fns = ~median(.x) - mean(.x))
-  ) 
-```
-
-
-```{r}
-sum(is.na(cleaned$sl_tlf_cact_zs))
-
 imputed <- 
-  df_to_impute %>% 
-  arrange(year) %>% 
-  mutate(
-    outcome_next_year = lead(sl_tlf_cact_zs, order_by = year)
-    ) %>% 
-  drop_na(outcome_next_year) %>% 
-  mutate(
-    across(
-      # no missigness in the outcome
-      .cols = everything(), 
-      .fns = 
-         ~ifelse(
-           is.na(.x),
-           median(.x, na.rm = T),
-           .x)
-    )
+  rio::import(
+    here::here('data', 'imputed_world_bank.csv')
   )
-
 ```
 
 ```{r}
@@ -193,6 +33,7 @@ training_data_outcome <-
   training_data_tmp %>% 
   select(outcome_next_year)
 
+# these variables are too co-linear for same year prediction
 
 training_sds <- 
   training_data_tmp %>% 
@@ -519,6 +360,11 @@ tuned_res <-
   ) 
 ```
 
+```{r}
+tuned_res
+```
+
+
 
 ```{r}
 pos_d <- 
@@ -537,36 +383,33 @@ plot_df <-
 plot_df %>% 
   ggplot(
     aes(
-      x = grid_index, 
-      y = mean, 
+      y = factor(grid_index), 
+      x = mean, 
       fill = metric,
-      color = metric,
       group = metric, 
-      ymin = mean - 1.96*se, 
-      ymax = mean + 1.96*se,
+      xmin = mean - 1.96*se, 
+      xmax = mean + 1.96*se
     )
-  ) +
-  scale_x_continuous(
-    breaks = 1:10
-  ) +
-  geom_errorbar(position = pos_d) + 
-  geom_point(position = pos_d) + 
+  ) + 
+  geom_col(color = 'black') + 
+  geom_errorbar(width = 0.2, color = 'black') + 
   geom_label(
-    aes(
-      label = round(mean, 3)
-    ),
-      color = 'black',
-    position = pos_d,
+    aes(label = round(mean, 3)),
+    color = 'black'
   ) +
   theme_bw() + 
-  coord_flip() +
   labs(
     caption = 
-      'CIs drawn with t-distribution; use to conceptualize spread, not assess significance'
+      '95% CIs drawn with t-distribution\nuse to conceptualize spread, not assess significance'
   ) +
   theme(
     plot.caption.position = 'plot',
     plot.title.position = 'plot'
+    ) +
+  facet_wrap(vars(metric), scales = 'free') + 
+  labs(
+    y = 'Grid index',
+    x = 'Average Fit'
     )
 ```
 
@@ -594,7 +437,6 @@ rf_tuned <-
 ```
 
 ```{r}
-
 actual_vs_pred <- 
   testing_data %>% 
   mutate(

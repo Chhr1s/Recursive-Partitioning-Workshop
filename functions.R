@@ -5,16 +5,62 @@ rmse <- function(observed_y, predicted_y){
     )
 }
 
+
+
+mae <- function(observed_y, predicted_y) 
+{mean(abs(observed_y - predicted_y))/length(observed_y)}
+
+# internal function to `cv_it()`
+fit_model_ <- 
+  function(
+    model_type, 
+    tuning_grid, 
+    mod_formula,
+    analysis_data, 
+    tuning_param1, 
+    tuning_param2
+    ){
+  if (model_type == 'dt'){
+    
+    
+      return(rpart(
+        data = analysis_data, 
+        formula = mod_formula, 
+        cp = tuning_param1,
+        minsplit = tuning_param2
+      ))
+    
+  }
+  
+  if (model_type == 'rf'){
+    
+    
+      ranger(
+        data = analysis_data, 
+        formula = mod_formula, 
+        mtry = tuning_param1,
+        num.trees = tuning_param2
+      )
+    
+
+  }
+}
+
+
+
+
 # function for cv & tuning
 
-cv_it <- 
+cv_it_complex <- 
   function (
     cv_obj, 
+    model_type,
     outcome_string,
     seed = 713, 
     mod_formula, 
     tuning_grid, 
     verbose = TRUE,
+    mod,
     ...) 
   {
     # want it to be reproducible, even if you don't remember to set it
@@ -27,54 +73,90 @@ cv_it <-
     for (j in 1:nrow(tuning_grid)){
       
       # store tuning parameters from grid
-      mtry_temp <- tuning_grid$mtry[[j]]
-      trees_temp <- tuning_grid$trees[[j]]
+      
+      if (model_type == 'rf'){
+        tp1 <- tuning_grid$mtry[[j]]
+        tp2 <- tuning_grid$trees[[j]]
+      }
+      
+      if (model_type == 'dt'){
+        
+        tp1 <- tuning_grid$cp_[[j]]
+        tp2 <- tuning_grid$minsize_[[j]]
+      }
       
       # make vectors for the fit metrics
-      rmse_temp <- vector(mode = 'numeric', length = length(number_cv_sets))
-      mae_temp <- vector(mode = 'numeric', length = length(number_cv_sets))
+      fit_1 <- vector(mode = 'numeric', length = length(number_cv_sets))
+      fit_2 <- vector(mode = 'numeric', length = length(number_cv_sets))
       
       # loop through cv object at this tuning value
       for (i in 1:number_cv_sets) {
         # use analysis set for training
-        temp_analysis <- analysis(cv_obj$splits[[i]])
-        # fit rf
         
+        temp_analysis <- analysis(cv_obj$splits[[i]])
+        # fit model
         
         fitted_result <- 
-          ranger(
-            data = temp_analysis, 
-            formula = mod_formula, 
-            mtry = mtry_temp,
-            num.trees = trees_temp
+          fit_model_(
+            model_type = model_type, 
+            tuning_grid = tuning_grid, 
+            mod_formula = mod_formula,
+            analysis_data = temp_analysis,
+            tuning_param1 = tp1,
+            tuning_param2 = tp2
           )
+        
         # get predictions
         temp_assessment <- assessment(cv_obj$splits[[i]])
-        temp_predictions <- predict(fitted_result, data = temp_assessment)
+        
+        if (model_type == 'rf') {
+          temp_predictions <- predict(fitted_result, data = temp_assessment)$predictions
+        }
+        
+        if (model_type == 'dt'){
+          
+          temp_predictions <- predict(fitted_result, newdata = temp_assessment)
+        }
         temp_new_Y <- temp_assessment %>% pull(sym(outcome_string))
         
         # store fit metrics
-        rmse_temp[i] <- rmse(observed_y = temp_new_Y, predicted_y = temp_predictions$predictions)
-        mae_temp[i] <- mae(observed_y = temp_new_Y, predicted_y = temp_predictions$predictions)
+        
+        if (mode == 'regression')
+        {
+          fit_type1 <- 'rmse_mean'
+          fit_type2 <- 'mae_mean'
+          fit_type1se <- 'rmse_se'
+          fit_type2se <- 'mae_se'
+        
+          
+          fit_1[i] <- rmse(observed_y = temp_new_Y, predicted_y = temp_predictions)
+          fit_2[i] <- mae(observed_y = temp_new_Y, predicted_y = temp_predictions)
+          
+        }
+        
+        if (mode == 'classification'){
+          fit_type1 <- 'classification_accuracy'
+          fit_type2 <- 'mae'
+        }
         
         if(verbose == TRUE) {message(paste0("cv index ", i, " complete"))}
       }
       # take average
-      mean_rmse <- mean(rmse_temp)
-      mean_mae <- mean(mae_temp)
+      mean_fit_1 <- mean(fit_1)
+      mean_fit_2 <- mean(fit_2)
       # calculate std. error
-      se_rmse <- sd(rmse_temp)/sqrt(length(rmse_temp))
-      se_mae <- sd(mae_temp)/sqrt(length(mae_temp))
+      se_fit_1 <- sd(fit_1)/sqrt(length(fit_1))
+      se_fit_2 <- sd(fit_2)/sqrt(length(fit_2))
       
       # put it together
       temp_results <- 
         tuning_grid[j, ] %>% 
         mutate(
           grid_index = j, 
-          mean_rmse = mean_rmse, 
-          se_rmse = se_rmse,
-          mean_mae = mean_mae,
-          se_mae = se_mae
+          '{fit_type1}' := mean_fit_1, 
+          '{fit_type1se}' := se_fit_1,
+          '{fit_type2}' := mean_fit_2,
+          '{fit_type2se}' := se_fit_2
         ) %>% 
         select(grid_index, everything())
       

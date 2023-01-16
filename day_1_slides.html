@@ -255,7 +255,7 @@ class: middle, center
 
 ![](imgs/training_tree.png)
 
-Need &lt;u&gt;"features" / predictor variables&lt;/u&gt; &amp; &lt;u&gt; **corresponding "response" / outcome** &lt;/u&gt;
+Need &lt;u&gt;"features" / predictor variables&lt;/u&gt; &amp; &lt;u&gt; *corresponding "response" / outcome* &lt;/u&gt;
 
 ---
 # Designed for Prediction 
@@ -352,7 +352,9 @@ Age (from full data):
 
 # Fit the decision tree
 
-Basic syntax is: `outcome_variable ~ predictors`
+Basic syntax is: `outcome_variable ~ predictors`. 
+
+Let's start with a really simple model to get the hang of DTs.
 
 
 ```r
@@ -362,8 +364,6 @@ two_var_DT &lt;-
     data = training_data
     )
 ```
-
----
 
 
 

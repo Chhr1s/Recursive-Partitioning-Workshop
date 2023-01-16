@@ -135,9 +135,9 @@ class: center
 
 * Many non-ML pieces of programming have defaults, too
 
-**You always need to read the software documentation when you use something**
+<u>**You ALWAYS need to read the software documentation when you use something**</u>
 
-This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**.
+This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**. Due to time constraints, we are unable to provide more than an introduction to these methods.
 
 ]
 
@@ -154,7 +154,7 @@ library(tidyverse)
 
 ___
 
-* Binary splits are almost always used 
+* Binary splits are almost always used (some "multi-way" splitting models exist)
 
 * This works because repeated binary splits can approximate any functional form based on observed data (i.e., Y to X relationship)
 
@@ -236,7 +236,7 @@ class: middle, center
 
 ![](imgs/training_tree.png)
 
-Need <u>"features" / predictor variables</u> & <u> **corresponding "response" / outcome** </u>
+Need <u>"features" / predictor variables</u> & <u> *corresponding "response" / outcome* </u>
 
 ---
 # Designed for Prediction 
@@ -331,7 +331,9 @@ Age (from full data):
 
 # Fit the decision tree
 
-Basic syntax is: `outcome_variable ~ predictors`
+Basic syntax is: `outcome_variable ~ predictors`. 
+
+Let's start with a really simple model to get the hang of DTs.
 
 ```{r}
 two_var_DT <- 
@@ -340,8 +342,6 @@ two_var_DT <-
     data = training_data
     )
 ```
-
----
 
 ```{r include=FALSE}
 surv_by_sex <- 
