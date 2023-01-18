@@ -13,90 +13,139 @@ library(tidyverse)
 ```{r}
 imputed <- 
   rio::import(
-    here::here('data', 'imputed_world_bank.csv')
+    here::here('data', 'se_asia_imputed_world_bank.csv')
   )
+
+key <- rio::import(here::here('data/thai_education', 'world_bank_key.csv'))
 ```
 
 ```{r}
 sum(is.na(imputed))
+
+imputed$year %>% 
+  unique() %>% 
+  length()
+
+missing_var <-
+  imputed %>% 
+  group_by() %>% 
+  summarize(
+    across(cols = everything(), .fns = ~sum(is.na(.x)))
+  ) %>% 
+  t() %>% 
+  data.frame() %>% 
+  filter(
+    . > 0
+  )
+
+# get the name(s) of who has missing data
+missing_country <- 
+  imputed %>% 
+  filter(is.na(!!sym(rownames(missing_var)))) %>% 
+  pull(country_name) %>% 
+  unique()
+
+# give the regional median to this
+# in this same way, I did cleaning of this data
+# you can see this process in `cleaning_all_wb_data.Rmd`
+# this is just to tip you off
+dat <- 
+  imputed %>% 
+  mutate(
+    se_com_durs = 
+      if_else(
+        is.na(se_com_durs) & country_name == missing_country, 
+        median(se_com_durs, na.rm = TRUE),
+        as.numeric(se_com_durs)
+      )
+  )
+
 ```
 
 ```{r}
 library(rsample)
 set.seed(123)
-split_data <- initial_split(imputed)
+split_data <- initial_split(dat, strata = country_name)
 
 training_data_tmp <- 
-  training(split_data) 
+  training(split_data) %>% 
+  select(-country_name)
 
 training_data_outcome <- 
   training_data_tmp %>% 
   select(outcome_next_year)
 
 # these variables are too co-linear for same year prediction
-
 training_sds <- 
   training_data_tmp %>% 
   select(
     -outcome_next_year, 
-    -contains('tlf_cact'),
-    -contains('sl_emp'),
-    -contains('tlf_acti')
-    ) %>% 
+    -contains('se_prm_enrr'),
+    #-contains('sl_emp'),
+    #-contains('tlf_acti')
+  ) %>% 
   mutate(
     across(
       .cols = everything(), 
       .fns = ~sd(.x, na.rm = T)
     )
   )
+
+
 # even though these had variance, they don't in the training set
 # we cannot learn from them
 
-nzv_training <- 
-  training_sds %>% 
-  select(where(~sum(.x) == 0)) %>% 
-  names()
+# I already did this... do I need to do it again?
+# nzv_training <- 
+#   training_sds %>% 
+#   select(where(~sum(training_sds$sp_pop_1564_to_zs) == 0)) %>% 
+#   names()
 
-training_sds <- 
-  training_sds %>% 
-  select(-any_of(nzv_training))
+# training_sds <- 
+#   training_sds %>% 
+#   select(-any_of(nzv_training))
 
 training_xs <- 
   training_data_tmp %>% 
   select(
-    -any_of(nzv_training), 
+    #-any_of(nzv_training), 
     -outcome_next_year, 
-    -contains('tlf_cact'),
-    -contains('sl_emp'),
-    -contains('tlf_acti')
-    ) 
+    -contains('se_prm_enrr'),
+    # -contains('sl_emp'),
+    # -contains('tlf_acti')
+  ) 
 
 training_means <- 
   training_xs %>% 
-  select(-any_of(nzv_training)) %>% 
+  #select(-any_of(nzv_training)) %>% 
   mutate(
     across(
       .cols = everything(), 
       .fns = ~mean(.x, na.rm = T)
     )
   )
-
-
 training_tmp <- 
-  (training_xs - training_means
-    
-    )/training_sds
+  (training_xs - training_means)/training_sds
+```
 
+
+```{r}
+dim(training_xs)
+dim(training_means)
 
 training_data <- 
   training_data_outcome %>% 
-  bind_cols(training_tmp)
+  bind_cols(training_tmp) %>% 
+  bind_cols(
+    training(split_data) %>% select(country_name)
+  )
 ```
 
 
 ```{r}
 testing_data_tmp <- 
-  testing(split_data) 
+  testing(split_data) %>% 
+  select(-country_name)
 
 testing_data_outcome <- 
   testing_data_tmp %>% 
@@ -106,20 +155,24 @@ testing_xs <-
   testing_data_tmp %>% 
   select(
     -outcome_next_year, 
-    -any_of(nzv_training),
-    -contains('tlf_cact'),
-    -contains('sl_emp'),
-    -contains('tlf_acti')
-    )
+    -contains('se_prm_enrr'),
+    #  -contains('tlf_cact'),
+    #  -contains('sl_emp'),
+    #  -contains('tlf_acti')
+  )
 
 testing_tmp <- 
   (testing_xs - training_means[1:nrow(testing_xs),]
-    
-    )/training_sds[1:nrow(testing_xs),]
+   
+  )/training_sds[1:nrow(testing_xs),]
 
 testing_data <- 
   testing_data_outcome %>% 
-  bind_cols(testing_tmp)
+  bind_cols(testing_tmp) %>% 
+  bind_cols(
+    testing(split_data) %>% 
+      select(country_name)
+  )
 ```
 
 ```{r}
@@ -132,6 +185,7 @@ dt_training <-
     data = training_data, 
     formula = outcome_next_year ~ .
   )
+
 ```
 
 ```{r}
@@ -159,7 +213,7 @@ rf_training <-
 ```{r}
 library(vip)
 vi <- vi(rf_training)
-investigate_v <- vi$Variable[1:3]
+investigate_v <- vi$Variable[1:5]
 vip(rf_training)
 ```
 
@@ -168,23 +222,36 @@ vip(rf_training)
 library(pdp)
 partial <- pdp::partial
 
-partial(
-  rf_training, 
-  pred.var = investigate_v[1], 
-  plot = T
-)
+partial_list1 <- 
+  map(
+    .x = investigate_v, 
+    .f = 
+      ~partial(
+        rf_training, 
+        pred.var = .x, 
+        plot = T
+      )
+  )
+vip(vi)
 
 partial(
-  rf_training, 
-  pred.var = investigate_v[2], 
-  plot = T
-)
-
-partial(
-  rf_training, 
-  pred.var = investigate_v[3], 
-  plot = T
-)
+  rf_training,
+  pred.var = c('year', 'country_name', 'se_xpd_totl_gd_zs'),
+  plot = FALSE
+) %>% 
+  mutate(
+      year = unique(training_sds$year)*year + unique(training_means$year)
+    ) %>% 
+  ggplot(
+    aes(
+      x = factor(year),
+      fill = yhat, 
+      y = se_xpd_totl_gd_zs
+    )
+  ) + 
+  geom_tile() +
+  facet_wrap(vars(country_name)) +
+  coord_cartesian()
 ```
 
 
@@ -192,60 +259,119 @@ partial(
 combos <- 
   data.frame(
     t(combn(investigate_v, 2))
-    )
+  )
 ```
 
 
 ```{r}
 f <- function(i) {
-    partial(
-      rf_training, 
-      pred.var = unlist(combos[i,]),
-      plot = F
-    )
+  partial(
+    rf_training, 
+    pred.var = c(unlist(combos[i,]),'year'),
+    plot = F
+  )
 }
+
+
 ```
 
 
 ```{r}
 library(parallel)
 start_time <- Sys.time()
-partial_list <- mclapply(1:3, f, mc.cores = 3)
+partial_list2 <- 
+  # only ones with the country name
+  mclapply(c(4, 7, 9, 10), f, mc.cores = 8L)
+
 stop_time <- Sys.time()
 stop_time - start_time
 ```
 
 ```{r}
+# names(partial_list2) <- 
+#     {combos %>% 
+#       mutate(var_combo = paste0(X1, '_and_', X2)) %>% 
+#       pull(var_combo)}
+#   
+# partials_with_country <- partial_list2[grepl('country_name',names(partial_list2))]
+```
+
+
+```{r}
+empty <-vector('list', 4)
+for (i in 1:4){
+  empty[[i]] <- 
+    partial_list2[[i]] %>% 
+    mutate(
+      year = unique(training_sds$year)*year + unique(training_means$year)
+    ) %>% 
+    ggplot(
+      aes(
+        x = year, 
+        y = !!sym(names(partial_list2[[i]])[[1]]),
+        fill = yhat
+        #color = year,
+        #fill = year
+      )
+    ) + 
+    geom_tile() +
+    coord_cartesian() +
+    facet_wrap(vars(country_name)) 
+    #labs(caption = i)
+}
+
+training_data %>% 
+  mutate(
+      year = unique(training_sds$year)*year + unique(training_means$year)
+    ) %>% 
+  group_by(year, country_name) %>% 
+  summarize(m = mean(outcome_next_year)) %>% 
+  ggplot(
+    aes(
+      x = year, 
+      y = m,
+      color = country_name,
+      #color = year,
+      #fill = year
+    )
+  ) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+#facet_wrap(vars(country_name)) 
+```
+
+
+```{r}
 library(lattice)
 plts_3d <- 
   map(
-  .x = partial_list,
-  .y = combos, 
-  .f = ~{
-    form <- 
-      formula(
-        paste(
-          "yhat ~", 
+    .x = partial_list,
+    .y = combos, 
+    .f = ~{
+      form <- 
+        formula(
           paste(
-            names(.x)[1L:2L], 
-            collapse = "*")
+            "yhat ~", 
+            paste(
+              names(.x)[1L:2L], 
+              collapse = "*")
           )
+        )
+      wireframe(
+        form, 
+        data = .x, 
+        drape =T, 
+        scale = list(arrows = F)
       )
-    wireframe(
-      form, 
-      data = .x, 
-      drape =T, 
-      scale = list(arrows = F)
-    )
-  }
-)
+    }
+  )
 
 plts_3d
 ```
 
 ```{r}
 mae <- function(observed_y, predicted_y) 
-  {mean(abs(observed_y - predicted_y))/length(observed_y)}
+{mean(abs(observed_y - predicted_y))/length(observed_y)}
 ```
 
 
@@ -306,12 +432,13 @@ actual_vs_pred %>%
     max.overlaps = 14,
     min.segment.length = 0.01
   ) +
-  labs(
-    y = 'True Workforce (%)\n(Next Year)',
-    x = 'Predited Workforce (%)\n(Next Year)',
-    
-  ) +
-  theme_bw()
+  # labs(
+  #   y = 'True Workforce (%)\n(Next Year)',
+  #   x = 'Predited Workforce (%)\n(Next Year)',
+  #   
+  # ) +
+  theme_bw() +
+  facet_wrap(vars(model))
 ```
 
 
@@ -345,25 +472,23 @@ library(dials)
 max_entropy_grid <- 
   grid_max_entropy(
     # default = floor(sqrt(ncol(training_data))) = 24
-    mtry(range = c(18, 100)),
+    mtry(range = c(5, 25)),
     trees(range = c(400, 1000)), 
     size = 10
   )
 
 tuned_res <- 
-  cv_it(
+  cv_it_complex(
     cv_obj = cv_obj, 
     outcome_string = 'outcome_next_year',
     seed = 333,
     mod_formula = outcome_next_year ~ .,
-    tuning_grid = max_entropy_grid
-  ) 
-```
+    tuning_grid = max_entropy_grid,
+    model_type = 'rf',
+    mode = 'regression'
+    ) 
 
-```{r}
-tuned_res
 ```
-
 
 
 ```{r}
@@ -375,8 +500,8 @@ pos_d <-
 plot_df <- 
   tuned_res %>% 
   pivot_longer(
-    cols = c(mean_rmse:se_mae),
-    names_to = c('.value', 'metric'),
+    cols = c(rmse_mean:mae_se),
+    names_to = c('metric', '.value'),
     names_sep = '_'
   ) 
 
@@ -405,23 +530,23 @@ plot_df %>%
   theme(
     plot.caption.position = 'plot',
     plot.title.position = 'plot'
-    ) +
+  ) +
   facet_wrap(vars(metric), scales = 'free') + 
   labs(
     y = 'Grid index',
     x = 'Average Fit'
-    )
+  )
 ```
 
 ```{r}
 final_mtry <- 
   tuned_res %>% 
-  filter(mean_rmse == min(mean_rmse)) %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
   pull(mtry)
 
 final_trees <- 
   tuned_res %>% 
-  filter(mean_rmse == min(mean_rmse)) %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
   pull(trees)
 ```
 
@@ -496,19 +621,20 @@ actual_vs_pred %>%
     min.segment.length = 0.01
   ) +
   labs(
-    y = 'True Workforce (%)\n(Next Year)',
-    x = 'Predited Workforce (%)\n(Next Year)',
+    # y = 'True Workforce (%)\n(Next Year)',
+    # x = 'Predited Workforce (%)\n(Next Year)',
     
   ) +
-  theme_bw()
+  theme_bw() +
+  facet_wrap(vars(model))
 ```
 
 ```{r}
+
 actual_vs_pred %>% 
   mutate(
     year = (year * training_sds$year[1]) + training_means$year[1]
   ) %>% 
-  group_by(model) %>% 
   group_by(model) %>% 
   summarize(
     MAE = mae(
@@ -520,5 +646,9 @@ actual_vs_pred %>%
       predicted_y = prediction
     )
   )
+```
+
+```{r}
+imputed %>% group_by(country_name) %>% summarize(mean(se_prm_enrr,na.rm = T))
 ```
 

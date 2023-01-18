@@ -5,104 +5,9 @@ date: 'February 20, 2022'
 output: xaringan::moon_reader
 ---
 
-
-```{css echo=F}
-.cl_transparent {
-  position: relative;
-  z-index: 1;
-}
-
-.cl_transparent::before {    
-      content: "";
-      background-image: url('imgs/img.jpg');
-      background-size: cover;
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      bottom: 0px;
-      left: 0px;
-      opacity: 0.5;
-      z-index: -1;
-}
-```
-
-
-```{r include=FALSE}
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
-set.seed(123)
-```
-
-# Day 1 Agenda
-
-* 5 Minutes — Introduction 
-* 30 minutes — Terminology and Interpretation
-* 30-60 Minutes — Theory of Recursive Partitioning for Classification and Regression (with examples)
-* 15 Minutes —	Coffee Break
-* 60 Minutes — Lab exercise: Fitting Decision Trees in R & Model Evaluation
-* 60 Minutes —	Use-Cases, Strengths, & Weaknesses of Decision Trees
-* 60 Minutes — Extensions of Decision Trees; Focus on Random Forests 
-
----
-
-class: left, top, cl_transparent
-
-# Introduction
-
-.pull-left[
-
-
-<div style="border:solid; background-color:#b3e0ff
-; opacity:0.7">
-
-.left[
-
-  **Currently**: 
-  * **PhD Candidate**
-    * *University of Oregon*
-    * Quantitative Research Methods in Education
-    * Dissertation extends model-based recursive partitioning
-  
-  * **Head Methodologist & Owner**
-    * *Parameter Analytics, LLC.*
-    * Statistics, research design, and data science consulting firm
-
-
-]
-
-]
-
-</div>
-
-.pull-right[
-
-<div style="border:solid; background-color:#b3e0ff
-; opacity:0.7">
-
-.left[
-
-
-**Primary Education & Work History**: 
-  * Coding on-and-off since 2010 & (near) daily since 2017
-  
-  * Bachelor's Degree in Neuroscience
-  
-  * Former high school teacher
-  
-  * Earned my Master's Degree in Prevention Science
-      * Physical and psychological well-being
-      * Public Health & big data approaches 
-      
-  * Data Science Mentor at RStudio (now "Posit") 
-]
-
-]
-</div>
-
----
-
 class: center, middle
 
-# Onward to Content
+# Let's get Started
 
 ---
 # A Recommended Reference
@@ -166,7 +71,7 @@ ___
 
 * Basis of decision trees, random forests, and other Machine Learning (ML) methods
 
-___
+---
 
 Many consider the automated interaction detection proposed in 1963 to be the seminal reference in this field.
 
@@ -296,12 +201,13 @@ library(rsample)
 # Setting up
 
 ```{r}
+data(ptitanic)
 ptitanic <- 
   ptitanic %>% 
   mutate(
     survived = relevel(survived, ref = 'died')
   )
-
+# this is how we'll keep training and testing data apart
 split_data <- initial_split(ptitanic)
 training_data <- training(split_data)
 testing_data <- testing(split_data)
@@ -309,29 +215,29 @@ testing_data <- testing(split_data)
 
 We will start with 2 variables to predict `survival`: `age` & `sex`
 
+
+---
+
 ```{r include=FALSE}
 descriptives <- psych::describe(rpart.plot::ptitanic$age)
 ```
 
-___
 
 ### Some descriptives 
 
-The percent of the sample which survived was ~`r round(sum(ptitanic$survived == 'survived')/nrow(ptitanic)*100)`%.
+In the whole sample, ~`r round(sum(ptitanic$survived == 'survived')/nrow(ptitanic)*100)`% survived the incident.
 
-Sex (from full data):
+Records show:
   * `r sum(ptitanic$sex == 'male')` coded as male
-  * `r sum(ptitanic$sex == 'female')` coded as female
-
-Age (from full data):
-  * Mean = `r round(descriptives$mean, 2)` years
-  * Std. Dev. = `r round(descriptives$sd, 2)` years
+  * `r sum(ptitanic$sex == 'female')` coded as female:
+  * Age - Mean = `r round(descriptives$mean, 2)` years
+  * Age - Std. Dev. = `r round(descriptives$sd, 2)` years
 
 ---
 
 # Fit the decision tree
 
-Basic syntax is: `outcome_variable ~ predictors`. 
+Basic syntax is: `outcome_variable ~ predictors`
 
 Let's start with a really simple model to get the hang of DTs.
 
@@ -342,6 +248,8 @@ two_var_DT <-
     data = training_data
     )
 ```
+
+This asks the model to build a decision tree that could predict `survival` based on these two variables in the data (coded `sex` and `age`)
 
 ```{r include=FALSE}
 surv_by_sex <- 
@@ -411,6 +319,58 @@ rpart.plot(
 )
 ```
 ]
+
+---
+
+# Zoomed in
+
+```{r echo=FALSE}
+rpart.plot(
+  two_var_DT, 
+  type = 4,
+  branch = 0.6,
+  clip.right.labs = FALSE,
+  box.palette = "Grays"
+)
+```
+
+---
+
+# Variable Importance Plots
+
+* Variable importance give the relative contribution of each variable to the model. 
+* As complexity / size of tree increases, VIPs become more helpful after the fist few splits.
+* Depending on the modeling framework, they are created with slightly different approaches.
+* The name gives the underlying logic, though
+
+with the `vip` package, you can get a basic VIP easily: 
+
+```{r, eval = FALSE, echo = T}
+library(vip)
+vip(two_var_DT, include_type = TRUE) + 
+  theme_bw(base_size = 15) +
+  labs(
+    title = 'Variable Importance Plot for Decision Tree',
+    subtitle = 'Data from `ptitanic`',
+  )
+```
+
+---
+
+# Variable Importance Plot
+
+.left-column[Be careful to not interpret the magnitude of differences without deep understandings of how this specific VIP is made.]
+.right-column[
+```{r echo = FALSE}
+library(vip)
+vip(two_var_DT, include_type = TRUE) + 
+  theme_bw(base_size = 15) +
+  labs(
+    title = 'Variable Importance Plot for Decision Tree',
+    subtitle = 'Data from `ptitanic`',
+  )
+```
+]
 ---
 
 # Another way to look at it
@@ -418,7 +378,7 @@ rpart.plot(
 .left-column[
 Visually, the model is finding the best split to separate the shapes. 
 
-This case is intuitive (2 splittig varibles & 2 total splits)
+This case is intuitive (2 splitting variables & 2 total splits)
 
 Higher dimensional models do the same thing, but harder to conceptualize.
 
@@ -500,7 +460,7 @@ tmp_tbl <-
        actual == 'survived' & predicted == 'died' ~ 'false positive',
        actual == 'survived' & predicted == 'survived' ~ 'true positive'
      ),
-    proportion = 
+    percent = 
       paste0(
         round(
           (n / sum(n))* 100), 
@@ -544,8 +504,10 @@ kbl(tmp_tbl, caption = 'Performance of 2-variable DT')
 
 ```{r}
 library(pdp)
-## purrr also 
-## has a `partial` command
+## two `partial` loaded:
+## `pdp::partial` 
+## `purrr::partial`
+## make sure we use former
 partial <- pdp::partial
 ```
 ]
@@ -559,7 +521,7 @@ univariate_pdp_sex <-
     pred.var = 'sex',
     type = 'classification',
     which.class = 'survived',
-    # pred prob not logits
+    # return predicted probability 
     prob = TRUE
     )
 ```
@@ -655,7 +617,8 @@ bi_pdp_plt <-
   labs(
     x = 'Passenger Age', 
     y = 'Predicted Probability of Surviving', 
-    title = 'Women & younger men (>= 15) display a substantially\n higher probability of survival',
+    title = 'Women & younger men display a substantially
+higher probability of survival',
     fill = 'Passenger\nSex'
     ) +
   theme(
@@ -676,9 +639,37 @@ bi_pdp_plt
 
 ---
 
-# Improving model performance 
+class: center, middle
 
-In many `R` packages, the `.` in a formula indicates that you want all variables (except the outcome) included
+# Activity
+
+---
+
+## Now it's your turn: 
+
+* Open `activity_1.Rmd`.
+
+* Complete `sections 1.1 - 1.5`.
+
+* Work in small groups or alone.
+
+* We'll come back together & discuss in ~20 minutes. 
+
+---
+
+class: center, middle
+
+# Review `activity_1_key.Rmd`
+
+---
+
+# Diving (a little bit) Deeper 
+
+Let's fit the same model from the activity again. 
+
+Our training data differs slightly compared to the activity. 
+
+If we made sure to use `set.seed()` with the same seed value, they would be the same. 
 
 ```{r}
 all_var_DT <- 
@@ -690,9 +681,20 @@ all_var_DT <-
 
 ---
 
+# Three Variable PDP!
+
+I do not recommend doing more than 2 variable PDPs in many cases. 
+
+Run times can be **MASSIVE**, even with good machines. 
+
+  1. make sure you save your `.Rmd` before running this
+  2. with ≥ 2 variable PDPs, be aware of:
+  
+    a. the dimensions of the data set (rows x columns)
+    
+    b. your computer's capability 
 
 ```{r}
-# I typically do NOT recommend this
 three_variable_pdp <- 
   partial(
     all_var_DT, 
@@ -705,11 +707,11 @@ three_variable_pdp <-
 
 ---
 
-```{r, fig.align='center'}
-rpart.plot(all_var_DT)
-```
+# Visualizing 
 
----
+PDPs get harder to visualize as number of variables included increase.
+
+We can make a slightly more complex plot to show this.
 
 ```{r}
 three_variable_plt <- 
@@ -726,19 +728,31 @@ three_variable_plt <-
     width = 0.02, 
     height = 0.02,
     alpha = 0.5
-    ) + 
+    ) +
+  facet_wrap(vars(sex), ncol = 2)
+```
+
+---
+
+# Slightly Formating the Visualization
+
+```{r}
+three_variable_plt <-
+  three_variable_plt +
   theme_bw(base_size = 15) +
   labs(
     x = 'Passenger Age', 
     y = 'Predicted Probability of Surviving', 
     title = 'Women & younger men display a substantially\n higher probability of survival',
-    fill = 'Passenger\nClass',
-    color = 'Passenger\nClass'
+    fill = 'Passenger Class',
+    color = 'Passenger Class',
+    caption = 'Points are minimally jittered in x- and y-dimensions to show density'
     ) +
   theme(
-    plot.title.position = 'plot'
-    ) +
-  facet_wrap(vars(sex), ncol = 2)
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot', 
+    legend.position = 'bottom'
+    )
 ```
 
 ---
@@ -760,7 +774,7 @@ three_variable_plt +
     data = 
       tibble(
         x = 7.5, 
-        y = 0.34, 
+        y = 0.35, 
         sex = 'male'
       ),
     aes(x = x, y = y, fill = sex),
@@ -772,9 +786,11 @@ three_variable_plt +
 
 ---
 
-All observed cases survived, so **they did get the same protection** but **the model prioritized other effects** (with our current hyperparameters and sample)
+# Deep Dive: Composition of Training Data
 
-```{r}
+We can see what actually happened to the young, 1st class males in the sample.
+
+```{r include=TRUE, echo = FALSE}
 training_data %>% 
   filter(
     pclass == '1st', 
@@ -784,7 +800,10 @@ training_data %>%
   tibble()
 ```
 
-With only 3 cases in the observed training data, this is not surprising.
+* In reality all observed cases survived
+* Reality ≠ Prediction
+* Misclassification of only 3 cases "does not matter"
+* **So, they did get the same protection, but the model prioritized other effects** 
 
 ---
 
@@ -813,6 +832,14 @@ training_data %>%
 
 ---
 
+# Context: DTs vs. GLMs
+
+The generalized linear model (GLM) can also make predictions. 
+
+Essentially the same as linear regression, but for dichotomous outcomes (i.e., died vs. survived)
+
+Let's contextualize how well this model is doing by fitting a basic logistic regression.
+
 ```{r}
 glm_comparison <-
   glm(
@@ -822,15 +849,19 @@ glm_comparison <-
   )
 ```
 
+---
+
+# Logistic Regression Parameters
+
 ```{r}
 summary(glm_comparison)
 ```
 
 ---
 
-Let's contrast this to a logistic regression
+# DTs, GLMs, and PDPs (oh my)
 
-```{r}
+```{r include = TRUE, echo = FALSE}
 glm_pdp <- 
   partial(
     glm_comparison, 
@@ -843,7 +874,21 @@ glm_pdp <-
   )
 ```
 
-```{r}
+
+.left-column[
+
+These models predict survival differently
+
+refer to: 
+
+linear vs. piecewise age effect
+
+constant effects across passenger class vs. differential effects of (`sex` x `class` x `age`)
+
+]
+
+.right-column[
+```{r include = TRUE, echo = FALSE}
 three_variable_pdp %>% 
   mutate(
     model = 'DT'
@@ -870,18 +915,21 @@ three_variable_pdp %>%
     fill = 'Passenger\nSex'
     ) +
   theme(
-    plot.title.position = 'plot'
+    plot.title.position = 'plot',
+    legend.position = 'bottom'
     ) +
   facet_wrap(vars(pclass), ncol = 1) 
 ```
-
+]
 ---
 
-The models predict survival *differently*, but we can't tell what is better from this. 
+# Comparing Performance
 
-Let's compare predictions on unseen data
+PDPs cannot tell us which model predicts more accurately. 
 
-The code to make this plot is long, so i'm actually not sharing it all. But here is how I made predictions
+We have to predict on unseen data for that.
+
+But here is how I made predictions (refer to `.Rmd` for formatting code)
 
 ```{r}
 tmp_tbl <- 
@@ -902,7 +950,9 @@ tmp_tbl <-
 
 ---
 
-```{r}
+# Comparative Accuracy Plot
+
+```{r echo = FALSE, include = TRUE}
 tmp_plt_df <- 
   tmp_tbl %>%
   pivot_longer(
@@ -950,7 +1000,7 @@ plt_df <-
  
 ```
 
-```{r include=FALSE}
+```{r include=TRUE, echo=FALSE}
 pos_tmp <-
   position_dodge(width = 1)
 
@@ -990,17 +1040,15 @@ comp_acc_plt <-
   )
 ```
 
----
-
-class: center
-
-```{r}
+```{r include=TRUE, echo=FALSE}
 comp_acc_plt
 ```
 
 ---
 
-```{r}
+# In-Depth Accuracy
+
+```{r echo = FALSE, include=TRUE}
 glm_dt_tbl <- 
   tmp_plt_df %>%
   mutate(
@@ -1022,15 +1070,20 @@ glm_dt_tbl <-
     percent = paste0(round(100*n/sum(n)), '%')
   )
 ```
----
 
-```{r}
-kbl(glm_dt_tbl, caption = 'Performance of DT vs. GLM')
+```{r include = TRUE, echo = FALSE}
+glm_dt_tbl %>% 
+  select(-model) %>% 
+  kbl(caption = 'Performance of DT vs. GLM') %>% 
+  pack_rows('Decision Tree', 1, 4) %>% 
+  pack_rows('Logistic Regression', 5, 9)
 ```
 
 ---
 
-Let's look at predicted probabilities for a random sampling of points
+# Exploring Specific Cases
+
+Let's look at predicted probabilities for a small number of randomly sampled points
 
 ```{r}
 library(ggrepel)
@@ -1050,7 +1103,10 @@ sml_df <-
   mutate(
     predicted_class = 
       if_else(round(predicted) == 1, 'survived', 'died'),
-    matched = if_else(actual == predicted_class, 'Correct', 'Incorrect'),
+    matched = 
+      if_else(
+        actual == predicted_class, 'Correct', 'Incorrect'
+        ),
     actual = paste0('Reality: ', actual)
   )
 ```
@@ -1087,7 +1143,7 @@ plt_of_smple <-
 
 ---
 
-```{r, fig.width=8,fig.height=6,fig.align='center'}
+```{r, include=TRUE,echo=FALSE,fig.width=8,fig.height=6,fig.align='center'}
 plt_of_smple +
   theme_bw() +
   labs(
@@ -1099,7 +1155,6 @@ plt_of_smple +
 ---
 
 # Another random sampling
-
 
 ```{r include=FALSE}
 set.seed(6)
@@ -1155,37 +1210,55 @@ plt_of_smple2 <-
 plt_of_smple2
 ```
 
-
----
-# Benefits of decision trees
-
-* work for many outcome types
-    * dichotomous = "classification" tree
-    * continuous = "regression" tree
-    
 ---
 
-class: center, middle
+# Cons
 
-# Random Forests
+Decision trees are great models for
 
----
+* quickly understanding broad strokes of data
+* interpretting complex interactions and nonlinear effects
 
-# Random Forests
+They have many issues, though:
 
-Random forests are an **ensemble** method designed to improve several shortcomings of decision trees.
+* Overfitting to the training data
+* Unstable tree structure  
+* Biased towards selecting variables with more potential split points (i.e., wide ranges)
+* Greedy algorithm 
+    * it finds the best option at each step
+    * branches are dependent on prior splits
 
-The logic is relatively simple: 
-  * 
-
-```{r}
-
-```
+There are numerous ways to overcome these shortcomings, though.
 
 ---
 
-# Benefits of Random Forests
+# Improving Predictions
 
-* when number of predictors > number of observed units
-  * established protocols for variable importance; can compare relative importance of all variables
-  * not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)
+Prediction relies on:
+
+  1. a model
+  2. user-specified settings
+      * Referred to as **hyperparameters**
+      * allows calibration of the model
+  3. data
+
+Thus, prediction can be improved by improving any one of those.
+
+Throughout the week, we will explore each of these.
+
+---
+
+# Schedule
+
+Feb. 21 we will improve (1) and (2)
+
+* explore a more robust model (random forests) 
+* improve models through modifying hyperparameters
+
+Feb. 22 we will
+
+* discuss cross-validation data
+* conduct hyperparameter tuning
+* reinforce skills from days 1 and 2
+
+---

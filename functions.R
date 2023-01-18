@@ -60,7 +60,7 @@ cv_it_complex <-
     mod_formula, 
     tuning_grid, 
     verbose = TRUE,
-    mod,
+    mode = 'regression',
     ...) 
   {
     # want it to be reproducible, even if you don't remember to set it
@@ -137,6 +137,7 @@ cv_it_complex <-
         if (mode == 'classification'){
           fit_type1 <- 'classification_accuracy'
           fit_type2 <- 'mae'
+          warning('classification not set up')
         }
         
         if(verbose == TRUE) {message(paste0("cv index ", i, " complete"))}

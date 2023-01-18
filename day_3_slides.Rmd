@@ -1,0 +1,132 @@
+---
+title: "day_3_slides"
+author: "Christopher Loan"
+date: "2023-01-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Hyperparameter Tuning
+
+
+---
+
+# YIKES
+
+that model is not easy to interpret
+
+```{r include=TRUE,echo=FALSE}
+overly_complex_dt <- 
+  rpart(
+  formula = survived ~ ., 
+  data = training_data,
+  cp = 0.001
+)
+```
+
+```{r include=TRUE,echo=FALSE}
+rpart.plot(overly_complex_dt)
+```
+
+
+---
+
+# Specific Cases
+
+Does this model oversimplify things still?
+
+Let's look at those odd cases, 1st class young males for both models:
+
+Training data (seen):
+
+```{r include=TRUE, echo=FALSE}
+training_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  filter(
+    age < 13, 
+    sex == 'male', 
+    pclass == '1st'
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+testing data (unseen):
+
+```{r include=TRUE, echo=FALSE}
+testing_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  filter(
+    age < 13, 
+    sex == 'male', 
+    pclass == '1st'
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+---
+# Prediction Accuracy 
+
+For these fringe cases:
+
+* the complex model was correct for 100% 
+* the simple was correct 0% of the time. 
+
+This is only 4 cases, though. 
+
+Let's look at **all** predictions.
+
+```{r include=TRUE,echo=FALSE}
+testing_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+The simple model outperforms the more complex model in aggregate.

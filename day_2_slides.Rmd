@@ -30,6 +30,34 @@ training_data <- training(split_data)
 testing_data <- testing(split_data)
 ```
 
+
+---
+
+class: center, middle
+
+# Random Forests
+
+---
+
+# Random Forests
+
+Random forests are an **ensemble** method designed to improve several shortcomings of decision trees.
+
+The logic is relatively simple: 
+  * 
+
+```{r}
+
+```
+
+---
+
+# Benefits of Random Forests
+
+* when number of predictors > number of observed units
+  * established protocols for variable importance; can compare relative importance of all variables
+  * not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)
+
 ```{r}
 # see Malley et al. (2012).
 

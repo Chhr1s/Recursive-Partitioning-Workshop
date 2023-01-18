@@ -1,0 +1,92 @@
+---
+title: "Day 1 \nIntroductions & Foundations in R"
+author: "Christopher M. Loan, MS"
+date: 'February 20, 2022'
+output: xaringan::moon_reader
+---
+
+```{css echo=F}
+.cl_transparent {
+  position: relative;
+  z-index: 1;
+}
+
+.cl_transparent::before {    
+      content: "";
+      background-image: url('imgs/img.jpg');
+      background-size: cover;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: 0px;
+      opacity: 0.5;
+      z-index: -1;
+}
+```
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+set.seed(123)
+```
+
+# Day 1 Agenda
+
+ 
+
+---
+
+class: left, top, cl_transparent
+
+# Introduction
+
+.pull-left[
+
+
+<div style="border:solid; background-color:#b3e0ff
+; opacity:0.7">
+
+.left[
+
+  **Currently**: 
+  * **PhD Candidate**
+    * *University of Oregon*
+    * Quantitative Research Methods in Education
+    * Dissertation extends model-based recursive partitioning
+  
+  * **Head Methodologist & Owner**
+    * *Parameter Analytics, LLC.*
+    * Statistics, research design, and data science consulting firm
+
+
+]
+
+]
+
+</div>
+
+.pull-right[
+
+<div style="border:solid; background-color:#b3e0ff
+; opacity:0.7">
+
+.left[
+
+
+**Primary Education & Work History**: 
+  * Coding on-and-off since 2010 & (near) daily since 2017
+  
+  * Bachelor's Degree in Neuroscience
+  
+  * Former high school teacher
+  
+  * Earned my Master's Degree in Prevention Science
+      * Physical and psychological well-being
+      * Public Health & big data approaches 
+      
+  * Data Science Mentor at RStudio (now "Posit") 
+]
+
+]
+</div>

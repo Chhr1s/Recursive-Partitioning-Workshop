@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="author" content="Christopher M. Loan, MS" />
     <meta name="date" content="2022-02-20" />
-    <script src="day_1_slides_files/header-attrs-2.19/header-attrs.js"></script>
+    <script src="day_1_slides_files/header-attrs-2.16/header-attrs.js"></script>
     <link href="day_1_slides_files/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="day_1_slides_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
     <script src="day_1_slides_files/kePrint-0.0.1/kePrint.js"></script>
@@ -29,101 +29,9 @@ Recursive Partitioning &amp; Decision Trees
 ---
 
 
-
-&lt;style type="text/css"&gt;
-.cl_transparent {
-  position: relative;
-  z-index: 1;
-}
-
-.cl_transparent::before {    
-      content: "";
-      background-image: url('imgs/img.jpg');
-      background-size: cover;
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      bottom: 0px;
-      left: 0px;
-      opacity: 0.5;
-      z-index: -1;
-}
-&lt;/style&gt;
-
-
-
-
-# Day 1 Agenda
-
-* 5 Minutes — Introduction 
-* 30 minutes — Terminology and Interpretation
-* 30-60 Minutes — Theory of Recursive Partitioning for Classification and Regression (with examples)
-* 15 Minutes —	Coffee Break
-* 60 Minutes — Lab exercise: Fitting Decision Trees in R &amp; Model Evaluation
-* 60 Minutes —	Use-Cases, Strengths, &amp; Weaknesses of Decision Trees
-* 60 Minutes — Extensions of Decision Trees; Focus on Random Forests 
-
----
-
-class: left, top, cl_transparent
-
-# Introduction
-
-.pull-left[
-
-
-&lt;div style="border:solid; background-color:#b3e0ff
-; opacity:0.7"&gt;
-
-.left[
-
-  **Currently**: 
-  * **PhD Candidate**
-    * *University of Oregon*
-    * Quantitative Research Methods in Education
-    * Dissertation extends model-based recursive partitioning
-  
-  * **Head Methodologist &amp; Owner**
-    * *Parameter Analytics, LLC.*
-    * Statistics, research design, and data science consulting firm
-
-
-]
-
-]
-
-&lt;/div&gt;
-
-.pull-right[
-
-&lt;div style="border:solid; background-color:#b3e0ff
-; opacity:0.7"&gt;
-
-.left[
-
-
-**Primary Education &amp; Work History**: 
-  * Coding on-and-off since 2010 &amp; (near) daily since 2017
-  
-  * Bachelor's Degree in Neuroscience
-  
-  * Former high school teacher
-  
-  * Earned my Master's Degree in Prevention Science
-      * Physical and psychological well-being
-      * Public Health &amp; big data approaches 
-      
-  * Data Science Mentor at RStudio (now "Posit") 
-]
-
-]
-&lt;/div&gt;
-
----
-
 class: center, middle
 
-# Onward to Content
+# Let's get Started
 
 ---
 # A Recommended Reference
@@ -156,9 +64,9 @@ class: center
 
 * Many non-ML pieces of programming have defaults, too
 
-**You always need to read the software documentation when you use something**
+&lt;u&gt;**You ALWAYS need to read the software documentation when you use something**&lt;/u&gt;
 
-This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**.
+This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**. Due to time constraints, we are unable to provide more than an introduction to these methods.
 
 ]
 
@@ -173,7 +81,7 @@ This lecture will build this skill in targeted places, but it **intentionally go
 
 ___
 
-* Binary splits are almost always used 
+* Binary splits are almost always used (some "multi-way" splitting models exist)
 
 * This works because repeated binary splits can approximate any functional form based on observed data (i.e., Y to X relationship)
 
@@ -185,7 +93,7 @@ ___
 
 * Basis of decision trees, random forests, and other Machine Learning (ML) methods
 
-___
+---
 
 Many consider the automated interaction detection proposed in 1963 to be the seminal reference in this field.
 
@@ -319,12 +227,13 @@ library(rsample)
 
 
 ```r
+data(ptitanic)
 ptitanic &lt;- 
   ptitanic %&gt;% 
   mutate(
     survived = relevel(survived, ref = 'died')
   )
-
+# this is how we'll keep training and testing data apart
 split_data &lt;- initial_split(ptitanic)
 training_data &lt;- training(split_data)
 testing_data &lt;- testing(split_data)
@@ -333,26 +242,26 @@ testing_data &lt;- testing(split_data)
 We will start with 2 variables to predict `survival`: `age` &amp; `sex`
 
 
+---
 
-___
+
+
 
 ### Some descriptives 
 
-The percent of the sample which survived was ~38%.
+In the whole sample, ~38% survived the incident.
 
-Sex (from full data):
+Records show:
   * 843 coded as male
-  * 466 coded as female
-
-Age (from full data):
-  * Mean = 29.88 years
-  * Std. Dev. = 14.41 years
+  * 466 coded as female:
+  * Age - Mean = 29.88 years
+  * Age - Std. Dev. = 14.41 years
 
 ---
 
 # Fit the decision tree
 
-Basic syntax is: `outcome_variable ~ predictors`. 
+Basic syntax is: `outcome_variable ~ predictors`
 
 Let's start with a really simple model to get the hang of DTs.
 
@@ -364,6 +273,8 @@ two_var_DT &lt;-
     data = training_data
     )
 ```
+
+This asks the model to build a decision tree that could predict `survival` based on these two variables in the data (coded `sex` and `age`)
 
 
 
@@ -383,7 +294,7 @@ We can make it look a little different too
 ]
 
 .right-column[
-![](day_1_slides_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+![](day_1_slides_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 ]
 ---
 
@@ -397,14 +308,51 @@ Split order, Predicted probabilities, &amp; node size give sense of the observed
 
 * more men than women
 
-* Men (~12%) survived at a lower rate than women (~26%)
+* Men (~13%) survived at a lower rate than women (~25%)
 
 * effect of age substantial in men (younger men more likely to live)
 
 ]
 
 .pull-right[
-![](day_1_slides_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](day_1_slides_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Zoomed in
+
+![](day_1_slides_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+
+---
+
+# Variable Importance Plots
+
+* Variable importance give the relative contribution of each variable to the model. 
+* As complexity / size of tree increases, VIPs become more helpful after the fist few splits.
+* Depending on the modeling framework, they are created with slightly different approaches.
+* The name gives the underlying logic, though
+
+with the `vip` package, you can get a basic VIP easily: 
+
+
+```r
+library(vip)
+vip(two_var_DT, include_type = TRUE) + 
+  theme_bw(base_size = 15) +
+  labs(
+    title = 'Variable Importance Plot for Decision Tree',
+    subtitle = 'Data from `ptitanic`',
+  )
+```
+
+---
+
+# Variable Importance Plot
+
+.left-column[Be careful to not interpret the magnitude of differences without deep understandings of how this specific VIP is made.]
+.right-column[
+![](day_1_slides_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 ]
 ---
 
@@ -413,14 +361,14 @@ Split order, Predicted probabilities, &amp; node size give sense of the observed
 .left-column[
 Visually, the model is finding the best split to separate the shapes. 
 
-This case is intuitive (2 splittig varibles &amp; 2 total splits)
+This case is intuitive (2 splitting variables &amp; 2 total splits)
 
 Higher dimensional models do the same thing, but harder to conceptualize.
 
 ]
 
 .right-column[
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
 ]
 ---
 
@@ -437,7 +385,7 @@ We can see how well the trained model performs with the withheld testing data. T
 
 
 
-Overall, the model accurately classified ~78%
+Overall, the model accurately classified ~79%
 ___
 
 To see this with more nuance, we can look at it as below: 
@@ -450,30 +398,30 @@ To see this with more nuance, we can look at it as below:
    &lt;th style="text-align:left;"&gt; predicted &lt;/th&gt;
    &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
    &lt;th style="text-align:left;"&gt; type of prediction &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; proportion &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; percent &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 95 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 92 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 29% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 28% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 161 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 167 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 49% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 51% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 34 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 10% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
@@ -493,8 +441,10 @@ To see this with more nuance, we can look at it as below:
 
 ```r
 library(pdp)
-## purrr also 
-## has a `partial` command
+## two `partial` loaded:
+## `pdp::partial` 
+## `purrr::partial`
+## make sure we use former
 partial &lt;- pdp::partial
 ```
 ]
@@ -509,13 +459,13 @@ univariate_pdp_sex &lt;-
     pred.var = 'sex',
     type = 'classification',
     which.class = 'survived',
-    # pred prob not logits
+    # return predicted probability 
     prob = TRUE
     )
 ```
 ]
 .center[
-![](day_1_slides_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+![](day_1_slides_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 ]
 
 ---
@@ -559,7 +509,7 @@ age_plt1 &lt;-
 age_plt1
 ```
 
-![](day_1_slides_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+![](day_1_slides_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -594,7 +544,8 @@ bi_pdp_plt &lt;-
   labs(
     x = 'Passenger Age', 
     y = 'Predicted Probability of Surviving', 
-    title = 'Women &amp; younger men (&gt;= 15) display a substantially\n higher probability of survival',
+    title = 'Women &amp; younger men display a substantially
+higher probability of survival',
     fill = 'Passenger\nSex'
     ) +
   theme(
@@ -613,13 +564,41 @@ bi_pdp_plt &lt;-
 bi_pdp_plt
 ```
 
-![](day_1_slides_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+![](day_1_slides_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
 
 ---
 
-# Improving model performance 
+class: center, middle
 
-In many `R` packages, the `.` in a formula indicates that you want all variables (except the outcome) included
+# Activity
+
+---
+
+## Now it's your turn: 
+
+* Open `activity_1.Rmd`.
+
+* Complete `sections 1.1 - 1.5`.
+
+* Work in small groups or alone.
+
+* We'll come back together &amp; discuss in ~20 minutes. 
+
+---
+
+class: center, middle
+
+# Review `activity_1_key.Rmd`
+
+---
+
+# Diving (a little bit) Deeper 
+
+Let's fit the same model from the activity again. 
+
+Our training data differs slightly compared to the activity. 
+
+If we made sure to use `set.seed()` with the same seed value, they would be the same. 
 
 
 ```r
@@ -632,10 +611,21 @@ all_var_DT &lt;-
 
 ---
 
+# Three Variable PDP!
+
+I do not recommend doing more than 2 variable PDPs in many cases. 
+
+Run times can be **MASSIVE**, even with good machines. 
+
+  1. make sure you save your `.Rmd` before running this
+  2. with ≥ 2 variable PDPs, be aware of:
+  
+    a. the dimensions of the data set (rows x columns)
+    
+    b. your computer's capability 
 
 
 ```r
-# I typically do NOT recommend this
 three_variable_pdp &lt;- 
   partial(
     all_var_DT, 
@@ -648,14 +638,11 @@ three_variable_pdp &lt;-
 
 ---
 
+# Visualizing 
 
-```r
-rpart.plot(all_var_DT)
-```
+PDPs get harder to visualize as number of variables included increase.
 
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-29-1.png" style="display: block; margin: auto;" /&gt;
-
----
+We can make a slightly more complex plot to show this.
 
 
 ```r
@@ -673,19 +660,32 @@ three_variable_plt &lt;-
     width = 0.02, 
     height = 0.02,
     alpha = 0.5
-    ) + 
+    ) +
+  facet_wrap(vars(sex), ncol = 2)
+```
+
+---
+
+# Slightly Formating the Visualization
+
+
+```r
+three_variable_plt &lt;-
+  three_variable_plt +
   theme_bw(base_size = 15) +
   labs(
     x = 'Passenger Age', 
     y = 'Predicted Probability of Surviving', 
     title = 'Women &amp; younger men display a substantially\n higher probability of survival',
-    fill = 'Passenger\nClass',
-    color = 'Passenger\nClass'
+    fill = 'Passenger Class',
+    color = 'Passenger Class',
+    caption = 'Points are minimally jittered in x- and y-dimensions to show density'
     ) +
   theme(
-    plot.title.position = 'plot'
-    ) +
-  facet_wrap(vars(sex), ncol = 2)
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot', 
+    legend.position = 'bottom'
+    )
 ```
 
 ---
@@ -695,39 +695,35 @@ three_variable_plt &lt;-
 three_variable_plt
 ```
 
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
 Why are 1st class young men not seeing the younger protection effect?
 
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-32-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-33-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
-All observed cases survived, so **they did get the same protection** but **the model prioritized other effects** (with our current hyperparameters and sample)
+# Deep Dive: Composition of Training Data
 
+We can see what actually happened to the young, 1st class males in the sample.
 
-```r
-training_data %&gt;% 
-  filter(
-    pclass == '1st', 
-    sex == 'male', 
-    age &lt; 13
-  ) %&gt;% 
-  tibble()
-```
 
 ```
-## # A tibble: 3 × 6
+## # A tibble: 4 × 6
 ##   pclass survived sex      age sibsp parch
 ##   &lt;fct&gt;  &lt;fct&gt;    &lt;fct&gt;  &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
-## 1 1st    survived male  11         1     2
-## 2 1st    survived male   4         0     2
+## 1 1st    survived male   4         0     2
+## 2 1st    survived male   6         0     2
 ## 3 1st    survived male   0.917     1     2
+## 4 1st    survived male  11         1     2
 ```
 
-With only 3 cases in the observed training data, this is not surprising.
+* In reality all observed cases survived
+* Reality ≠ Prediction
+* Misclassification of only 3 cases "does not matter"
+* **So, they did get the same protection, but the model prioritized other effects** 
 
 ---
 
@@ -740,7 +736,7 @@ If you're a 2nd or 3rd class male, the model split on other variables, however, 
 rpart.plot(all_var_DT)
 ```
 
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-34-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -758,9 +754,17 @@ training_data %&gt;%
   theme(legend.position = 'none')
 ```
 
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-36-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
+
+# Context: DTs vs. GLMs
+
+The generalized linear model (GLM) can also make predictions. 
+
+Essentially the same as linear regression, but for dichotomous outcomes (i.e., died vs. survived)
+
+Let's contextualize how well this model is doing by fitting a basic logistic regression.
 
 
 ```r
@@ -771,6 +775,10 @@ glm_comparison &lt;-
     family = binomial(link = "logit")
   )
 ```
+
+---
+
+# Logistic Regression Parameters
 
 
 ```r
@@ -785,90 +793,61 @@ summary(glm_comparison)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.6909  -0.6628  -0.3965   0.6549   2.5823  
+## -2.7472  -0.6649  -0.4240   0.6646   2.5039  
 ## 
 ## Coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)  3.926972   0.422939   9.285  &lt; 2e-16 ***
-## pclass2nd   -1.446515   0.267060  -5.416 6.08e-08 ***
-## pclass3rd   -2.546287   0.271413  -9.382  &lt; 2e-16 ***
-## sexmale     -2.496987   0.202304 -12.343  &lt; 2e-16 ***
-## age         -0.039638   0.007894  -5.021 5.13e-07 ***
-## sibsp       -0.361919   0.119541  -3.028  0.00247 ** 
-## parch        0.053705   0.117440   0.457  0.64746    
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  3.97726    0.41600   9.561  &lt; 2e-16 ***
+## pclass2nd   -1.43007    0.26640  -5.368 7.95e-08 ***
+## pclass3rd   -2.36867    0.26193  -9.043  &lt; 2e-16 ***
+## sexmale     -2.56032    0.20066 -12.760  &lt; 2e-16 ***
+## age         -0.04067    0.00754  -5.395 6.87e-08 ***
+## sibsp       -0.35453    0.11838  -2.995  0.00275 ** 
+## parch        0.10446    0.11177   0.935  0.35002    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 1051.94  on 781  degrees of freedom
-## Residual deviance:  711.66  on 775  degrees of freedom
-##   (199 observations deleted due to missingness)
-## AIC: 725.66
+##     Null deviance: 1063.10  on 785  degrees of freedom
+## Residual deviance:  735.24  on 779  degrees of freedom
+##   (195 observations deleted due to missingness)
+## AIC: 749.24
 ## 
-## Number of Fisher Scoring iterations: 5
+## Number of Fisher Scoring iterations: 4
 ```
 
 ---
 
-Let's contrast this to a logistic regression
+# DTs, GLMs, and PDPs (oh my)
 
 
-```r
-glm_pdp &lt;- 
-  partial(
-    glm_comparison, 
-    pred.var = c('sex', 'age', 'pclass'),
-    type = 'classification'
-    #which.class = 'survived'
-    ) %&gt;% 
-  mutate(
-    model = 'glm'
-  )
-```
 
 
-```r
-three_variable_pdp %&gt;% 
-  mutate(
-    model = 'DT'
-  ) %&gt;% 
-  bind_rows(glm_pdp) %&gt;% 
-  ggplot(
-    aes(
-      y = yhat, 
-      x = age,
-      shape = sex,
-      color = model
-    )
-  ) + 
-  theme_bw() +
-  geom_point(
-    size = 4, 
-    alpha = 0.4
-  ) +
-  theme_bw(base_size = 15) +
-  labs(
-    x = 'Passenger Age', 
-    y = 'Predicted Probability of Surviving', 
-    title = 'Women &amp; younger men (&gt;= 15) display a substantially\n higher probability of survival',
-    fill = 'Passenger\nSex'
-    ) +
-  theme(
-    plot.title.position = 'plot'
-    ) +
-  facet_wrap(vars(pclass), ncol = 1) 
-```
+.left-column[
 
-![](day_1_slides_files/figure-html/unnamed-chunk-39-1.png)&lt;!-- --&gt;
+These models predict survival differently
 
+refer to: 
+
+linear vs. piecewise age effect
+
+constant effects across passenger class vs. differential effects of (`sex` x `class` x `age`)
+
+]
+
+.right-column[
+![](day_1_slides_files/figure-html/unnamed-chunk-40-1.png)&lt;!-- --&gt;
+]
 ---
 
-The models predict survival *differently*, but we can't tell what is better from this. 
+# Comparing Performance
 
-Let's compare predictions on unseen data
+PDPs cannot tell us which model predicts more accurately. 
 
-The code to make this plot is long, so i'm actually not sharing it all. But here is how I made predictions
+We have to predict on unseen data for that.
+
+But here is how I made predictions (refer to `.Rmd` for formatting code)
 
 
 ```r
@@ -890,98 +869,19 @@ tmp_tbl &lt;-
 
 ---
 
-
-```r
-tmp_plt_df &lt;- 
-  tmp_tbl %&gt;%
-  pivot_longer(
-    cols = c(predicted_DT, predicted_glm), 
-    names_to = 'model', 
-    values_to = 'predicted', 
-    names_prefix = 'predicted_', 
-  ) %&gt;% 
-  mutate(
-    predicted_class = 
-      if_else(round(predicted) == 1, 'survived', 'died'),
-    accuracy = 
-      if_else(predicted_class == survived, 'correct', 'incorrect'),
-    stringent_accuracy = 
-      if_else(is.na(accuracy), 'incorrect', accuracy)
-        )
-
-nas_in_glm &lt;- 
-  tmp_plt_df %&gt;% 
-  group_by(model) %&gt;% 
-  count(accuracy) %&gt;% 
-  mutate(
-    proportion = 
-      paste0(
-        round(
-          (n / sum(n))* 100), 
-        '%'
-        )
-    ) %&gt;% 
-  filter(is.na(accuracy)) %&gt;% 
-  pull(proportion)
-  
-plt_df &lt;- 
-  tmp_plt_df %&gt;% 
-  group_by(model) %&gt;% 
-  count(stringent_accuracy) %&gt;% 
-  mutate(
-    proportion = 
-      paste0(
-        round(
-          (n / sum(n))* 100), 
-        '%'
-        )
-    )
-```
+# Comparative Accuracy Plot
 
 
+
+
+
+![](day_1_slides_files/figure-html/unnamed-chunk-44-1.png)&lt;!-- --&gt;
 
 ---
 
-class: center
+# In-Depth Accuracy
 
 
-```r
-comp_acc_plt
-```
-
-![](day_1_slides_files/figure-html/unnamed-chunk-43-1.png)&lt;!-- --&gt;
-
----
-
-
-```r
-glm_dt_tbl &lt;- 
-  tmp_plt_df %&gt;%
-  mutate(
-   type_of_prediction =
-     case_when(
-       actual == 'died' &amp; predicted_class == 'died' ~ 
-         'true negative',
-       actual == 'died' &amp; predicted_class == 'survived' ~ 
-         'false negative',
-       actual == 'survived' &amp; predicted_class == 'died' ~ 
-         'false positive',
-       actual == 'survived' &amp; predicted_class == 'survived' ~ 
-         'true positive'
-     )
-  ) %&gt;% 
-  group_by(model) %&gt;% 
-  count(type_of_prediction) %&gt;% 
-  mutate(
-    percent = paste0(round(100*n/sum(n)), '%')
-  )
-```
----
-
-
-```r
-kbl(glm_dt_tbl, caption = 'Performance of DT vs. GLM')
-```
 
 &lt;table&gt;
 &lt;caption&gt;Performance of DT vs. GLM&lt;/caption&gt;
@@ -994,66 +894,70 @@ kbl(glm_dt_tbl, caption = 'Performance of DT vs. GLM')
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; DT &lt;/td&gt;
+  &lt;tr grouplength="4"&gt;&lt;td colspan="4" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Decision Tree&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; DT &lt;/td&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 34 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 10% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; DT &lt;/td&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 161 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 49% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 167 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 51% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; DT &lt;/td&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 95 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 29% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 92 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 28% &lt;/td&gt;
   &lt;/tr&gt;
-  &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; glm &lt;/td&gt;
+  &lt;tr grouplength="5"&gt;&lt;td colspan="4" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Logistic Regression&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 22 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 7% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 27 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 8% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 9% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 127 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; 39% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 78 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 24% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 77 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 23% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:left;"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 64 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 20% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 68 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 21% &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
 ---
 
-Let's look at predicted probabilities for a random sampling of points
+# Exploring Specific Cases
+
+Let's look at predicted probabilities for a small number of randomly sampled points
 
 
 ```r
@@ -1074,7 +978,10 @@ sml_df &lt;-
   mutate(
     predicted_class = 
       if_else(round(predicted) == 1, 'survived', 'died'),
-    matched = if_else(actual == predicted_class, 'Correct', 'Incorrect'),
+    matched = 
+      if_else(
+        actual == predicted_class, 'Correct', 'Incorrect'
+        ),
     actual = paste0('Reality: ', actual)
   )
 ```
@@ -1112,17 +1019,7 @@ plt_of_smple &lt;-
 
 ---
 
-
-```r
-plt_of_smple +
-  theme_bw() +
-  labs(
-    y = 'Prediction',
-    shape = 'Accuracy'
-  )
-```
-
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-48-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-49-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -1132,45 +1029,64 @@ plt_of_smple +
 
 
 
-
 ```r
 plt_of_smple2
 ```
 
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-50-1.png" style="display: block; margin: auto;" /&gt;
-
-
----
-# Benefits of decision trees
-
-* work for many outcome types
-    * dichotomous = "classification" tree
-    * continuous = "regression" tree
-    
----
-
-class: center, middle
-
-# Random Forests
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-51-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
-# Random Forests
+# Cons
 
-Random forests are an **ensemble** method designed to improve several shortcomings of decision trees.
+Decision trees are great models for
 
-The logic is relatively simple: 
-  * 
+* quickly understanding broad strokes of data
+* interpretting complex interactions and nonlinear effects
 
+They have many issues, though:
 
+* Overfitting to the training data
+* Unstable tree structure  
+* Biased towards selecting variables with more potential split points (i.e., wide ranges)
+* Greedy algorithm 
+    * it finds the best option at each step
+    * branches are dependent on prior splits
+
+There are numerous ways to overcome these shortcomings, though.
 
 ---
 
-# Benefits of Random Forests
+# Improving Predictions
 
-* when number of predictors &gt; number of observed units
-  * established protocols for variable importance; can compare relative importance of all variables
-  * not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)
+Prediction relies on:
+
+  1. a model
+  2. user-specified settings
+      * Referred to as **hyperparameters**
+      * allows calibration of the model
+  3. data
+
+Thus, prediction can be improved by improving any one of those.
+
+Throughout the week, we will explore each of these.
+
+---
+
+# Schedule
+
+Feb. 21 we will improve (1) and (2)
+
+* explore a more robust model (random forests) 
+* improve models through modifying hyperparameters
+
+Feb. 22 we will
+
+* discuss cross-validation data
+* conduct hyperparameter tuning
+* reinforce skills from days 1 and 2
+
+---
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

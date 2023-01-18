@@ -48,21 +48,33 @@ key <-
 
 ```{r}
 library(sjmisc)
+library(parallel)
+
 cleaned <- 
   dat %>% 
+  group_by(country_name) %>% 
+  nest() %>% 
   mutate(
-    janitor_version = janitor::make_clean_names(indicator_code)
+    data = 
+      map(
+        .x = data, 
+        .f =
+        ~{.x %>% 
+            mutate(janitor_version = janitor::make_clean_names(indicator_code)) %>% 
+            select(-indicator_name, -indicator_code) %>% 
+            relocate(janitor_version, .before = everything()) %>% 
+            rotate_df() %>%
+            row_to_names(row_number = 1) %>%
+            rownames_to_column(var = 'year') %>%
+            tibble() %>%
+            mutate(
+              year = str_extract(string = year, regex('\\d\\d\\d\\d')),
+              across(.cols = everything(), ~as.numeric(.x))
+            )
+        }
+      ) 
   ) %>% 
-  select(-indicator_name, -indicator_code) %>% 
-  relocate(janitor_version, .before = everything()) %>% 
-  rotate_df() %>% 
-  row_to_names(row_number = 1) %>% 
-  rownames_to_column(var = 'year') %>% 
-  tibble() %>% 
-  mutate(
-    year = str_extract(string = year, regex('\\d\\d\\d\\d')),
-    across(.cols = everything(), as.numeric)
-  )
+  unnest(data)
 ```
 
 `sl_tlf_cact_zs` = Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)
@@ -76,36 +88,98 @@ key
 ```
 
 ```{r}
-nzv_vars <- 
-  names(which(apply(cleaned, 2, var) < 0.1))
+missingness_counter <-
+  cleaned %>%
+  group_by(country_name) %>%
+  nest() %>%
+  mutate(
+    data =
+      mclapply(
+        mc.cores = 9L,
+        X = data,
+        FUN = function(x) {sum(is.na(x))}
+      )
+  ) %>%
+  unnest(data) %>%
+  ungroup()
 
-df_to_impute <- 
-  cleaned %>% 
-  # only retain rows with < 10% missingness
-  select(
-    where(~sum(is.na(.x)) < 0.1*nrow(cleaned)) &
-      -all_of(nzv_vars)
+se_asia <- 
+  c(
+    'Brunei Darussalam', 
+    'Myanmar', 
+    'Cambodia', 
+    #'Timor-Leste', 
+    'Indonesia', 
+    'Lao PDR', 
+    'Malaysia', 
+    'Philippines', 
+    'Singapore', 
+    'Thailand',
+    'Vietnam'
   )
+missingness_counter %>% 
+  filter(
+    country_name %in% se_asia
+  )
+```
+
+```{r}
+library(janitor)
+regional <- 
+  cleaned %>% 
+  filter(
+    country_name %in% se_asia & year >= 2000
+    ) %>% 
+  remove_constant() %>% 
+  remove_empty(which = 'cols') %>% 
+  remove_empty(which = 'rows') 
+
+```
 
 
-df_to_impute
-key %>% View()
+```{r}
+near_zero_variance <- 
+  names(which(apply(regional, 2, var, na.rm = TRUE) < 0.2))
+
+df_to_impute <-
+  regional %>% 
+  select(
+    where(~sum(is.na(.x))/nrow(regional) < 0.25)   & -all_of(near_zero_variance)
+  ) 
+
+eligible_vars <- 
+  df_to_impute %>% 
+  names() 
+
+impute_key <- 
+  key %>% 
+  filter(
+    janitor_version %in% eligible_vars
+  ) 
+
+  
+# only 7 % missing is good balance of lots of variables 
+sum(is.na(df_to_impute))/(nrow(df_to_impute)*ncol(df_to_impute))
 # select an outcome with no missingness
 
 full_variables <- 
   df_to_impute %>% 
   # only retain rows with < 10% missingness:
-  select(where(~sum(is.na(.x)) < 0.1*nrow(df_to_impute))) %>% 
+  select(where(~sum(is.na(.x)) < 0.2*nrow(df_to_impute))) %>% 
   # no missingness:
   #select(where(~sum(is.na(.x))==0)) %>% 
   names()
 
 
+df_to_impute %>% 
+  select(all_of(full_variables)) %>% 
+  summarize(across(.cols = everything(), .fns = var, na.rm = T)) 
+
 outcome_key <- 
   key %>% 
   filter(
      janitor_version %in% full_variables & 
-       !janitor_version %in% nzv_vars
+       !janitor_version %in% near_zero_variance
   )
 
 
@@ -114,7 +188,7 @@ outcome_key <-
 
 outcome_descriptor <-
   outcome_key %>% 
-  filter(janitor_version == 'sl_tlf_cact_zs') %>% 
+  filter(janitor_version == 'se_prm_enrr') %>% 
   pull(indicator_name)
 
 # more information at:
@@ -158,26 +232,42 @@ cleaned %>%
 ```{r}
 imputed <- 
   df_to_impute %>% 
-  arrange(year) %>% 
+  group_by(country_name) %>% 
+  nest() %>% 
   mutate(
-    ## check this
-    outcome_next_year = lead(sl_tlf_cact_zs, order_by = year)
-    ) %>% 
-  drop_na(outcome_next_year) %>% 
-  mutate(
-    across(
-      # no missigness in the outcome
-      .cols = everything(), 
-      .fns = 
-         ~ifelse(
-           is.na(.x),
-           median(.x, na.rm = T),
-           .x)
-    )
+    data = 
+      map(
+        .x = data, 
+        .f = 
+          ~.x %>% 
+          arrange(year) %>% 
+          mutate(
+            ## check this
+            outcome_next_year = lead(se_prm_enrr, order_by = year)
+          ) %>% 
+        # removes any potential issue from the `lead()` call
+        # also removes prediction into covid years
+          drop_na(outcome_next_year) %>% 
+          mutate(
+            across(
+              # no missigness in the outcome
+              .cols = everything(),
+              .fns =
+                ~ifelse(
+                  is.na(.x),
+                  median(.x, na.rm = T),
+                  .x)
+            )
+      )
   )
+  ) %>% 
+  unnest(data) %>% 
+  ungroup() %>% 
+  # this keeps out covid issues and also 
+  filter(year <= 2018) 
 ```
 
 ```{r}
-#rio::export(imputed, here::here('data', 'imputed_world_bank.csv'))
+#rio::export(imputed, here::here('data', 'se_asia_imputed_world_bank.csv'))
 ```
 
