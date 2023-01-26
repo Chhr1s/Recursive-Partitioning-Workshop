@@ -1,0 +1,1443 @@
+indicator_name,indicator_code,janitor_version
+"Internally displaced persons, total displaced by conflict and violence (number of people)",VC.IDP.TOCV,vc_idp_tocv
+Travel services (% of commercial service exports),TX.VAL.TRVL.ZS.WT,tx_val_trvl_zs_wt
+Commercial service exports (current US$),TX.VAL.SERV.CD.WT,tx_val_serv_cd_wt
+Merchandise exports by the reporting economy (current US$),TX.VAL.MRCH.WL.CD,tx_val_mrch_wl_cd
+Merchandise exports to low- and middle-income economies in Middle East & North Africa (% of total merchandise exports),TX.VAL.MRCH.R4.ZS,tx_val_mrch_r4_zs
+Merchandise exports to low- and middle-income economies outside region (% of total merchandise exports),TX.VAL.MRCH.OR.ZS,tx_val_mrch_or_zs
+Ores and metals exports (% of merchandise exports),TX.VAL.MMTL.ZS.UN,tx_val_mmtl_zs_un
+Fuel exports (% of merchandise exports),TX.VAL.FUEL.ZS.UN,tx_val_fuel_zs_un
+Export volume index (2000 = 100),TX.QTY.MRCH.XD.WD,tx_qty_mrch_xd_wd
+Transport services (% of commercial service imports),TM.VAL.TRAN.ZS.WT,tm_val_tran_zs_wt
+Merchandise imports from low- and middle-income economies within region (% of total merchandise imports),TM.VAL.MRCH.WR.ZS,tm_val_mrch_wr_zs
+Merchandise imports from low- and middle-income economies in South Asia (% of total merchandise imports),TM.VAL.MRCH.R5.ZS,tm_val_mrch_r5_zs
+Merchandise imports from low- and middle-income economies in East Asia & Pacific (% of total merchandise imports),TM.VAL.MRCH.R1.ZS,tm_val_mrch_r1_zs
+Merchandise imports from economies in the Arab World (% of total merchandise imports),TM.VAL.MRCH.AL.ZS,tm_val_mrch_al_zs
+ICT goods imports (% total goods imports),TM.VAL.ICTG.ZS.UN,tm_val_ictg_zs_un
+Import unit value index (2015 = 100),TM.UVI.MRCH.XD.WD,tm_uvi_mrch_xd_wd
+"Tariff rate, most favored nation, simple mean, primary products (%)",TM.TAX.TCOM.SM.FN.ZS,tm_tax_tcom_sm_fn_zs
+"Binding coverage, primary products (%)",TM.TAX.TCOM.BC.ZS,tm_tax_tcom_bc_zs
+"Tariff rate, most favored nation, simple mean, all products (%)",TM.TAX.MRCH.SM.FN.ZS,tm_tax_mrch_sm_fn_zs
+"Binding coverage, all products (%)",TM.TAX.MRCH.BC.ZS,tm_tax_mrch_bc_zs
+"Tariff rate, most favored nation, simple mean, manufactured products (%)",TM.TAX.MANF.SM.FN.ZS,tm_tax_manf_sm_fn_zs
+"Binding coverage, manufactured products (%)",TM.TAX.MANF.BC.ZS,tm_tax_manf_bc_zs
+"International tourism, expenditures (current US$)",ST.INT.XPND.CD,st_int_xpnd_cd
+"International tourism, receipts for passenger transport items (current US$)",ST.INT.TRNR.CD,st_int_trnr_cd
+"International tourism, number of arrivals",ST.INT.ARVL,st_int_arvl
+Urban population growth (annual %),SP.URB.GROW,sp_urb_grow
+Completeness of death registration with cause-of-death information (%),SP.REG.DTHS.ZS,sp_reg_dths_zs
+"Completeness of birth registration, male (%)",SP.REG.BRTH.MA.ZS,sp_reg_brth_ma_zs
+"Population, female (% of total population)",SP.POP.TOTL.FE.ZS,sp_pop_totl_fe_zs
+Researchers in R&D (per million people),SP.POP.SCIE.RD.P6,sp_pop_scie_rd_p6
+Age dependency ratio (% of working-age population),SP.POP.DPND,sp_pop_dpnd
+"Population ages 75-79, male (% of male population)",SP.POP.7579.MA.5Y,sp_pop_7579_ma_5y
+Population ages 65 and above (% of total population),SP.POP.65UP.TO.ZS,sp_pop_65up_to_zs
+"Population ages 65 and above, female (% of female population)",SP.POP.65UP.FE.ZS,sp_pop_65up_fe_zs
+"Population ages 60-64, male (% of male population)",SP.POP.6064.MA.5Y,sp_pop_6064_ma_5y
+"Population ages 50-54, male (% of male population)",SP.POP.5054.MA.5Y,sp_pop_5054_ma_5y
+"Population ages 40-44, male (% of male population)",SP.POP.4044.MA.5Y,sp_pop_4044_ma_5y
+"Population ages 30-34, male (% of male population)",SP.POP.3034.MA.5Y,sp_pop_3034_ma_5y
+"Population ages 20-24, male (% of male population)",SP.POP.2024.MA.5Y,sp_pop_2024_ma_5y
+"Population ages 15-64, male (% of male population)",SP.POP.1564.MA.ZS,sp_pop_1564_ma_zs
+"Population ages 15-19, male (% of male population)",SP.POP.1519.MA.5Y,sp_pop_1519_ma_5y
+"Population ages 05-09, male (% of male population)",SP.POP.0509.MA.5Y,sp_pop_0509_ma_5y
+"Population ages 0-14, male (% of male population)",SP.POP.0014.MA.ZS,sp_pop_0014_ma_zs
+"Population ages 00-04, male (% of male population)",SP.POP.0004.MA.5Y,sp_pop_0004_ma_5y
+Women who were first married by age 15 (% of women ages 20-24),SP.M15.2024.FE.ZS,sp_m15_2024_fe_zs
+"Survival to age 65, female (% of cohort)",SP.DYN.TO65.FE.ZS,sp_dyn_to65_fe_zs
+"Life expectancy at birth, female (years)",SP.DYN.LE00.FE.IN,sp_dyn_le00_fe_in
+"Contraceptive prevalence, any method (% of married women ages 15-49)",SP.DYN.CONU.ZS,sp_dyn_conu_zs
+"Mortality rate, adult, male (per 1,000 male adults)",SP.DYN.AMRT.MA,sp_dyn_amrt_ma
+Prevalence of severe food insecurity in the population (%),SN.ITK.SVFI.ZS,sn_itk_svfi_zs
+International migrant stock (% of population),SM.POP.TOTL.ZS,sm_pop_totl_zs
+Net migration,SM.POP.NETM,sm_pop_netm
+"Unemployment, total (% of total labor force) (modeled ILO estimate)",SL.UEM.TOTL.ZS,sl_uem_totl_zs
+"Unemployment, female (% of female labor force) (modeled ILO estimate)",SL.UEM.TOTL.FE.ZS,sl_uem_totl_fe_zs
+"Share of youth not in education, employment or training, female (% of female youth population)",SL.UEM.NEET.FE.ZS,sl_uem_neet_fe_zs
+"Mortality rate attributed to household and ambient air pollution, age-standardized, male (per 100,000 male population)",SH.STA.AIRP.MA.P5,sh_sta_airp_ma_p5
+Risk of catastrophic expenditure for surgical care (% of people at risk),SH.SGR.CRSK.ZS,sh_sgr_crsk_zs
+Prevalence of anemia among pregnant women (%),SH.PRG.ANEM,sh_prg_anem
+Children with fever receiving antimalarial drugs (% of children under age 5 with fever),SH.MLR.TRET.ZS,sh_mlr_tret_zs
+"Physicians (per 1,000 people)",SH.MED.PHYS.ZS,sh_med_phys_zs
+"Immunization, measles (% of children ages 12-23 months)",SH.IMM.MEAS,sh_imm_meas
+"Incidence of HIV, ages 15-49 (per 1,000 uninfected population ages 15-49)",SH.HIV.INCD.ZS,sh_hiv_incd_zs
+Adults (ages 15+) and children (ages 0-14) newly infected with HIV,SH.HIV.INCD.TL,sh_hiv_incd_tl
+"Prevalence of HIV, male (% ages 15-24)",SH.HIV.1524.MA.ZS,sh_hiv_1524_ma_zs
+"People using safely managed drinking water services, urban (% of urban population)",SH.H2O.SMDW.UR.ZS,sh_h2o_smdw_ur_zs
+"People using at least basic drinking water services, rural (% of rural population)",SH.H2O.BASW.RU.ZS,sh_h2o_basw_ru_zs
+"Mortality from CVD, cancer, diabetes or CRD between exact ages 30 and 70, male (%)",SH.DYN.NCOM.MA.ZS,sh_dyn_ncom_ma_zs
+"Mortality rate, under-5 (per 1,000 live births)",SH.DYN.MORT,sh_dyn_mort
+"Probability of dying among adolescents ages 15-19 years (per 1,000)",SH.DYN.1519,sh_dyn_1519
+"Cause of death, by non-communicable diseases (% of total)",SH.DTH.NCOM.ZS,sh_dth_ncom_zs
+"Cause of death, by communicable diseases and maternal, prenatal and nutrition conditions (% of total)",SH.DTH.COMM.ZS,sh_dth_comm_zs
+Number of deaths ages 5-9 years,SH.DTH.0509,sh_dth_0509
+Prevalence of anemia among children (% of children ages 6-59 months),SH.ANM.CHLD.ZS,sh_anm_chld_zs
+"Total alcohol consumption per capita, female (liters of pure alcohol, projected estimates, female 15+ years of age)",SH.ALC.PCAP.FE.LI,sh_alc_pcap_fe_li
+Women who believe a husband is justified in beating his wife when she goes out without telling him (%),SG.VAW.GOES.ZS,sg_vaw_goes_zs
+"Proportion of time spent on unpaid domestic and care work, male (% of 24 hour day)",SG.TIM.UWRK.MA,sg_tim_uwrk_ma
+"Women making their own informed decisions regarding sexual relations, contraceptive use and reproductive health care  (% of women age 15-49)",SG.DMK.SRCR.FN.ZS,sg_dmk_srcr_fn_zs
+Expenditure on tertiary education (% of government expenditure on education),SE.XPD.TERT.ZS,se_xpd_tert_zs
+Expenditure on primary education (% of government expenditure on education),SE.XPD.PRIM.ZS,se_xpd_prim_zs
+"Current education expenditure, secondary (% of total expenditure in secondary public institutions)",SE.XPD.CSEC.ZS,se_xpd_csec_zs
+"School enrollment, tertiary, female (% gross)",SE.TER.ENRR.FE,se_ter_enrr_fe
+"Educational attainment, at least completed short-cycle tertiary, population 25+, male (%) (cumulative)",SE.TER.CUAT.ST.MA.ZS,se_ter_cuat_st_ma_zs
+"Educational attainment, at least Master's or equivalent, population 25+, female (%) (cumulative)",SE.TER.CUAT.MS.FE.ZS,se_ter_cuat_ms_fe_zs
+"Educational attainment, at least Bachelor's or equivalent, population 25+, total (%) (cumulative)",SE.TER.CUAT.BA.ZS,se_ter_cuat_ba_zs
+"Adolescents out of school, male (% of male lower secondary school age)",SE.SEC.UNER.LO.MA.ZS,se_sec_uner_lo_ma_zs
+"Secondary education, teachers",SE.SEC.TCHR,se_sec_tchr
+"Trained teachers in upper secondary education, female (% of female teachers)",SE.SEC.TCAQ.UP.FE.ZS,se_sec_tcaq_up_fe_zs
+"Trained teachers in lower secondary education, female (% of female teachers)",SE.SEC.TCAQ.LO.FE.ZS,se_sec_tcaq_lo_fe_zs
+"Progression to secondary school, female (%)",SE.SEC.PROG.FE.ZS,se_sec_prog_fe_zs
+"School enrollment, secondary (% net)",SE.SEC.NENR,se_sec_nenr
+"Secondary education, vocational pupils (% female)",SE.SEC.ENRL.VO.FE.ZS,se_sec_enrl_vo_fe_zs
+"Pupil-teacher ratio, lower secondary",SE.SEC.ENRL.LO.TC.ZS,se_sec_enrl_lo_tc_zs
+"Secondary education, pupils",SE.SEC.ENRL,se_sec_enrl
+"Educational attainment, at least completed upper secondary, population 25+, female (%) (cumulative)",SE.SEC.CUAT.UP.FE.ZS,se_sec_cuat_up_fe_zs
+"Educational attainment, at least completed lower secondary, population 25+, total (%) (cumulative)",SE.SEC.CUAT.LO.ZS,se_sec_cuat_lo_zs
+"Lower secondary completion rate, male (% of relevant age group)",SE.SEC.CMPT.LO.MA.ZS,se_sec_cmpt_lo_ma_zs
+"Children out of school, male (% of male primary school age)",SE.PRM.UNER.MA.ZS,se_prm_uner_ma_zs
+"Children out of school, primary",SE.PRM.UNER,se_prm_uner
+"Primary education, teachers (% female)",SE.PRM.TCHR.FE.ZS,se_prm_tchr_fe_zs
+"Trained teachers in primary education, female (% of female teachers)",SE.PRM.TCAQ.FE.ZS,se_prm_tcaq_fe_zs
+"Persistence to last grade of primary, total (% of cohort)",SE.PRM.PRSL.ZS,se_prm_prsl_zs
+"Persistence to grade 5, male (% of cohort)",SE.PRM.PRS5.MA.ZS,se_prm_prs5_ma_zs
+"Over-age students, primary, male (% of male enrollment)",SE.PRM.OENR.MA.ZS,se_prm_oenr_ma_zs
+"Net intake rate in grade 1, female (% of official school-age population)",SE.PRM.NINT.FE.ZS,se_prm_nint_fe_zs
+"Gross intake ratio in first grade of primary education, total (% of relevant age group)",SE.PRM.GINT.ZS,se_prm_gint_zs
+"School enrollment, primary, female (% gross)",SE.PRM.ENRR.FE,se_prm_enrr_fe
+"Primary education, pupils",SE.PRM.ENRL,se_prm_enrl
+"Educational attainment, at least completed primary, population 25+ years, female (%) (cumulative)",SE.PRM.CUAT.FE.ZS,se_prm_cuat_fe_zs
+Primary school starting age (years),SE.PRM.AGES,se_prm_ages
+"School enrollment, preprimary, male (% gross)",SE.PRE.ENRR.MA,se_pre_enrr_ma
+"Preprimary education, duration (years)",SE.PRE.DURS,se_pre_durs
+"School enrollment, primary (gross), gender parity index (GPI)",SE.ENR.PRIM.FM.ZS,se_enr_prim_fm_zs
+"Literacy rate, adult female (% of females ages 15 and above)",SE.ADT.LITR.FE.ZS,se_adt_litr_fe_zs
+"Literacy rate, youth female (% of females ages 15-24)",SE.ADT.1524.LT.FE.ZS,se_adt_1524_lt_fe_zs
+Coverage of social insurance programs in 3rd quintile (% of population),per_si_allsi.cov_q3_tot,per_si_allsi_cov_q3_tot
+Benefit incidence of social insurance programs to poorest quintile (% of total social insurance benefits),per_si_allsi.ben_q1_tot,per_si_allsi_ben_q1_tot
+Coverage of social safety net programs in 3rd quintile (% of population),per_sa_allsa.cov_q3_tot,per_sa_allsa_cov_q3_tot
+Benefit incidence of social safety net programs to poorest quintile (% of total safety net benefits),per_sa_allsa.ben_q1_tot,per_sa_allsa_ben_q1_tot
+Coverage of unemployment benefits and ALMP in 3rd quintile (% of population),per_lm_alllm.cov_q3_tot,per_lm_alllm_cov_q3_tot
+Benefit incidence of unemployment benefits and ALMP to poorest quintile (% of total U/ALMP benefits),per_lm_alllm.ben_q1_tot,per_lm_alllm_ben_q1_tot
+"Net bilateral aid flows from DAC donors, Czech Republic (current US$)",DC.DAC.CZEL.CD,dc_dac_czel_cd
+"Net bilateral aid flows from DAC donors, Belgium (current US$)",DC.DAC.BELL.CD,dc_dac_bell_cd
+"Stocks traded, total value (% of GDP)",CM.MKT.TRAD.GD.ZS,cm_mkt_trad_gd_zs
+Market capitalization of listed domestic companies (current US$),CM.MKT.LCAP.CD,cm_mkt_lcap_cd
+"Personal transfers, receipts (BoP, current US$)",BX.TRF.PWKR.CD,bx_trf_pwkr_cd
+"Foreign direct investment, net inflows (BoP, current US$)",BX.KLT.DINV.CD.WD,bx_klt_dinv_cd_wd
+"Charges for the use of intellectual property, receipts (BoP, current US$)",BX.GSR.ROYL.CD,bx_gsr_royl_cd
+"Exports of goods and services (BoP, current US$)",BX.GSR.GNFS.CD,bx_gsr_gnfs_cd
+"ICT service exports (BoP, current US$)",BX.GSR.CCIS.CD,bx_gsr_ccis_cd
+"Net secondary income (BoP, current US$)",BN.TRF.CURR.CD,bn_trf_curr_cd
+"Net errors and omissions (BoP, current US$)",BN.KAC.EOMS.CD,bn_kac_eoms_cd
+"Net financial account (BoP, current US$)",BN.FIN.TOTL.CD,bn_fin_totl_cd
+"Secondary income, other sectors, payments (BoP, current US$)",BM.TRF.PRVT.CD,bm_trf_prvt_cd
+"Transport services (% of service imports, BoP)",BM.GSR.TRAN.ZS,bm_gsr_tran_zs
+"Goods imports (BoP, current US$)",BM.GSR.MRCH.CD,bm_gsr_mrch_cd
+"Communications, computer, etc. (% of service imports, BoP)",BM.GSR.CMCP.ZS,bm_gsr_cmcp_zs
+Livestock production index (2014-2016 = 100),AG.PRD.LVSK.XD,ag_prd_lvsk_xd
+"Agricultural machinery, tractors per 100 sq. km of arable land",AG.LND.TRAC.ZS,ag_lnd_trac_zs
+Average precipitation in depth (mm per year),AG.LND.PRCP.MM,ag_lnd_prcp_mm
+Land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.ZS,ag_lnd_el5m_zs
+Rural land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.RU.K2,ag_lnd_el5m_ru_k2
+Arable land (hectares per person),AG.LND.ARBL.HA.PC,ag_lnd_arbl_ha_pc
+Fertilizer consumption (kilograms per hectare of arable land),AG.CON.FERT.ZS,ag_con_fert_zs
+Net primary income (Net income from abroad) (current LCU),NY.GSR.NFCY.CN,ny_gsr_nfcy_cn
+Gross savings (current LCU),NY.GNS.ICTR.CN,ny_gns_ictr_cn
+GNI per capita (constant LCU),NY.GNP.PCAP.KN,ny_gnp_pcap_kn
+"GNI per capita, Atlas method (current US$)",NY.GNP.PCAP.CD,ny_gnp_pcap_cd
+GNI growth (annual %),NY.GNP.MKTP.KD.ZG,ny_gnp_mktp_kd_zg
+GNI (current US$),NY.GNP.MKTP.CD,ny_gnp_mktp_cd
+Gross domestic savings (current LCU),NY.GDS.TOTL.CN,ny_gds_totl_cn
+"GDP per capita, PPP (constant 2017 international $)",NY.GDP.PCAP.PP.KD,ny_gdp_pcap_pp_kd
+GDP per capita (constant 2015 US$),NY.GDP.PCAP.KD,ny_gdp_pcap_kd
+"GDP, PPP (constant 2017 international $)",NY.GDP.MKTP.PP.KD,ny_gdp_mktp_pp_kd
+GDP (constant 2015 US$),NY.GDP.MKTP.KD,ny_gdp_mktp_kd
+Mineral rents (% of GDP),NY.GDP.MINR.RT.ZS,ny_gdp_minr_rt_zs
+Gross value added at basic prices (GVA) (current LCU),NY.GDP.FCST.CN,ny_gdp_fcst_cn
+GDP deflator: linked series (base year varies by country),NY.GDP.DEFL.ZS.AD,ny_gdp_defl_zs_ad
+Coal rents (% of GDP),NY.GDP.COAL.RT.ZS,ny_gdp_coal_rt_zs
+"Adjusted net savings, including particulate emission damage (% of GNI)",NY.ADJ.SVNG.GN.ZS,ny_adj_svng_gn_zs
+Adjusted net national income per capita (current US$),NY.ADJ.NNTY.PC.CD,ny_adj_nnty_pc_cd
+Adjusted savings: net national savings (% of GNI),NY.ADJ.NNAT.GN.ZS,ny_adj_nnat_gn_zs
+Adjusted savings: particulate emission damage (% of GNI),NY.ADJ.DPEM.GN.ZS,ny_adj_dpem_gn_zs
+Adjusted savings: mineral depletion (% of GNI),NY.ADJ.DMIN.GN.ZS,ny_adj_dmin_gn_zs
+Adjusted savings: net forest depletion (% of GNI),NY.ADJ.DFOR.GN.ZS,ny_adj_dfor_gn_zs
+Adjusted savings: education expenditure (% of GNI),NY.ADJ.AEDU.GN.ZS,ny_adj_aedu_gn_zs
+"Services, value added (annual % growth)",NV.SRV.TOTL.KD.ZG,nv_srv_totl_kd_zg
+"Services, value added per worker (constant 2015 US$)",NV.SRV.EMPL.KD,nv_srv_empl_kd
+Machinery and transport equipment (% of value added in manufacturing),NV.MNF.MTRN.ZS.UN,nv_mnf_mtrn_zs_un
+"Industry (including construction), value added (constant LCU)",NV.IND.TOTL.KN,nv_ind_totl_kn
+"Industry (including construction), value added (current US$)",NV.IND.TOTL.CD,nv_ind_totl_cd
+"Manufacturing, value added (constant 2015 US$)",NV.IND.MANF.KD,nv_ind_manf_kd
+Financial intermediary services indirectly Measured (FISIM) (constant LCU),NV.FSM.TOTL.KN,nv_fsm_totl_kn
+"Agriculture, forestry, and fishing, value added (annual % growth)",NV.AGR.TOTL.KD.ZG,nv_agr_totl_kd_zg
+"Agriculture, forestry, and fishing, value added per worker (constant 2015 US$)",NV.AGR.EMPL.KD,nv_agr_empl_kd
+External balance on goods and services (current LCU),NE.RSB.GNFS.CN,ne_rsb_gnfs_cn
+Imports of goods and services (annual % growth),NE.IMP.GNFS.KD.ZG,ne_imp_gnfs_kd_zg
+Gross capital formation (% of GDP),NE.GDI.TOTL.ZS,ne_gdi_totl_zs
+Gross capital formation (current LCU),NE.GDI.TOTL.CN,ne_gdi_totl_cn
+Changes in inventories (current US$),NE.GDI.STKB.CD,ne_gdi_stkb_cd
+Gross fixed capital formation (constant 2015 US$),NE.GDI.FTOT.KD,ne_gdi_ftot_kd
+"Gross fixed capital formation, private sector (current LCU)",NE.GDI.FPRV.CN,ne_gdi_fprv_cn
+Exports of goods and services (constant 2015 US$),NE.EXP.GNFS.KD,ne_exp_gnfs_kd
+Gross national expenditure (constant LCU),NE.DAB.TOTL.KN,ne_dab_totl_kn
+Gross national expenditure deflator (base year varies by country),NE.DAB.DEFL.ZS,ne_dab_defl_zs
+Final consumption expenditure (constant 2015 US$),NE.CON.TOTL.KD,ne_con_totl_kd
+"Households and NPISHs Final consumption expenditure, PPP (constant 2017 international $)",NE.CON.PRVT.PP.KD,ne_con_prvt_pp_kd
+Households and NPISHs Final consumption expenditure (constant LCU),NE.CON.PRVT.KN,ne_con_prvt_kn
+Households and NPISHs Final consumption expenditure (current LCU),NE.CON.PRVT.CN,ne_con_prvt_cn
+General government final consumption expenditure (annual % growth),NE.CON.GOVT.KD.ZG,ne_con_govt_kd_zg
+Arms exports (SIPRI trend indicator values),MS.MIL.XPRT.KD,ms_mil_xprt_kd
+Military expenditure (current USD),MS.MIL.XPND.CD,ms_mil_xpnd_cd
+Research and development expenditure (% of GDP),GB.XPD.RSDV.GD.ZS,gb_xpd_rsdv_gd_zs
+"Account ownership at a financial institution or with a mobile-money-service provider, primary education or less (% of population ages 15+)",FX.OWN.TOTL.PL.ZS,fx_own_totl_pl_zs
+"Account ownership at a financial institution or with a mobile-money-service provider, richest 60% (% of population ages 15+)",FX.OWN.TOTL.60.ZS,fx_own_totl_60_zs
+Claims on other sectors of the domestic economy (% of GDP),FS.AST.DOMO.GD.ZS,fs_ast_domo_gd_zs
+"Interest rate spread (lending rate minus deposit rate, %)",FR.INR.LNDP,fr_inr_lndp
+"Inflation, consumer prices (annual %)",FP.CPI.TOTL.ZG,fp_cpi_totl_zg
+Broad money (% of GDP),FM.LBL.BMNY.GD.ZS,fm_lbl_bmny_gd_zs
+Net foreign assets (current LCU),FM.AST.NFRG.CN,fm_ast_nfrg_cn
+Total reserves minus gold (current US$),FI.RES.XGLD.CD,fi_res_xgld_cd
+Bank liquid reserves to bank assets ratio (%),FD.RES.LIQU.AS.ZS,fd_res_liqu_as_zs
+"Commercial bank branches (per 100,000 adults)",FB.CBK.BRCH.P5,fb_cbk_brch_p5
+Terrestrial and marine protected areas (% of total territorial area),ER.PTD.TOTL.ZS,er_ptd_totl_zs
+"Renewable internal freshwater resources, total (billion cubic meters)",ER.H2O.INTR.K3,er_h2o_intr_k3
+"Annual freshwater withdrawals, industry (% of total freshwater withdrawal)",ER.H2O.FWIN.ZS,er_h2o_fwin_zs
+Total fisheries production (metric tons),ER.FSH.PROD.MT,er_fsh_prod_mt
+Pump price for diesel fuel (US$ per liter),EP.PMP.DESL.CD,ep_pmp_desl_cd
+Population in largest city,EN.URB.LCTY,en_urb_lcty
+Rural population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.RU.ZS,en_pop_el5m_ru_zs
+"Fish species, threatened",EN.FSH.THRD.NO,en_fsh_thrd_no
+"CO2 emissions from electricity and heat production, total (% of total fuel combustion)",EN.CO2.ETOT.ZS,en_co2_etot_zs
+Disaster risk reduction progress score (1-5 scale; 5=best),EN.CLC.DRSK.XQ,en_clc_drsk_xq
+"PM2.5 pollution, population exposed to levels exceeding WHO Interim Target-3 value (% of total)",EN.ATM.PM25.MC.T3.ZS,en_atm_pm25_mc_t3_zs
+PFC gas emissions (thousand metric tons of CO2 equivalent),EN.ATM.PFCG.KT.CE,en_atm_pfcg_kt_ce
+Nitrous oxide emissions in energy sector (thousand metric tons of CO2 equivalent),EN.ATM.NOXE.EG.KT.CE,en_atm_noxe_eg_kt_ce
+Methane emissions (kt of CO2 equivalent),EN.ATM.METH.KT.CE,en_atm_meth_kt_ce
+Agricultural methane emissions (thousand metric tons of CO2 equivalent),EN.ATM.METH.AG.KT.CE,en_atm_meth_ag_kt_ce
+Other greenhouse gas emissions (% change from 1990),EN.ATM.GHGO.ZG,en_atm_ghgo_zg
+CO2 emissions (kg per 2017 PPP $ of GDP),EN.ATM.CO2E.PP.GD.KD,en_atm_co2e_pp_gd_kd
+CO2 emissions from liquid fuel consumption (kt),EN.ATM.CO2E.LF.KT,en_atm_co2e_lf_kt
+CO2 emissions from gaseous fuel consumption (kt),EN.ATM.CO2E.GF.KT,en_atm_co2e_gf_kt
+Combustible renewables and waste (% of total energy),EG.USE.CRNW.ZS,eg_use_crnw_zs
+"Energy imports, net (% of energy use)",EG.IMP.CONS.ZS,eg_imp_cons_zs
+"Electricity production from renewable sources, excluding hydroelectric (% of total)",EG.ELC.RNWX.ZS,eg_elc_rnwx_zs
+Electricity production from nuclear sources (% of total),EG.ELC.NUCL.ZS,eg_elc_nucl_zs
+"Electricity production from oil, gas and coal sources (% of total)",EG.ELC.FOSL.ZS,eg_elc_fosl_zs
+"Access to electricity, rural (% of rural population)",EG.ELC.ACCS.RU.ZS,eg_elc_accs_ru_zs
+"Access to clean fuels and technologies for cooking, rural (% of rural population)",EG.CFT.ACCS.RU.ZS,eg_cft_accs_ru_zs
+Public and publicly guaranteed debt service (% of GNI),DT.TDS.DPPG.GN.ZS,dt_tds_dppg_gn_zs
+Total debt service (% of GNI),DT.TDS.DECT.GN.ZS,dt_tds_dect_gn_zs
+Net ODA received per capita (current US$),DT.ODA.ODAT.PC.ZS,dt_oda_odat_pc_zs
+Net ODA received (% of gross capital formation),DT.ODA.ODAT.GI.ZS,dt_oda_odat_gi_zs
+Net official development assistance and official aid received (constant 2020 US$),DT.ODA.ALLD.KD,dt_oda_alld_kd
+"Net official flows from UN agencies, UNWTO (current US$)",DT.NFL.UNWT.CD,dt_nfl_unwt_cd
+"Net bilateral aid flows from DAC donors, Canada (current US$)",DC.DAC.CANL.CD,dc_dac_canl_cd
+"Stocks traded, turnover ratio of domestic shares (%)",CM.MKT.TRNR,cm_mkt_trnr
+Market capitalization of listed domestic companies (% of GDP),CM.MKT.LCAP.GD.ZS,cm_mkt_lcap_gd_zs
+"Personal remittances, received (current US$)",BX.TRF.PWKR.CD.DT,bx_trf_pwkr_cd_dt
+"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,bx_klt_dinv_wd_gd_zs
+"Exports of goods, services and primary income (BoP, current US$)",BX.GSR.TOTL.CD,bx_gsr_totl_cd
+"Insurance and financial services (% of service exports, BoP)",BX.GSR.INSF.ZS,bx_gsr_insf_zs
+"ICT service exports (% of service exports, BoP)",BX.GSR.CCIS.ZS,bx_gsr_ccis_zs
+"Net capital account (BoP, current US$)",BN.TRF.KOGT.CD,bn_trf_kogt_cd
+"Foreign direct investment, net (BoP, current US$)",BN.KLT.DINV.CD,bn_klt_dinv_cd
+"Net primary income (BoP, current US$)",BN.GSR.FCTY.CD,bn_gsr_fcty_cd
+"Personal remittances, paid (current US$)",BM.TRF.PWKR.CD.DT,bm_trf_pwkr_cd_dt
+"Travel services (% of service imports, BoP)",BM.GSR.TRVL.ZS,bm_gsr_trvl_zs
+"Service imports (BoP, current US$)",BM.GSR.NFSV.CD,bm_gsr_nfsv_cd
+"Primary income payments (BoP, current US$)",BM.GSR.FCTY.CD,bm_gsr_fcty_cd
+Surface area (sq. km),AG.SRF.TOTL.K2,ag_srf_totl_k2
+Cereal production (metric tons),AG.PRD.CREL.MT,ag_prd_crel_mt
+Land area (sq. km),AG.LND.TOTL.K2,ag_lnd_totl_k2
+Forest area (sq. km),AG.LND.FRST.K2,ag_lnd_frst_k2
+Rural land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.RU.ZS,ag_lnd_el5m_ru_zs
+Arable land (% of land area),AG.LND.ARBL.ZS,ag_lnd_arbl_zs
+Agricultural land (sq. km),AG.LND.AGRI.K2,ag_lnd_agri_k2
+"Intentional homicides, female (per 100,000 female)",VC.IHR.PSRC.FE.P5,vc_ihr_psrc_fe_p5
+Battle-related deaths (number of people),VC.BTL.DETH,vc_btl_deth
+High-technology exports (current US$),TX.VAL.TECH.CD,tx_val_tech_cd
+Merchandise exports to low- and middle-income economies within region (% of total merchandise exports),TX.VAL.MRCH.WR.ZS,tx_val_mrch_wr_zs
+Merchandise exports to low- and middle-income economies in South Asia (% of total merchandise exports),TX.VAL.MRCH.R5.ZS,tx_val_mrch_r5_zs
+Merchandise exports to low- and middle-income economies in East Asia & Pacific (% of total merchandise exports),TX.VAL.MRCH.R1.ZS,tx_val_mrch_r1_zs
+Merchandise exports to economies in the Arab World (% of total merchandise exports),TX.VAL.MRCH.AL.ZS,tx_val_mrch_al_zs
+ICT goods exports (% of total goods exports),TX.VAL.ICTG.ZS.UN,tx_val_ictg_zs_un
+Export unit value index (2015 = 100),TX.UVI.MRCH.XD.WD,tx_uvi_mrch_xd_wd
+Travel services (% of commercial service imports),TM.VAL.TRVL.ZS.WT,tm_val_trvl_zs_wt
+Import value index (2000 = 100),TM.VAL.MRCH.XD.WD,tm_val_mrch_xd_wd
+Merchandise imports from low- and middle-income economies in Sub-Saharan Africa (% of total merchandise imports),TM.VAL.MRCH.R6.ZS,tm_val_mrch_r6_zs
+Merchandise imports from low- and middle-income economies in Europe & Central Asia (% of total merchandise imports),TM.VAL.MRCH.R2.ZS,tm_val_mrch_r2_zs
+Merchandise imports (current US$),TM.VAL.MRCH.CD.WT,tm_val_mrch_cd_wt
+Insurance and financial services (% of commercial service imports),TM.VAL.INSF.ZS.WT,tm_val_insf_zs_wt
+Agricultural raw materials imports (% of merchandise imports),TM.VAL.AGRI.ZS.UN,tm_val_agri_zs_un
+"Share of tariff lines with specific rates, primary products (%)",TM.TAX.TCOM.SR.ZS,tm_tax_tcom_sr_zs
+"Bound rate, simple mean, primary products (%)",TM.TAX.TCOM.BR.ZS,tm_tax_tcom_br_zs
+"Share of tariff lines with specific rates, all products (%)",TM.TAX.MRCH.SR.ZS,tm_tax_mrch_sr_zs
+"Bound rate, simple mean, all products (%)",TM.TAX.MRCH.BR.ZS,tm_tax_mrch_br_zs
+"Share of tariff lines with specific rates, manufactured products (%)",TM.TAX.MANF.SR.ZS,tm_tax_manf_sr_zs
+"Bound rate, simple mean, manufactured products (%)",TM.TAX.MANF.BR.ZS,tm_tax_manf_br_zs
+"International tourism, expenditures (% of total imports)",ST.INT.XPND.MP.ZS,st_int_xpnd_mp_zs
+"International tourism, expenditures for passenger transport items (current US$)",ST.INT.TRNX.CD,st_int_trnx_cd
+"International tourism, number of departures",ST.INT.DPRT,st_int_dprt
+Urban population,SP.URB.TOTL,sp_urb_totl
+Rural population,SP.RUR.TOTL,sp_rur_totl
+"Completeness of birth registration, rural (%)",SP.REG.BRTH.RU.ZS,sp_reg_brth_ru_zs
+"Population, male",SP.POP.TOTL.MA.IN,sp_pop_totl_ma_in
+Technicians in R&D (per million people),SP.POP.TECH.RD.P6,sp_pop_tech_rd_p6
+"Age dependency ratio, old (% of working-age population)",SP.POP.DPND.OL,sp_pop_dpnd_ol
+"Population ages 80 and above, female (% of female population)",SP.POP.80UP.FE.5Y,sp_pop_80up_fe_5y
+"Population ages 70-74, female (% of female population)",SP.POP.7074.FE.5Y,sp_pop_7074_fe_5y
+"Population ages 65 and above, male",SP.POP.65UP.MA.IN,sp_pop_65up_ma_in
+"Population ages 65-69, female (% of female population)",SP.POP.6569.FE.5Y,sp_pop_6569_fe_5y
+"Population ages 55-59, female (% of female population)",SP.POP.5559.FE.5Y,sp_pop_5559_fe_5y
+"Population ages 45-49, female (% of female population)",SP.POP.4549.FE.5Y,sp_pop_4549_fe_5y
+"Population ages 35-39, female (% of female population)",SP.POP.3539.FE.5Y,sp_pop_3539_fe_5y
+"Population ages 25-29, female (% of female population)",SP.POP.2529.FE.5Y,sp_pop_2529_fe_5y
+"Population ages 15-64, total",SP.POP.1564.TO,sp_pop_1564_to
+"Population ages 15-64, female",SP.POP.1564.FE.IN,sp_pop_1564_fe_in
+"Population ages 10-14, female (% of female population)",SP.POP.1014.FE.5Y,sp_pop_1014_fe_5y
+"Population ages 0-14, total",SP.POP.0014.TO,sp_pop_0014_to
+"Population ages 0-14, female",SP.POP.0014.FE.IN,sp_pop_0014_fe_in
+Women who were first married by age 18 (% of women ages 20-24),SP.M18.2024.FE.ZS,sp_m18_2024_fe_zs
+"Survival to age 65, male (% of cohort)",SP.DYN.TO65.MA.ZS,sp_dyn_to65_ma_zs
+"Life expectancy at birth, total (years)",SP.DYN.LE00.IN,sp_dyn_le00_in
+"Mortality rate, infant, female (per 1,000 live births)",SP.DYN.IMRT.FE.IN,sp_dyn_imrt_fe_in
+"Birth rate, crude (per 1,000 people)",SP.DYN.CBRT.IN,sp_dyn_cbrt_in
+Vitamin A supplementation coverage rate (% of children ages 6-59 months),SN.ITK.VITA.ZS,sn_itk_vita_zs
+Prevalence of undernourishment (% of population),SN.ITK.DEFC.ZS,sn_itk_defc_zs
+Refugee population by country or territory of asylum,SM.POP.REFG,sm_pop_refg
+"Children in employment, wage workers, female (% of female children in employment, ages 7-14)",SL.WAG.0714.FE.ZS,sl_wag_0714_fe_zs
+"Unemployment, male (% of male labor force) (national estimate)",SL.UEM.TOTL.MA.NE.ZS,sl_uem_totl_ma_ne_zs
+"Share of youth not in education, employment or training, male (% of male youth population)",SL.UEM.NEET.MA.ZS,sl_uem_neet_ma_zs
+"Unemployment with intermediate education, female (% of female labor force with intermediate education)",SL.UEM.INTM.FE.ZS,sl_uem_intm_fe_zs
+Unemployment with advanced education (% of total labor force with advanced education),SL.UEM.ADVN.ZS,sl_uem_advn_zs
+"Unemployment, youth total (% of total labor force ages 15-24) (national estimate)",SL.UEM.1524.NE.ZS,sl_uem_1524_ne_zs
+Adequacy of social protection and labor programs (% of total welfare of beneficiary households),per_allsp.adq_pop_tot,per_allsp_adq_pop_tot
+"Official exchange rate (LCU per US$, period average)",PA.NUS.FCRF,pa_nus_fcrf
+Net secondary income (Net current transfers from abroad) (current LCU),NY.TRF.NCTR.CN,ny_trf_nctr_cn
+Taxes less subsidies on products (current US$),NY.TAX.NIND.CD,ny_tax_nind_cd
+Gross savings (% of GDP),NY.GNS.ICTR.ZS,ny_gns_ictr_zs
+"GNI per capita, PPP (constant 2017 international $)",NY.GNP.PCAP.PP.KD,ny_gnp_pcap_pp_kd
+GNI per capita (constant 2015 US$),NY.GNP.PCAP.KD,ny_gnp_pcap_kd
+"GNI, PPP (current international $)",NY.GNP.MKTP.PP.CD,ny_gnp_mktp_pp_cd
+GNI: linked series (current LCU),NY.GNP.MKTP.CN.AD,ny_gnp_mktp_cn_ad
+Gross domestic income (constant LCU),NY.GDY.TOTL.KN,ny_gdy_totl_kn
+Total natural resources rents (% of GDP),NY.GDP.TOTL.RT.ZS,ny_gdp_totl_rt_zs
+GDP per capita (constant LCU),NY.GDP.PCAP.KN,ny_gdp_pcap_kn
+GDP per capita (current US$),NY.GDP.PCAP.CD,ny_gdp_pcap_cd
+GDP (constant LCU),NY.GDP.MKTP.KN,ny_gdp_mktp_kn
+GDP (current LCU),NY.GDP.MKTP.CN,ny_gdp_mktp_cn
+Gross value added at basic prices (GVA) (constant LCU),NY.GDP.FCST.KN,ny_gdp_fcst_kn
+Discrepancy in expenditure estimate of GDP (constant LCU),NY.GDP.DISC.KN,ny_gdp_disc_kn
+"Inflation, GDP deflator: linked series (annual %)",NY.GDP.DEFL.KD.ZG.AD,ny_gdp_defl_kd_zg_ad
+"Adjusted net savings, excluding particulate emission damage (% of GNI)",NY.ADJ.SVNX.GN.ZS,ny_adj_svnx_gn_zs
+Adjusted net national income per capita (annual % growth),NY.ADJ.NNTY.PC.KD.ZG,ny_adj_nnty_pc_kd_zg
+Adjusted net national income (constant 2015 US$),NY.ADJ.NNTY.KD,ny_adj_nnty_kd
+Adjusted savings: gross savings (% of GNI),NY.ADJ.ICTR.GN.ZS,ny_adj_ictr_gn_zs
+Adjusted savings: energy depletion (% of GNI),NY.ADJ.DNGY.GN.ZS,ny_adj_dngy_gn_zs
+Adjusted savings: consumption of fixed capital (% of GNI),NY.ADJ.DKAP.GN.ZS,ny_adj_dkap_gn_zs
+Adjusted savings: carbon dioxide damage (% of GNI),NY.ADJ.DCO2.GN.ZS,ny_adj_dco2_gn_zs
+"Services, value added (% of GDP)",NV.SRV.TOTL.ZS,nv_srv_totl_zs
+"Services, value added (current LCU)",NV.SRV.TOTL.CN,nv_srv_totl_cn
+Medium and high-tech manufacturing value added (% manufacturing value added),NV.MNF.TECH.ZS.UN,nv_mnf_tech_zs_un
+Chemicals (% of value added in manufacturing),NV.MNF.CHEM.ZS.UN,nv_mnf_chem_zs_un
+"Industry (including construction), value added (constant 2015 US$)",NV.IND.TOTL.KD,nv_ind_totl_kd
+"Manufacturing, value added (constant LCU)",NV.IND.MANF.KN,nv_ind_manf_kn
+"Manufacturing, value added (current US$)",NV.IND.MANF.CD,nv_ind_manf_cd
+"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,nv_agr_totl_zs
+"Agriculture, forestry, and fishing, value added (current LCU)",NV.AGR.TOTL.CN,nv_agr_totl_cn
+External balance on goods and services (% of GDP),NE.RSB.GNFS.ZS,ne_rsb_gnfs_zs
+Imports of goods and services (% of GDP),NE.IMP.GNFS.ZS,ne_imp_gnfs_zs
+Imports of goods and services (current LCU),NE.IMP.GNFS.CN,ne_imp_gnfs_cn
+Gross capital formation (annual % growth),NE.GDI.TOTL.KD.ZG,ne_gdi_totl_kd_zg
+Changes in inventories (constant LCU),NE.GDI.STKB.KN,ne_gdi_stkb_kn
+Gross fixed capital formation (constant LCU),NE.GDI.FTOT.KN,ne_gdi_ftot_kn
+Gross fixed capital formation (current US$),NE.GDI.FTOT.CD,ne_gdi_ftot_cd
+Exports of goods and services (constant LCU),NE.EXP.GNFS.KN,ne_exp_gnfs_kn
+Exports of goods and services (current US$),NE.EXP.GNFS.CD,ne_exp_gnfs_cd
+Gross national expenditure (current LCU),NE.DAB.TOTL.CN,ne_dab_totl_cn
+Final consumption expenditure (constant LCU),NE.CON.TOTL.KN,ne_con_totl_kn
+Final consumption expenditure (current US$),NE.CON.TOTL.CD,ne_con_totl_cd
+Households and NPISHs Final consumption expenditure per capita growth (annual %),NE.CON.PRVT.PC.KD.ZG,ne_con_prvt_pc_kd_zg
+Households and NPISHs Final consumption expenditure (constant 2015 US$),NE.CON.PRVT.KD,ne_con_prvt_kd
+General government final consumption expenditure (% of GDP),NE.CON.GOVT.ZS,ne_con_govt_zs
+General government final consumption expenditure (current LCU),NE.CON.GOVT.CN,ne_con_govt_cn
+Military expenditure (% of GDP),MS.MIL.XPND.GD.ZS,ms_mil_xpnd_gd_zs
+"Armed forces personnel, total",MS.MIL.TOTL.P1,ms_mil_totl_p1
+Customs and other import duties (current LCU),GC.TAX.IMPT.CN,gc_tax_impt_cn
+Taxes on exports (% of tax revenue),GC.TAX.EXPT.ZS,gc_tax_expt_zs
+Social contributions (% of revenue),GC.REV.SOCL.ZS,gc_rev_socl_zs
+Net lending (+) / net borrowing (-) (% of GDP),GC.NLD.TOTL.GD.ZS,gc_nld_totl_gd_zs
+"Net incurrence of liabilities, total (% of GDP)",GC.LBL.TOTL.GD.ZS,gc_lbl_totl_gd_zs
+Net acquisition of financial assets (% of GDP),GC.AST.TOTL.GD.ZS,gc_ast_totl_gd_zs
+"Account ownership at a financial institution or with a mobile-money-service provider, young adults (% of population ages 15-24)",FX.OWN.TOTL.YG.ZS,fx_own_totl_yg_zs
+"Account ownership at a financial institution or with a mobile-money-service provider, male (% of population ages 15+)",FX.OWN.TOTL.MA.ZS,fx_own_totl_ma_zs
+Domestic credit to private sector (% of GDP),FS.AST.PRVT.GD.ZS,fs_ast_prvt_gd_zs
+"Risk premium on lending (lending rate minus treasury bill rate, %)",FR.INR.RISK,fr_inr_risk
+Deposit interest rate (%),FR.INR.DPST,fr_inr_dpst
+Broad money growth (annual %),FM.LBL.BMNY.ZG,fm_lbl_bmny_zg
+Claims on private sector (annual growth as % of broad money),FM.AST.PRVT.ZG.M3,fm_ast_prvt_zg_m3
+Claims on other sectors of the domestic economy (annual growth as % of broad money),FM.AST.DOMO.ZG.M3,fm_ast_domo_zg_m3
+Total reserves (% of total external debt),FI.RES.TOTL.DT.ZS,fi_res_totl_dt_zs
+"Depositors with commercial banks (per 1,000 adults)",FB.CBK.DPTR.P3,fb_cbk_dptr_p3
+"Automated teller machines (ATMs) (per 100,000 adults)",FB.ATM.TOTL.P5,fb_atm_totl_p5
+Terrestrial protected areas (% of total land area),ER.LND.PTLD.ZS,er_lnd_ptld_zs
+"Annual freshwater withdrawals, total (billion cubic meters)",ER.H2O.FWTL.K3,er_h2o_fwtl_k3
+"Annual freshwater withdrawals, agriculture (% of total freshwater withdrawal)",ER.H2O.FWAG.ZS,er_h2o_fwag_zs
+Aquaculture production (metric tons),ER.FSH.AQUA.MT,er_fsh_aqua_mt
+Population in urban agglomerations of more than 1 million,EN.URB.MCTY,en_urb_mcty
+Population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.ZS,en_pop_el5m_zs
+"Mammal species, threatened",EN.MAM.THRD.NO,en_mam_thrd_no
+"CO2 emissions from other sectors, excluding residential buildings and commercial and public services (% of total fuel combustion)",EN.CO2.OTHX.ZS,en_co2_othx_zs
+"Droughts, floods, extreme temperatures (% of population, average 1990-2009)",EN.CLC.MDAT.ZS,en_clc_mdat_zs
+SF6 gas emissions (thousand metric tons of CO2 equivalent),EN.ATM.SF6G.KT.CE,en_atm_sf6g_kt_ce
+"PM2.5 pollution, population exposed to levels exceeding WHO Interim Target-1 value (% of total)",EN.ATM.PM25.MC.T1.ZS,en_atm_pm25_mc_t1_zs
+Nitrous oxide emissions (thousand metric tons of CO2 equivalent),EN.ATM.NOXE.KT.CE,en_atm_noxe_kt_ce
+Agricultural nitrous oxide emissions (thousand metric tons of CO2 equivalent),EN.ATM.NOXE.AG.KT.CE,en_atm_noxe_ag_kt_ce
+Methane emissions in energy sector (thousand metric tons of CO2 equivalent),EN.ATM.METH.EG.KT.CE,en_atm_meth_eg_kt_ce
+Total greenhouse gas emissions (% change from 1990),EN.ATM.GHGT.ZG,en_atm_ghgt_zg
+CO2 emissions from solid fuel consumption (% of total),EN.ATM.CO2E.SF.ZS,en_atm_co2e_sf_zs
+CO2 emissions (metric tons per capita),EN.ATM.CO2E.PC,en_atm_co2e_pc
+CO2 emissions (kg per 2015 US$ of GDP),EN.ATM.CO2E.KD.GD,en_atm_co2e_kd_gd
+Energy use (kg of oil equivalent per capita),EG.USE.PCAP.KG.OE,eg_use_pcap_kg_oe
+Fossil fuel energy consumption (% of total),EG.USE.COMM.FO.ZS,eg_use_comm_fo_zs
+GDP per unit of energy use (PPP $ per kg of oil equivalent),EG.GDP.PUSE.KO.PP,eg_gdp_puse_ko_pp
+Renewable electricity output (% of total electricity output),EG.ELC.RNEW.ZS,eg_elc_rnew_zs
+Electric power transmission and distribution losses (% of output),EG.ELC.LOSS.ZS,eg_elc_loss_zs
+Access to electricity (% of population),EG.ELC.ACCS.ZS,eg_elc_accs_zs
+Access to clean fuels and technologies for cooking (% of population),EG.CFT.ACCS.ZS,eg_cft_accs_zs
+"Multilateral debt service (TDS, current US$)",DT.TDS.MLAT.CD,dt_tds_mlat_cd
+"Debt service (PPG and IMF only, % of exports of goods, services and primary income)",DT.TDS.DPPF.XP.ZS,dt_tds_dppf_xp_zs
+"Debt service on external debt, total (TDS, current US$)",DT.TDS.DECT.CD,dt_tds_dect_cd
+Net official development assistance received (constant 2020 US$),DT.ODA.ODAT.KD,dt_oda_odat_kd
+Net official aid received (constant 2020 US$),DT.ODA.OATL.KD,dt_oda_oatl_kd
+"Net official flows from UN agencies, WHO (current US$)",DT.NFL.WHOL.CD,dt_nfl_whol_cd
+"Intentional homicides, male (per 100,000 male)",VC.IHR.PSRC.MA.P5,vc_ihr_psrc_ma_p5
+"Internally displaced persons, new displacement associated with conflict and violence (number of cases)",VC.IDP.NWCV,vc_idp_nwcv
+High-technology exports (% of manufactured exports),TX.VAL.TECH.MF.ZS,tx_val_tech_mf_zs
+Export value index (2000 = 100),TX.VAL.MRCH.XD.WD,tx_val_mrch_xd_wd
+Merchandise exports to low- and middle-income economies in Sub-Saharan Africa (% of total merchandise exports),TX.VAL.MRCH.R6.ZS,tx_val_mrch_r6_zs
+Merchandise exports to low- and middle-income economies in Europe & Central Asia (% of total merchandise exports),TX.VAL.MRCH.R2.ZS,tx_val_mrch_r2_zs
+Merchandise exports (current US$),TX.VAL.MRCH.CD.WT,tx_val_mrch_cd_wt
+Insurance and financial services (% of commercial service exports),TX.VAL.INSF.ZS.WT,tx_val_insf_zs_wt
+Agricultural raw materials exports (% of merchandise exports),TX.VAL.AGRI.ZS.UN,tx_val_agri_zs_un
+Net barter terms of trade index (2000 = 100),TT.PRI.MRCH.XD.WD,tt_pri_mrch_xd_wd
+"Computer, communications and other services (% of commercial service imports)",TM.VAL.OTHR.ZS.WT,tm_val_othr_zs_wt
+"Merchandise imports by the reporting economy, residual (% of total merchandise imports)",TM.VAL.MRCH.RS.ZS,tm_val_mrch_rs_zs
+Merchandise imports from low- and middle-income economies in Latin America & the Caribbean (% of total merchandise imports),TM.VAL.MRCH.R3.ZS,tm_val_mrch_r3_zs
+Merchandise imports from high-income economies (% of total merchandise imports),TM.VAL.MRCH.HI.ZS,tm_val_mrch_hi_zs
+Manufactures imports (% of merchandise imports),TM.VAL.MANF.ZS.UN,tm_val_manf_zs_un
+Food imports (% of merchandise imports),TM.VAL.FOOD.ZS.UN,tm_val_food_zs_un
+"Tariff rate, applied, weighted mean, primary products (%)",TM.TAX.TCOM.WM.AR.ZS,tm_tax_tcom_wm_ar_zs
+"Share of tariff lines with international peaks, primary products (%)",TM.TAX.TCOM.IP.ZS,tm_tax_tcom_ip_zs
+"Tariff rate, applied, weighted mean, all products (%)",TM.TAX.MRCH.WM.AR.ZS,tm_tax_mrch_wm_ar_zs
+"Share of tariff lines with international peaks, all products (%)",TM.TAX.MRCH.IP.ZS,tm_tax_mrch_ip_zs
+"Tariff rate, applied, weighted mean, manufactured products (%)",TM.TAX.MANF.WM.AR.ZS,tm_tax_manf_wm_ar_zs
+"Share of tariff lines with international peaks, manufactured products (%)",TM.TAX.MANF.IP.ZS,tm_tax_manf_ip_zs
+Merchandise trade (% of GDP),TG.VAL.TOTL.GD.ZS,tg_val_totl_gd_zs
+"International tourism, receipts for travel items (current US$)",ST.INT.TVLR.CD,st_int_tvlr_cd
+"International tourism, receipts (current US$)",ST.INT.RCPT.CD,st_int_rcpt_cd
+Urban population (% of total population),SP.URB.TOTL.IN.ZS,sp_urb_totl_in_zs
+Rural population growth (annual %),SP.RUR.TOTL.ZG,sp_rur_totl_zg
+"Completeness of birth registration, urban (%)",SP.REG.BRTH.UR.ZS,sp_reg_brth_ur_zs
+"Population, male (% of total population)",SP.POP.TOTL.MA.ZS,sp_pop_totl_ma_zs
+"Population, total",SP.POP.TOTL,sp_pop_totl
+"Age dependency ratio, young (% of working-age population)",SP.POP.DPND.YG,sp_pop_dpnd_yg
+"Population ages 80 and above, male (% of male population)",SP.POP.80UP.MA.5Y,sp_pop_80up_ma_5y
+"Population ages 70-74, male (% of male population)",SP.POP.7074.MA.5Y,sp_pop_7074_ma_5y
+"Population ages 65 and above, male (% of male population)",SP.POP.65UP.MA.ZS,sp_pop_65up_ma_zs
+"Population ages 65-69, male (% of male population)",SP.POP.6569.MA.5Y,sp_pop_6569_ma_5y
+"Population ages 55-59, male (% of male population)",SP.POP.5559.MA.5Y,sp_pop_5559_ma_5y
+"Population ages 45-49, male (% of male population)",SP.POP.4549.MA.5Y,sp_pop_4549_ma_5y
+"Population ages 35-39, male (% of male population)",SP.POP.3539.MA.5Y,sp_pop_3539_ma_5y
+"Population ages 25-29, male (% of male population)",SP.POP.2529.MA.5Y,sp_pop_2529_ma_5y
+Population ages 15-64 (% of total population),SP.POP.1564.TO.ZS,sp_pop_1564_to_zs
+"Population ages 15-64, female (% of female population)",SP.POP.1564.FE.ZS,sp_pop_1564_fe_zs
+"Population ages 10-14, male (% of male population)",SP.POP.1014.MA.5Y,sp_pop_1014_ma_5y
+Population ages 0-14 (% of total population),SP.POP.0014.TO.ZS,sp_pop_0014_to_zs
+"Population ages 0-14, female (% of female population)",SP.POP.0014.FE.ZS,sp_pop_0014_fe_zs
+Teenage mothers (% of women ages 15-19 who have had children or are currently pregnant),SP.MTR.1519.ZS,sp_mtr_1519_zs
+Wanted fertility rate (births per woman),SP.DYN.WFRT,sp_dyn_wfrt
+"Life expectancy at birth, male (years)",SP.DYN.LE00.MA.IN,sp_dyn_le00_ma_in
+"Mortality rate, infant (per 1,000 live births)",SP.DYN.IMRT.IN,sp_dyn_imrt_in
+"Death rate, crude (per 1,000 people)",SP.DYN.CDRT.IN,sp_dyn_cdrt_in
+"Adolescent fertility rate (births per 1,000 women ages 15-19)",SP.ADO.TFRT,sp_ado_tfrt
+Prevalence of moderate or severe food insecurity in the population (%),SN.ITK.MSFI.ZS,sn_itk_msfi_zs
+Refugee population by country or territory of origin,SM.POP.REFG.OR,sm_pop_refg_or
+"Children in employment, wage workers, male (% of male children in employment, ages 7-14)",SL.WAG.0714.MA.ZS,sl_wag_0714_ma_zs
+"Unemployment, male (% of male labor force) (modeled ILO estimate)",SL.UEM.TOTL.MA.ZS,sl_uem_totl_ma_zs
+"Share of youth not in education, employment or training, total (% of youth population)",SL.UEM.NEET.ZS,sl_uem_neet_zs
+"Unemployment with intermediate education, male (% of male labor force with intermediate education)",SL.UEM.INTM.MA.ZS,sl_uem_intm_ma_zs
+"Unemployment with basic education, female (% of female labor force with basic education)",SL.UEM.BASC.FE.ZS,sl_uem_basc_fe_zs
+"Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate)",SL.UEM.1524.ZS,sl_uem_1524_zs
+"Mortality rate attributed to unsafe water, unsafe sanitation and lack of hygiene (per 100,000 population)",SH.STA.WASH.P5,sh_sta_wash_p5
+"Suicide mortality rate, female (per 100,000 female population)",SH.STA.SUIC.FE.P5,sh_sta_suic_fe_p5
+"Prevalence of stunting, height for age, female (% of children under 5)",SH.STA.STNT.FE.ZS,sh_sta_stnt_fe_zs
+"Mortality rate attributed to unintentional poisoning, male (per 100,000 male population)",SH.STA.POIS.P5.MA,sh_sta_pois_p5_ma
+"Prevalence of overweight (modeled estimate, % of children under 5)",SH.STA.OWGH.ME.ZS,sh_sta_owgh_me_zs
+Diarrhea treatment (% of children under 5 receiving oral rehydration and continued feeding),SH.STA.ORCF.ZS,sh_sta_orcf_zs
+"Maternal mortality ratio (national estimate, per 100,000 live births)",SH.STA.MMRT.NE,sh_sta_mmrt_ne
+"Prevalence of underweight, weight for age, female (% of children under 5)",SH.STA.MALN.FE.ZS,sh_sta_maln_fe_zs
+Female genital mutilation prevalence (%),SH.STA.FGMS.ZS,sh_sta_fgms_zs
+Exclusive breastfeeding (% of children under 6 months),SH.STA.BFED.ZS,sh_sta_bfed_zs
+ARI treatment (% of children under 5 taken to a health provider),SH.STA.ARIC.ZS,sh_sta_aric_zs
+"Mortality rate attributed to household and ambient air pollution, age-standardized, female (per 100,000 female population)",SH.STA.AIRP.FE.P5,sh_sta_airp_fe_p5
+"Prevalence of current tobacco use, males (% of male adults)",SH.PRV.SMOK.MA,sh_prv_smok_ma
+Lifetime risk of maternal death (%),SH.MMR.RISK.ZS,sh_mmr_risk_zs
+Use of insecticide-treated bed nets (% of under-5 population),SH.MLR.NETS.ZS,sh_mlr_nets_zs
+"Nurses and midwives (per 1,000 people)",SH.MED.NUMW.P3,sh_med_numw_p3
+"Immunization, DPT (% of children ages 12-23 months)",SH.IMM.IDPT,sh_imm_idpt
+"Incidence of HIV, ages 15-24 (per 1,000 uninfected population ages 15-24)",SH.HIV.INCD.YG.P3,sh_hiv_incd_yg_p3
+Children (ages 0-14) newly infected with HIV,SH.HIV.INCD.14,sh_hiv_incd_14
+"Prevalence of HIV, female (% ages 15-24)",SH.HIV.1524.FE.ZS,sh_hiv_1524_fe_zs
+"People using safely managed drinking water services, rural (% of rural population)",SH.H2O.SMDW.RU.ZS,sh_h2o_smdw_ru_zs
+Demand for family planning satisfied by modern methods (% of married women with demand for family planning),SH.FPL.SATM.ZS,sh_fpl_satm_zs
+"Mortality from CVD, cancer, diabetes or CRD between exact ages 30 and 70, female (%)",SH.DYN.NCOM.FE.ZS,sh_dyn_ncom_fe_zs
+"Prevalence of HIV, total (% of population ages 15-49)",SH.DYN.AIDS.ZS,sh_dyn_aids_zs
+"Probability of dying among adolescents ages 10-14 years (per 1,000)",SH.DYN.1014,sh_dyn_1014
+Number of under-five deaths,SH.DTH.MORT,sh_dth_mort
+Number of deaths ages 20-24 years,SH.DTH.2024,sh_dth_2024
+"Condom use, population ages 15-24, male (% of males ages 15-24)",SH.CON.1524.MA.ZS,sh_con_1524_ma_zs
+Prevalence of anemia among women of reproductive age (% of women ages 15-49),SH.ANM.ALLW.ZS,sh_anm_allw_zs
+Women who believe a husband is justified in beating his wife when she refuses sex with him (%),SG.VAW.REFU.ZS,sg_vaw_refu_zs
+Women who believe a husband is justified in beating his wife when she burns the food (%),SG.VAW.BURN.ZS,sg_vaw_burn_zs
+"Proportion of time spent on unpaid domestic and care work, female (% of 24 hour day)",SG.TIM.UWRK.FE,sg_tim_uwrk_fe
+"Women participating in the three decisions (own health care, major household purchases, and visiting family) (% of women age 15-49)",SG.DMK.ALLD.FN.ZS,sg_dmk_alld_fn_zs
+"Government expenditure per student, tertiary (% of GDP per capita)",SE.XPD.TERT.PC.ZS,se_xpd_tert_pc_zs
+"Government expenditure per student, primary (% of GDP per capita)",SE.XPD.PRIM.PC.ZS,se_xpd_prim_pc_zs
+"Current education expenditure, primary (% of total expenditure in primary public institutions)",SE.XPD.CPRM.ZS,se_xpd_cprm_zs
+"School enrollment, tertiary (% gross)",SE.TER.ENRR,se_ter_enrr
+"Educational attainment, at least completed short-cycle tertiary, population 25+, female (%) (cumulative)",SE.TER.CUAT.ST.FE.ZS,se_ter_cuat_st_fe_zs
+"Educational attainment, Doctoral or equivalent, population 25+, total (%) (cumulative)",SE.TER.CUAT.DO.ZS,se_ter_cuat_do_zs
+"Educational attainment, at least Bachelor's or equivalent, population 25+, male (%) (cumulative)",SE.TER.CUAT.BA.MA.ZS,se_ter_cuat_ba_ma_zs
+"Adolescents out of school, female (% of female lower secondary school age)",SE.SEC.UNER.LO.FE.ZS,se_sec_uner_lo_fe_zs
+Trained teachers in secondary education (% of total teachers),SE.SEC.TCAQ.ZS,se_sec_tcaq_zs
+"Trained teachers in secondary education, male (% of male teachers)",SE.SEC.TCAQ.MA.ZS,se_sec_tcaq_ma_zs
+"Trained teachers in secondary education, female (% of female teachers)",SE.SEC.TCAQ.FE.ZS,se_sec_tcaq_fe_zs
+"School enrollment, secondary, private (% of total secondary)",SE.SEC.PRIV.ZS,se_sec_priv_zs
+"School enrollment, secondary, male (% gross)",SE.SEC.ENRR.MA,se_sec_enrr_ma
+"Secondary education, vocational pupils",SE.SEC.ENRL.VO,se_sec_enrl_vo
+"Secondary education, general pupils (% female)",SE.SEC.ENRL.GC.FE.ZS,se_sec_enrl_gc_fe_zs
+"Secondary education, duration (years)",SE.SEC.DURS,se_sec_durs
+"Educational attainment, at least completed post-secondary, population 25+, total (%) (cumulative)",SE.SEC.CUAT.PO.ZS,se_sec_cuat_po_zs
+"Educational attainment, at least completed lower secondary, population 25+, male (%) (cumulative)",SE.SEC.CUAT.LO.MA.ZS,se_sec_cuat_lo_ma_zs
+"Lower secondary completion rate, female (% of relevant age group)",SE.SEC.CMPT.LO.FE.ZS,se_sec_cmpt_lo_fe_zs
+"Children out of school, primary, male",SE.PRM.UNER.MA,se_prm_uner_ma
+"Adjusted net enrollment rate, primary, male (% of primary school age children)",SE.PRM.TENR.MA,se_prm_tenr_ma
+"Primary education, teachers",SE.PRM.TCHR,se_prm_tchr
+"Repeaters, primary, total (% of total enrollment)",SE.PRM.REPT.ZS,se_prm_rept_zs
+"Persistence to last grade of primary, male (% of cohort)",SE.PRM.PRSL.MA.ZS,se_prm_prsl_ma_zs
+"Persistence to grade 5, female (% of cohort)",SE.PRM.PRS5.FE.ZS,se_prm_prs5_fe_zs
+"Over-age students, primary, female (% of female enrollment)",SE.PRM.OENR.FE.ZS,se_prm_oenr_fe_zs
+"School enrollment, primary, male (% net)",SE.PRM.NENR.MA,se_prm_nenr_ma
+"Gross intake ratio in first grade of primary education, male (% of relevant age group)",SE.PRM.GINT.MA.ZS,se_prm_gint_ma_zs
+"School enrollment, primary (% gross)",SE.PRM.ENRR,se_prm_enrr
+"Primary education, duration (years)",SE.PRM.DURS,se_prm_durs
+"Primary completion rate, total (% of relevant age group)",SE.PRM.CMPT.ZS,se_prm_cmpt_zs
+Trained teachers in preprimary education (% of total teachers),SE.PRE.TCAQ.ZS,se_pre_tcaq_zs
+"School enrollment, preprimary, female (% gross)",SE.PRE.ENRR.FE,se_pre_enrr_fe
+"School enrollment, tertiary (gross), gender parity index (GPI)",SE.ENR.TERT.FM.ZS,se_enr_tert_fm_zs
+"Compulsory education, duration (years)",SE.COM.DURS,se_com_durs
+"Literacy rate, youth total (% of people ages 15-24)",SE.ADT.1524.LT.ZS,se_adt_1524_lt_zs
+Real effective exchange rate index (2010 = 100),PX.REX.REER,px_rex_reer
+Coverage of social insurance programs in 2nd quintile (% of population),per_si_allsi.cov_q2_tot,per_si_allsi_cov_q2_tot
+"Net official flows from UN agencies, UNRWA (current US$)",DT.NFL.UNRW.CD,dt_nfl_unrw_cd
+"Net official flows from UN agencies, UNEP (current US$)",DT.NFL.UNEP.CD,dt_nfl_unep_cd
+"Net official flows from UN agencies, UNICEF (current US$)",DT.NFL.UNCF.CD,dt_nfl_uncf_cd
+"PPG, private creditors (NFL, current US$)",DT.NFL.PRVT.CD,dt_nfl_prvt_cd
+"Commercial banks and other lending (PPG + PNG) (NFL, current US$)",DT.NFL.PCBO.CD,dt_nfl_pcbo_cd
+"IFC, private nonguaranteed (NFL, current US$)",DT.NFL.NIFC.CD,dt_nfl_nifc_cd
+"Net financial flows, IBRD (NFL, current US$)",DT.NFL.MIBR.CD,dt_nfl_mibr_cd
+"Net official flows from UN agencies, IFAD (current US$)",DT.NFL.IFAD.CD,dt_nfl_ifad_cd
+"Portfolio investment, bonds (PPG + PNG) (NFL, current US$)",DT.NFL.BOND.CD,dt_nfl_bond_cd
+Present value of external debt (current US$),DT.DOD.PVLX.CD,dt_dod_pvlx_cd
+Short-term debt (% of total external debt),DT.DOD.DSTC.ZS,dt_dod_dstc_zs
+"External debt stocks, public and publicly guaranteed (PPG) (DOD, current US$)",DT.DOD.DPPG.CD,dt_dod_dppg_cd
+External debt stocks (% of GNI),DT.DOD.DECT.GN.ZS,dt_dod_dect_gn_zs
+"Net ODA provided, total (current US$)",DC.ODA.TOTL.CD,dc_oda_totl_cd
+"Net bilateral aid flows from DAC donors, Total (current US$)",DC.DAC.TOTL.CD,dc_dac_totl_cd
+"Net bilateral aid flows from DAC donors, Portugal (current US$)",DC.DAC.PRTL.CD,dc_dac_prtl_cd
+"Net bilateral aid flows from DAC donors, Netherlands (current US$)",DC.DAC.NLDL.CD,dc_dac_nldl_cd
+"Net bilateral aid flows from DAC donors, Italy (current US$)",DC.DAC.ITAL.CD,dc_dac_ital_cd
+"Net bilateral aid flows from DAC donors, Greece (current US$)",DC.DAC.GRCL.CD,dc_dac_grcl_cd
+"Net bilateral aid flows from DAC donors, Spain (current US$)",DC.DAC.ESPL.CD,dc_dac_espl_cd
+"Unemployment, youth female (% of female labor force ages 15-24) (national estimate)",SL.UEM.1524.FE.NE.ZS,sl_uem_1524_fe_ne_zs
+"Part time employment, male (% of total male employment)",SL.TLF.PART.MA.ZS,sl_tlf_part_ma_zs
+"Labor force with intermediate education, female (% of female working-age population with intermediate education)",SL.TLF.INTM.FE.ZS,sl_tlf_intm_fe_zs
+"Labor force participation rate, male (% of male population ages 15+) (national estimate)",SL.TLF.CACT.MA.NE.ZS,sl_tlf_cact_ma_ne_zs
+"Labor force participation rate, female (% of female population ages 15+) (national estimate)",SL.TLF.CACT.FE.NE.ZS,sl_tlf_cact_fe_ne_zs
+Labor force with advanced education (% of total working-age population with advanced education),SL.TLF.ADVN.ZS,sl_tlf_advn_zs
+"Labor force participation rate, male (% of male population ages 15-64) (modeled ILO estimate)",SL.TLF.ACTI.MA.ZS,sl_tlf_acti_ma_zs
+"Labor force participation rate for ages 15-24, male (%) (modeled ILO estimate)",SL.TLF.ACTI.1524.MA.ZS,sl_tlf_acti_1524_ma_zs
+"Children in employment, total (% of children ages 7-14)",SL.TLF.0714.ZS,sl_tlf_0714_zs
+"Average working hours of children, working only, male, ages 7-14 (hours per week)",SL.TLF.0714.WK.MA.TM,sl_tlf_0714_wk_ma_tm
+"Average working hours of children, study and work, ages 7-14 (hours per week)",SL.TLF.0714.SW.TM,sl_tlf_0714_sw_tm
+"Average working hours of children, study and work, female, ages 7-14 (hours per week)",SL.TLF.0714.SW.FE.TM,sl_tlf_0714_sw_fe_tm
+"Employment in services, male (% of male employment) (modeled ILO estimate)",SL.SRV.EMPL.MA.ZS,sl_srv_empl_ma_zs
+"Child employment in services, female (% of female economically active children ages 7-14)",SL.SRV.0714.FE.ZS,sl_srv_0714_fe_zs
+Child employment in manufacturing (% of economically active children ages 7-14),SL.MNF.0714.ZS,sl_mnf_0714_zs
+"Employment in industry, male (% of male employment) (modeled ILO estimate)",SL.IND.EMPL.MA.ZS,sl_ind_empl_ma_zs
+"Contributing family workers, male (% of male employment) (modeled ILO estimate)",SL.FAM.WORK.MA.ZS,sl_fam_work_ma_zs
+"Children in employment, unpaid family workers, female (% of female children in employment, ages 7-14)",SL.FAM.0714.FE.ZS,sl_fam_0714_fe_zs
+"Vulnerable employment, total (% of total employment) (modeled ILO estimate)",SL.EMP.VULN.ZS,sl_emp_vuln_zs
+"Employment to population ratio, 15+, total (%) (national estimate)",SL.EMP.TOTL.SP.NE.ZS,sl_emp_totl_sp_ne_zs
+"Employment to population ratio, 15+, female (%) (national estimate)",SL.EMP.TOTL.SP.FE.NE.ZS,sl_emp_totl_sp_fe_ne_zs
+"Self-employed, female (% of female employment) (modeled ILO estimate)",SL.EMP.SELF.FE.ZS,sl_emp_self_fe_zs
+"Employment to population ratio, ages 15-24, total (%) (modeled ILO estimate)",SL.EMP.1524.SP.ZS,sl_emp_1524_sp_zs
+"Employment to population ratio, ages 15-24, female (%) (modeled ILO estimate)",SL.EMP.1524.SP.FE.ZS,sl_emp_1524_sp_fe_zs
+"Employment in agriculture, female (% of female employment) (modeled ILO estimate)",SL.AGR.EMPL.FE.ZS,sl_agr_empl_fe_zs
+"Annualized average growth rate in per capita real survey mean consumption or income, total population (%)",SI.SPR.PCAP.ZG,si_spr_pcap_zg
+Average transaction cost of sending remittances from a specific country (%),SI.RMT.COST.OB.ZS,si_rmt_cost_ob_zs
+Poverty headcount ratio at national poverty lines (% of population),SI.POV.NAHC,si_pov_nahc
+"Multidimensional poverty headcount ratio, household (% of total households)",SI.POV.MDIM.HH,si_pov_mdim_hh
+Multidimensional poverty headcount ratio (% of total population),SI.POV.MDIM,si_pov_mdim
+Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,si_pov_gaps
+Proportion of people living below 50 percent of median income (%),SI.DST.50MD,si_dst_50md
+Income share held by third 20%,SI.DST.03RD.20,si_dst_03rd_20
+Domestic private health expenditure (% of current health expenditure),SH.XPD.PVTD.CH.ZS,sh_xpd_pvtd_ch_zs
+"Domestic general government health expenditure per capita, PPP (current international $)",SH.XPD.GHED.PP.CD,sh_xpd_ghed_pp_cd
+Domestic general government health expenditure (% of current health expenditure),SH.XPD.GHED.CH.ZS,sh_xpd_ghed_ch_zs
+"Current health expenditure per capita, PPP (current international $)",SH.XPD.CHEX.PP.CD,sh_xpd_chex_pp_cd
+UHC service coverage index,SH.UHC.SRVS.CV.XD,sh_uhc_srvs_cv_xd
+Number of people spending more than 10% of household consumption or income on out-of-pocket health care expenditure,SH.UHC.OOPC.10.TO,sh_uhc_oopc_10_to
+Increase in poverty gap at $3.20 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (USD),SH.UHC.NOP2.CG,sh_uhc_nop2_cg
+Increase in poverty gap at $1.90 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (USD),SH.UHC.NOP1.CG,sh_uhc_nop1_cg
+"Prevalence of severe wasting, weight for height (% of children under 5)",SH.SVR.WAST.ZS,sh_svr_wast_zs
+"Prevalence of wasting, weight for height, male (% of children under 5)",SH.STA.WAST.MA.ZS,sh_sta_wast_ma_zs
+"Suicide mortality rate (per 100,000 population)",SH.STA.SUIC.P5,sh_sta_suic_p5
+"Prevalence of stunting, height for age (modeled estimate, % of children under 5)",SH.STA.STNT.ME.ZS,sh_sta_stnt_me_zs
+"People using safely managed sanitation services, urban (% of urban population)",SH.STA.SMSS.UR.ZS,sh_sta_smss_ur_zs
+"Mortality rate attributed to unintentional poisoning (per 100,000 population)",SH.STA.POIS.P5,sh_sta_pois_p5
+"Prevalence of overweight, weight for height, female (% of children under 5)",SH.STA.OWGH.FE.ZS,sh_sta_owgh_fe_zs
+"People practicing open defecation, urban (% of urban population)",SH.STA.ODFC.UR.ZS,sh_sta_odfc_ur_zs
+"Prevalence of underweight, weight for age (% of children under 5)",SH.STA.MALN.ZS,sh_sta_maln_zs
+"People with basic handwashing facilities including soap and water, urban (% of urban population)",SH.STA.HYGN.UR.ZS,sh_sta_hygn_ur_zs
+Logistics performance index: Overall (1=low to 5=high),LP.LPI.OVRL.XQ,lp_lpi_ovrl_xq
+Logistics performance index: Efficiency of customs clearance process (1=low to 5=high),LP.LPI.CUST.XQ,lp_lpi_cust_xq
+Secure Internet servers (per 1 million people),IT.NET.SECR.P6,it_net_secr_p6
+Fixed telephone subscriptions (per 100 people),IT.MLT.MAIN.P2,it_mlt_main_p2
+Container port traffic (TEU: 20 foot equivalent units),IS.SHP.GOOD.TU,is_shp_good_tu
+"Railways, goods transported (million ton-km)",IS.RRS.GOOD.MT.K6,is_rrs_good_mt_k6
+Statistical performance indicators (SPI): Pillar 5 data infrastructure score (scale 0-100),IQ.SPI.PIL5,iq_spi_pil5
+Statistical performance indicators (SPI): Pillar 1 data use score (scale 0-100),IQ.SPI.PIL1,iq_spi_pil1
+Statistical Capacity Score (Overall Average) (scale 0 - 100),IQ.SCI.OVRL,iq_sci_ovrl
+CPIA structural policies cluster average (1=low to 6=high),IQ.CPA.STRC.XQ,iq_cpa_strc_xq
+CPIA social protection rating (1=low to 6=high),IQ.CPA.PROT.XQ,iq_cpa_prot_xq
+CPIA macroeconomic management rating (1=low to 6=high),IQ.CPA.MACR.XQ,iq_cpa_macr_xq
+CPIA fiscal policy rating (1=low to 6=high),IQ.CPA.FISP.XQ,iq_cpa_fisp_xq
+CPIA economic management cluster average (1=low to 6=high),IQ.CPA.ECON.XQ,iq_cpa_econ_xq
+"Trademark applications, nonresident, by count",IP.TMK.NRCT,ip_tmk_nrct
+"Industrial design applications, resident, by count",IP.IDS.RSCT,ip_ids_rsct
+Public private partnerships investment in ICT (current US$),IE.PPN.ICTI.CD,ie_ppn_icti_cd
+Investment in ICT with private participation (current US$),IE.PPI.ICTI.CD,ie_ppi_icti_cd
+Total tax and contribution rate (% of profit),IC.TAX.TOTL.CP.ZS,ic_tax_totl_cp_zs
+Number of visits or required meetings with tax officials (average for affected firms),IC.TAX.METG,ic_tax_metg
+"Start-up procedures to register a business, male (number)",IC.REG.PROC.MA,ic_reg_proc_ma
+"Time required to start a business, female (days)",IC.REG.DURS.FE,ic_reg_durs_fe
+"Cost of business start-up procedures, female (% of GNI per capita)",IC.REG.COST.PC.FE.ZS,ic_reg_cost_pc_fe_zs
+Strength of legal rights index (0=weak to 12=strong),IC.LGL.CRED.XQ,ic_lgl_cred_xq
+"Cost to import, documentary compliance (US$)",IC.IMP.CSDC.CD,ic_imp_csdc_cd
+Firms experiencing losses due to theft and vandalism (% of firms),IC.FRM.THEV.ZS,ic_frm_thev_zs
+Firms that do not report all sales for tax purposes (% of firms),IC.FRM.INFM.ZS,ic_frm_infm_zs
+Time required to obtain an operating license (days),IC.FRM.DURS,ic_frm_durs
+Bribery incidence (% of firms experiencing at least one bribe payment request),IC.FRM.BRIB.ZS,ic_frm_brib_zs
+"Time to export, border compliance (hours)",IC.EXP.TMBC,ic_exp_tmbc
+Firms experiencing electrical outages (% of firms),IC.ELC.OUTG.ZS,ic_elc_outg_zs
+Public credit registry coverage (% of adults),IC.CRD.PUBL.ZS,ic_crd_publ_zs
+"New business density (new registrations per 1,000 people ages 15-64)",IC.BUS.NDNS.ZS,ic_bus_ndns_zs
+"Human capital index (HCI), male, upper bound (scale 0-1)",HD.HCI.OVRL.UB.MA,hd_hci_ovrl_ub_ma
+"Human capital index (HCI), male, lower bound (scale 0-1)",HD.HCI.OVRL.LB.MA,hd_hci_ovrl_lb_ma
+Human capital index (HCI) (scale 0-1),HD.HCI.OVRL,hd_hci_ovrl
+Expense (% of GDP),GC.XPN.TOTL.GD.ZS,gc_xpn_totl_gd_zs
+Interest payments (% of expense),GC.XPN.INTP.ZS,gc_xpn_intp_zs
+Goods and services expense (current LCU),GC.XPN.GSRV.CN,gc_xpn_gsrv_cn
+"Taxes on income, profits and capital gains (% of revenue)",GC.TAX.YPKG.RV.ZS,gc_tax_ypkg_rv_zs
+Other taxes (% of revenue),GC.TAX.OTHR.RV.ZS,gc_tax_othr_rv_zs
+Customs and other import duties (% of tax revenue),GC.TAX.IMPT.ZS,gc_tax_impt_zs
+Taxes on goods and services (current LCU),GC.TAX.GSRV.CN,gc_tax_gsrv_cn
+"Revenue, excluding grants (current LCU)",GC.REV.XGRT.CN,gc_rev_xgrt_cn
+Grants and other revenue (current LCU),GC.REV.GOTR.CN,gc_rev_gotr_cn
+Net investment in nonfinancial assets (current LCU),GC.NFN.TOTL.CN,gc_nfn_totl_cn
+"Central government debt, total (current LCU)",GC.DOD.TOTL.CN,gc_dod_totl_cn
+Account ownership at a financial institution or with a mobile-money-service provider (% of population ages 15+),FX.OWN.TOTL.ZS,fx_own_totl_zs
+Logistics performance index: Ability to track and trace consignments (1=low to 5=high),LP.LPI.TRAC.XQ,lp_lpi_trac_xq
+Logistics performance index: Ease of arranging competitively priced shipments (1=low to 5=high),LP.LPI.ITRN.XQ,lp_lpi_itrn_xq
+"Lead time to export, median case (days)",LP.EXP.DURS.MD,lp_exp_durs_md
+Fixed broadband subscriptions (per 100 people),IT.NET.BBND.P2,it_net_bbnd_p2
+Mobile cellular subscriptions (per 100 people),IT.CEL.SETS.P2,it_cel_sets_p2
+Rail lines (total route-km),IS.RRS.TOTL.KM,is_rrs_totl_km
+"Air transport, freight (million ton-km)",IS.AIR.GOOD.MT.K1,is_air_good_mt_k1
+Statistical performance indicators (SPI): Pillar 3 data products score  (scale 0-100),IQ.SPI.PIL3,iq_spi_pil3
+Source data assessment of statistical capacity (scale 0 - 100),IQ.SCI.SRCE,iq_sci_srce
+"CPIA transparency, accountability, and corruption in the public sector rating (1=low to 6=high)",IQ.CPA.TRAN.XQ,iq_cpa_tran_xq
+CPIA efficiency of revenue mobilization rating (1=low to 6=high),IQ.CPA.REVN.XQ,iq_cpa_revn_xq
+CPIA equity of public resource use rating (1=low to 6=high),IQ.CPA.PRES.XQ,iq_cpa_pres_xq
+CPIA building human resources rating (1=low to 6=high),IQ.CPA.HRES.XQ,iq_cpa_hres_xq
+CPIA quality of budgetary and financial management rating (1=low to 6=high),IQ.CPA.FINQ.XQ,iq_cpa_finq_xq
+CPIA business regulatory environment rating (1=low to 6=high),IQ.CPA.BREG.XQ,iq_cpa_breg_xq
+"Patent applications, nonresidents",IP.PAT.NRES,ip_pat_nres
+Public private partnerships investment in water and sanitation (current US$),IE.PPN.WATR.CD,ie_ppn_watr_cd
+Investment in water and sanitation with private participation (current US$),IE.PPI.WATR.CD,ie_ppi_watr_cd
+Procedures to build a warehouse (number),IC.WRH.PROC,ic_wrh_proc
+Tax payments (number),IC.TAX.PAYM,ic_tax_paym
+Firms expected to give gifts in meetings with tax officials (% of firms),IC.TAX.GIFT.ZS,ic_tax_gift_zs
+Start-up procedures to register a business (number),IC.REG.PROC,ic_reg_proc
+Cost of business start-up procedures (% of GNI per capita),IC.REG.COST.PC.ZS,ic_reg_cost_pc_zs
+Time required to register property (days),IC.PRP.DURS,ic_prp_durs
+"Time to import, documentary compliance (hours)",IC.IMP.TMDC,ic_imp_tmdc
+Time spent dealing with the requirements of government regulations (% of senior management time),IC.GOV.DURS.ZS,ic_gov_durs_zs
+Value lost due to electrical outages (% of sales for affected firms),IC.FRM.OUTG.ZS,ic_frm_outg_zs
+Firms with female participation in ownership (% of firms),IC.FRM.FEMO.ZS,ic_frm_femo_zs
+Informal payments to public officials (% of firms),IC.FRM.CORR.ZS,ic_frm_corr_zs
+Firms using banks to finance working capital (% of firms),IC.FRM.BKWC.ZS,ic_frm_bkwc_zs
+"Cost to export, border compliance (US$)",IC.EXP.CSBC.CD,ic_exp_csbc_cd
+Time to obtain an electrical connection (days),IC.ELC.DURS,ic_elc_durs
+Depth of credit information index (0=low to 8=high),IC.CRD.INFO.XQ,ic_crd_info_xq
+Business extent of disclosure index (0=less disclosure to 10=more disclosure),IC.BUS.DISC.XQ,ic_bus_disc_xq
+"Human capital index (HCI), upper bound (scale 0-1)",HD.HCI.OVRL.UB,hd_hci_ovrl_ub
+"Human capital index (HCI), lower bound (scale 0-1)",HD.HCI.OVRL.LB,hd_hci_ovrl_lb
+Subsidies and other transfers (% of expense),GC.XPN.TRFT.ZS,gc_xpn_trft_zs
+Other expense (% of expense),GC.XPN.OTHR.ZS,gc_xpn_othr_zs
+Interest payments (current LCU),GC.XPN.INTP.CN,gc_xpn_intp_cn
+Compensation of employees (current LCU),GC.XPN.COMP.CN,gc_xpn_comp_cn
+Tax revenue (% of GDP),GC.TAX.TOTL.GD.ZS,gc_tax_totl_gd_zs
+Taxes on international trade (% of revenue),GC.TAX.INTT.RV.ZS,gc_tax_intt_rv_zs
+Taxes on goods and services (% value added of industry and services),GC.TAX.GSRV.VA.ZS,gc_tax_gsrv_va_zs
+Taxes on exports (current LCU),GC.TAX.EXPT.CN,gc_tax_expt_cn
+Social contributions (current LCU),GC.REV.SOCL.CN,gc_rev_socl_cn
+Net lending (+) / net borrowing (-) (current LCU),GC.NLD.TOTL.CN,gc_nld_totl_cn
+"Net incurrence of liabilities, total (current LCU)",GC.LBL.TOTL.CN,gc_lbl_totl_cn
+Net acquisition of financial assets (current LCU),GC.AST.TOTL.CN,gc_ast_totl_cn
+"Account ownership at a financial institution or with a mobile-money-service provider, secondary education or more (% of population ages 15+)",FX.OWN.TOTL.SO.ZS,fx_own_totl_so_zs
+"Account ownership at a financial institution or with a mobile-money-service provider, female (% of population ages 15+)",FX.OWN.TOTL.FE.ZS,fx_own_totl_fe_zs
+Domestic credit provided by financial sector (% of GDP),FS.AST.DOMS.GD.ZS,fs_ast_doms_gd_zs
+Real interest rate (%),FR.INR.RINR,fr_inr_rinr
+"Net official flows from UN agencies, UNAIDS (current US$)",DT.NFL.UNAI.CD,dt_nfl_unai_cd
+"PPG, other private creditors (NFL, current US$)",DT.NFL.PROP.CD,dt_nfl_prop_cd
+"PPG, commercial banks (NFL, current US$)",DT.NFL.PCBK.CD,dt_nfl_pcbk_cd
+"Net financial flows, others (NFL, current US$)",DT.NFL.MOTH.CD,dt_nfl_moth_cd
+"Net financial flows, IMF nonconcessional (NFL, current US$)",DT.NFL.IMFN.CD,dt_nfl_imfn_cd
+"Net official flows from UN agencies, IAEA (current US$)",DT.NFL.IAEA.CD,dt_nfl_iaea_cd
+"Net financial flows, bilateral (NFL, current US$)",DT.NFL.BLAT.CD,dt_nfl_blat_cd
+"IBRD loans and IDA credits (DOD, current US$)",DT.DOD.MWBG.CD,dt_dod_mwbg_cd
+"Short-term debt (% of exports of goods, services and primary income)",DT.DOD.DSTC.XP.ZS,dt_dod_dstc_xp_zs
+"External debt stocks, private nonguaranteed (PNG) (DOD, current US$)",DT.DOD.DPNG.CD,dt_dod_dpng_cd
+"External debt stocks, total (DOD, current US$)",DT.DOD.DECT.CD,dt_dod_dect_cd
+Net ODA provided to the least developed countries (% of GNI),DC.ODA.TLDC.GN.ZS,dc_oda_tldc_gn_zs
+"Net bilateral aid flows from DAC donors, Sweden (current US$)",DC.DAC.SWEL.CD,dc_dac_swel_cd
+"Net bilateral aid flows from DAC donors, Poland (current US$)",DC.DAC.POLL.CD,dc_dac_poll_cd
+"Net bilateral aid flows from DAC donors, Luxembourg (current US$)",DC.DAC.LUXL.CD,dc_dac_luxl_cd
+"Net bilateral aid flows from DAC donors, Iceland (current US$)",DC.DAC.ISLL.CD,dc_dac_isll_cd
+"Net bilateral aid flows from DAC donors, United Kingdom (current US$)",DC.DAC.GBRL.CD,dc_dac_gbrl_cd
+"Net bilateral aid flows from DAC donors, Denmark (current US$)",DC.DAC.DNKL.CD,dc_dac_dnkl_cd
+"Net bilateral aid flows from DAC donors, European Union institutions (current US$)",DC.DAC.CECL.CD,dc_dac_cecl_cd
+"Net bilateral aid flows from DAC donors, Australia (current US$)",DC.DAC.AUSL.CD,dc_dac_ausl_cd
+"Listed domestic companies, total",CM.MKT.LDOM.NO,cm_mkt_ldom_no
+"Personal remittances, received (% of GDP)",BX.TRF.PWKR.DT.GD.ZS,bx_trf_pwkr_dt_gd_zs
+"Portfolio equity, net inflows (BoP, current US$)",BX.PEF.TOTL.CD.WD,bx_pef_totl_cd_wd
+Unemployment with basic education (% of total labor force with basic education),SL.UEM.BASC.ZS,sl_uem_basc_zs
+"Unemployment with advanced education, male (% of male labor force with advanced education)",SL.UEM.ADVN.MA.ZS,sl_uem_advn_ma_zs
+"Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate)",SL.UEM.1524.MA.ZS,sl_uem_1524_ma_zs
+"Labor force, total",SL.TLF.TOTL.IN,sl_tlf_totl_in
+"Part time employment, female (% of total female employment)",SL.TLF.PART.FE.ZS,sl_tlf_part_fe_zs
+"Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)",SL.TLF.CACT.ZS,sl_tlf_cact_zs
+Ratio of female to male labor force participation rate (%) (modeled ILO estimate),SL.TLF.CACT.FM.ZS,sl_tlf_cact_fm_zs
+Labor force with basic education (% of total working-age population with basic education),SL.TLF.BASC.ZS,sl_tlf_basc_zs
+"Labor force with advanced education, male (% of male working-age population with advanced education)",SL.TLF.ADVN.MA.ZS,sl_tlf_advn_ma_zs
+"Labor force participation rate, female (% of female population ages 15-64) (modeled ILO estimate)",SL.TLF.ACTI.FE.ZS,sl_tlf_acti_fe_zs
+"Labor force participation rate for ages 15-24, male (%) (national estimate)",SL.TLF.ACTI.1524.MA.NE.ZS,sl_tlf_acti_1524_ma_ne_zs
+"Children in employment, work only (% of children in employment, ages 7-14)",SL.TLF.0714.WK.ZS,sl_tlf_0714_wk_zs
+"Children in employment, work only, female (% of female children in employment, ages 7-14)",SL.TLF.0714.WK.FE.ZS,sl_tlf_0714_wk_fe_zs
+"Children in employment, study and work, male (% of male children in employment, ages 7-14)",SL.TLF.0714.SW.MA.ZS,sl_tlf_0714_sw_ma_zs
+"Children in employment, male (% of male children ages 7-14)",SL.TLF.0714.MA.ZS,sl_tlf_0714_ma_zs
+"Employment in services, female (% of female employment) (modeled ILO estimate)",SL.SRV.EMPL.FE.ZS,sl_srv_empl_fe_zs
+"Children in employment, self-employed (% of children in employment, ages 7-14)",SL.SLF.0714.ZS,sl_slf_0714_zs
+"Child employment in manufacturing, male (% of male economically active children ages 7-14)",SL.MNF.0714.MA.ZS,sl_mnf_0714_ma_zs
+"Employment in industry, female (% of female employment) (modeled ILO estimate)",SL.IND.EMPL.FE.ZS,sl_ind_empl_fe_zs
+"Contributing family workers, female (% of female employment) (modeled ILO estimate)",SL.FAM.WORK.FE.ZS,sl_fam_work_fe_zs
+"Wage and salaried workers, total (% of total employment) (modeled ILO estimate)",SL.EMP.WORK.ZS,sl_emp_work_zs
+"Vulnerable employment, male (% of male employment) (modeled ILO estimate)",SL.EMP.VULN.MA.ZS,sl_emp_vuln_ma_zs
+"Employment to population ratio, 15+, male (%) (modeled ILO estimate)",SL.EMP.TOTL.SP.MA.ZS,sl_emp_totl_sp_ma_zs
+Female share of employment in senior and middle management (%),SL.EMP.SMGT.FE.ZS,sl_emp_smgt_fe_zs
+"Employers, total (% of total employment) (modeled ILO estimate)",SL.EMP.MPYR.ZS,sl_emp_mpyr_zs
+"Employment to population ratio, ages 15-24, total (%) (national estimate)",SL.EMP.1524.SP.NE.ZS,sl_emp_1524_sp_ne_zs
+"Employment to population ratio, ages 15-24, female (%) (national estimate)",SL.EMP.1524.SP.FE.NE.ZS,sl_emp_1524_sp_fe_ne_zs
+Child employment in agriculture (% of economically active children ages 7-14),SL.AGR.0714.ZS,sl_agr_0714_zs
+"Survey mean consumption or income per capita, total population (2017 PPP $ per day)",SI.SPR.PCAP,si_spr_pcap
+Average transaction cost of sending remittances to a specific country (%),SI.RMT.COST.IB.ZS,si_rmt_cost_ib_zs
+Multidimensional poverty index (scale 0-1),SI.POV.MDIM.XQ,si_pov_mdim_xq
+"Multidimensional poverty headcount ratio, female (% of female population)",SI.POV.MDIM.FE,si_pov_mdim_fe
+Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,si_pov_lmic_gp
+Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,si_pov_dday
+Income share held by highest 10%,SI.DST.10TH.10,si_dst_10th_10
+Income share held by second 20%,SI.DST.02ND.20,si_dst_02nd_20
+"Out-of-pocket expenditure per capita, PPP (current international $)",SH.XPD.OOPC.PP.CD,sh_xpd_oopc_pp_cd
+Domestic general government health expenditure per capita (current US$),SH.XPD.GHED.PC.CD,sh_xpd_ghed_pc_cd
+"External health expenditure per capita, PPP (current international $)",SH.XPD.EHEX.PP.CD,sh_xpd_ehex_pp_cd
+Current health expenditure per capita (current US$),SH.XPD.CHEX.PC.CD,sh_xpd_chex_pc_cd
+Proportion of population spending more than 25% of household consumption or income on out-of-pocket health care expenditure (%),SH.UHC.OOPC.25.ZS,sh_uhc_oopc_25_zs
+Proportion of population pushed below the $3.20 ($ 2011 PPP) poverty line by out-of-pocket health care expenditure (%),SH.UHC.NOP2.ZS,sh_uhc_nop2_zs
+Proportion of population pushed below the $1.90 ($ 2011 PPP) poverty line by out-of-pocket health care expenditure (%),SH.UHC.NOP1.ZS,sh_uhc_nop1_zs
+"Incidence of tuberculosis (per 100,000 people)",SH.TBS.INCD,sh_tbs_incd
+"Prevalence of severe wasting, weight for height, male (% of children under 5)",SH.SVR.WAST.MA.ZS,sh_svr_wast_ma_zs
+"Prevalence of wasting, weight for height, female (% of children under 5)",SH.STA.WAST.FE.ZS,sh_sta_wast_fe_zs
+"Suicide mortality rate, male (per 100,000 male population)",SH.STA.SUIC.MA.P5,sh_sta_suic_ma_p5
+"Prevalence of stunting, height for age, male (% of children under 5)",SH.STA.STNT.MA.ZS,sh_sta_stnt_ma_zs
+"People using safely managed sanitation services, rural (% of rural population)",SH.STA.SMSS.RU.ZS,sh_sta_smss_ru_zs
+"Prevalence of overweight, weight for height (% of children under 5)",SH.STA.OWGH.ZS,sh_sta_owgh_zs
+Diarrhea treatment (% of children under 5 who received ORS packet),SH.STA.ORTH,sh_sta_orth
+"People practicing open defecation, rural (% of rural population)",SH.STA.ODFC.RU.ZS,sh_sta_odfc_ru_zs
+"Prevalence of underweight, weight for age, male (% of children under 5)",SH.STA.MALN.MA.ZS,sh_sta_maln_ma_zs
+"People with basic handwashing facilities including soap and water, rural (% of rural population)",SH.STA.HYGN.RU.ZS,sh_sta_hygn_ru_zs
+Births attended by skilled health staff (% of total),SH.STA.BRTC.ZS,sh_sta_brtc_zs
+"People using at least basic sanitation services, rural (% of rural population)",SH.STA.BASS.RU.ZS,sh_sta_bass_ru_zs
+"Account ownership at a financial institution or with a mobile-money-service provider, older adults (% of population ages 25+)",FX.OWN.TOTL.OL.ZS,fx_own_totl_ol_zs
+"Account ownership at a financial institution or with a mobile-money-service provider, poorest 40% (% of population ages 15+)",FX.OWN.TOTL.40.ZS,fx_own_totl_40_zs
+"Claims on central government, etc. (% GDP)",FS.AST.CGOV.GD.ZS,fs_ast_cgov_gd_zs
+Lending interest rate (%),FR.INR.LEND,fr_inr_lend
+Consumer price index (2010 = 100),FP.CPI.TOTL,fp_cpi_totl
+Broad money (current LCU),FM.LBL.BMNY.CN,fm_lbl_bmny_cn
+Net domestic credit (current LCU),FM.AST.DOMS.CN,fm_ast_doms_cn
+Total reserves in months of imports,FI.RES.TOTL.MO,fi_res_totl_mo
+Domestic credit to private sector by banks (% of GDP),FD.AST.PRVT.GD.ZS,fd_ast_prvt_gd_zs
+Bank capital to assets ratio (%),FB.BNK.CAPA.ZS,fb_bnk_capa_zs
+Marine protected areas (% of territorial waters),ER.MRN.PTMR.ZS,er_mrn_ptmr_zs
+"Annual freshwater withdrawals, total (% of internal resources)",ER.H2O.FWTL.ZS,er_h2o_fwtl_zs
+"Annual freshwater withdrawals, domestic (% of total freshwater withdrawal)",ER.H2O.FWDM.ZS,er_h2o_fwdm_zs
+Capture fisheries production (metric tons),ER.FSH.CAPT.MT,er_fsh_capt_mt
+Population in urban agglomerations of more than 1 million (% of total population),EN.URB.MCTY.TL.ZS,en_urb_mcty_tl_zs
+Population living in slums (% of urban population),EN.POP.SLUM.UR.ZS,en_pop_slum_ur_zs
+Population density (people per sq. km of land area),EN.POP.DNST,en_pop_dnst
+CO2 emissions from transport (% of total fuel combustion),EN.CO2.TRAN.ZS,en_co2_tran_zs
+CO2 emissions from residential buildings and commercial and public services (% of total fuel combustion),EN.CO2.BLDG.ZS,en_co2_bldg_zs
+"Bird species, threatened",EN.BIR.THRD.NO,en_bir_thrd_no
+"PM2.5 pollution, population exposed to levels exceeding WHO Interim Target-2 value (% of total)",EN.ATM.PM25.MC.T2.ZS,en_atm_pm25_mc_t2_zs
+Nitrous oxide emissions (% change from 1990),EN.ATM.NOXE.ZG,en_atm_noxe_zg
+Agricultural nitrous oxide emissions (% of total),EN.ATM.NOXE.AG.ZS,en_atm_noxe_ag_zs
+Energy related methane emissions (% of total),EN.ATM.METH.EG.ZS,en_atm_meth_eg_zs
+HFC gas emissions (thousand metric tons of CO2 equivalent),EN.ATM.HFCG.KT.CE,en_atm_hfcg_kt_ce
+"Other greenhouse gas emissions, HFC, PFC and SF6 (thousand metric tons of CO2 equivalent)",EN.ATM.GHGO.KT.CE,en_atm_ghgo_kt_ce
+CO2 emissions (kg per PPP $ of GDP),EN.ATM.CO2E.PP.GD,en_atm_co2e_pp_gd
+CO2 emissions (kt),EN.ATM.CO2E.KT,en_atm_co2e_kt
+CO2 intensity (kg per kg of oil equivalent energy use),EN.ATM.CO2E.EG.ZS,en_atm_co2e_eg_zs
+"Energy use (kg of oil equivalent) per $1,000 GDP (constant 2017 PPP)",EG.USE.COMM.GD.PP.KD,eg_use_comm_gd_pp_kd
+GDP per unit of energy use (constant 2017 PPP $ per kg of oil equivalent),EG.GDP.PUSE.KO.PP.KD,eg_gdp_puse_ko_pp_kd
+"Electricity production from renewable sources, excluding hydroelectric (kWh)",EG.ELC.RNWX.KH,eg_elc_rnwx_kh
+Electricity production from natural gas sources (% of total),EG.ELC.NGAS.ZS,eg_elc_ngas_zs
+Electricity production from coal sources (% of total),EG.ELC.COAL.ZS,eg_elc_coal_zs
+Energy intensity level of primary energy (MJ/$2017 PPP GDP),EG.EGY.PRIM.PP.KD,eg_egy_prim_pp_kd
+Multilateral debt service (% of public and publicly guaranteed debt service),DT.TDS.MLAT.PG.ZS,dt_tds_mlat_pg_zs
+"Debt service on external debt, public and publicly guaranteed (PPG) (TDS, current US$)",DT.TDS.DPPG.CD,dt_tds_dppg_cd
+"Total debt service (% of exports of goods, services and primary income)",DT.TDS.DECT.EX.ZS,dt_tds_dect_ex_zs
+"Net ODA received (% of imports of goods, services and primary income)",DT.ODA.ODAT.MP.ZS,dt_oda_odat_mp_zs
+Net official development assistance received (current US$),DT.ODA.ODAT.CD,dt_oda_odat_cd
+Net official development assistance and official aid received (current US$),DT.ODA.ALLD.CD,dt_oda_alld_cd
+"Net official flows from UN agencies, UNTA (current US$)",DT.NFL.UNTA.CD,dt_nfl_unta_cd
+General government final consumption expenditure (constant 2015 US$),NE.CON.GOVT.KD,ne_con_govt_kd
+Military expenditure (% of general government expenditure),MS.MIL.XPND.ZS,ms_mil_xpnd_zs
+Armed forces personnel (% of total labor force),MS.MIL.TOTL.TF.ZS,ms_mil_totl_tf_zs
+Logistics performance index: Frequency with which shipments reach consignee within scheduled or expected time (1=low to 5=high),LP.LPI.TIME.XQ,lp_lpi_time_xq
+Logistics performance index: Quality of trade and transport-related infrastructure (1=low to 5=high),LP.LPI.INFR.XQ,lp_lpi_infr_xq
+Individuals using the Internet (% of population),IT.NET.USER.ZS,it_net_user_zs
+Fixed broadband subscriptions,IT.NET.BBND,it_net_bbnd
+Mobile cellular subscriptions,IT.CEL.SETS,it_cel_sets
+"Railways, passengers carried (million passenger-km)",IS.RRS.PASG.KM,is_rrs_pasg_km
+"Air transport, registered carrier departures worldwide",IS.AIR.DPRT,is_air_dprt
+Statistical performance indicators (SPI): Pillar 2 data services score (scale 0-100),IQ.SPI.PIL2,iq_spi_pil2
+Periodicity and timeliness assessment of statistical capacity (scale 0 - 100),IQ.SCI.PRDC,iq_sci_prdc
+CPIA trade rating (1=low to 6=high),IQ.CPA.TRAD.XQ,iq_cpa_trad_xq
+CPIA public sector management and institutions cluster average (1=low to 6=high),IQ.CPA.PUBS.XQ,iq_cpa_pubs_xq
+CPIA quality of public administration rating (1=low to 6=high),IQ.CPA.PADM.XQ,iq_cpa_padm_xq
+CPIA gender equality rating (1=low to 6=high),IQ.CPA.GNDR.XQ,iq_cpa_gndr_xq
+CPIA policy and institutions for environmental sustainability rating (1=low to 6=high),IQ.CPA.ENVR.XQ,iq_cpa_envr_xq
+"Trademark applications, resident, by count",IP.TMK.RSCT,ip_tmk_rsct
+Scientific and technical journal articles,IP.JRN.ARTC.SC,ip_jrn_artc_sc
+Public private partnerships investment in transport (current US$),IE.PPN.TRAN.CD,ie_ppn_tran_cd
+Investment in transport with private participation (current US$),IE.PPI.TRAN.CD,ie_ppi_tran_cd
+Time required to build a warehouse (days),IC.WRH.DURS,ic_wrh_durs
+Other taxes payable by businesses (% of commercial profits),IC.TAX.OTHR.CP.ZS,ic_tax_othr_cp_zs
+Time to prepare and pay taxes (hours),IC.TAX.DURS,ic_tax_durs
+"Time required to start a business, male (days)",IC.REG.DURS.MA,ic_reg_durs_ma
+"Cost of business start-up procedures, male (% of GNI per capita)",IC.REG.COST.PC.MA.ZS,ic_reg_cost_pc_ma_zs
+Time required to enforce a contract (days),IC.LGL.DURS,ic_lgl_durs
+"Time to import, border compliance (hours)",IC.IMP.TMBC,ic_imp_tmbc
+Firms offering formal training (% of firms),IC.FRM.TRNG.ZS,ic_frm_trng_zs
+Firms visited or required meetings with tax officials (% of firms),IC.FRM.METG.ZS,ic_frm_metg_zs
+Firms with female top manager (% of firms),IC.FRM.FEMM.ZS,ic_frm_femm_zs
+Firms competing against unregistered firms (% of firms),IC.FRM.CMPU.ZS,ic_frm_cmpu_zs
+"Time to export, documentary compliance (hours)",IC.EXP.TMDC,ic_exp_tmdc
+Time required to get electricity (days),IC.ELC.TIME,ic_elc_time
+Average time to clear exports through customs (days),IC.CUS.DURS.EX,ic_cus_durs_ex
+New businesses registered (number),IC.BUS.NREG,ic_bus_nreg
+Ease of doing business score (0 = lowest performance to 100 = best performance),IC.BUS.DFRN.XQ,ic_bus_dfrn_xq
+"Human capital index (HCI), male (scale 0-1)",HD.HCI.OVRL.MA,hd_hci_ovrl_ma
+"Human capital index (HCI), female (scale 0-1)",HD.HCI.OVRL.FE,hd_hci_ovrl_fe
+Subsidies and other transfers (current LCU),GC.XPN.TRFT.CN,gc_xpn_trft_cn
+Other expense (current LCU),GC.XPN.OTHR.CN,gc_xpn_othr_cn
+Goods and services expense (% of expense),GC.XPN.GSRV.ZS,gc_xpn_gsrv_zs
+"Taxes on income, profits and capital gains (% of total taxes)",GC.TAX.YPKG.ZS,gc_tax_ypkg_zs
+Tax revenue (current LCU),GC.TAX.TOTL.CN,gc_tax_totl_cn
+Taxes on international trade (current LCU),GC.TAX.INTT.CN,gc_tax_intt_cn
+Taxes on goods and services (% of revenue),GC.TAX.GSRV.RV.ZS,gc_tax_gsrv_rv_zs
+"Revenue, excluding grants (% of GDP)",GC.REV.XGRT.GD.ZS,gc_rev_xgrt_gd_zs
+Grants and other revenue (% of revenue),GC.REV.GOTR.ZS,gc_rev_gotr_zs
+Net investment in nonfinancial assets (% of GDP),GC.NFN.TOTL.GD.ZS,gc_nfn_totl_gd_zs
+"Central government debt, total (% of GDP)",GC.DOD.TOTL.GD.ZS,gc_dod_totl_gd_zs
+"Net official flows from UN agencies, UNIDIR (current US$)",DT.NFL.UNID.CD,dt_nfl_unid_cd
+"Net official flows from UN agencies, UNDP (current US$)",DT.NFL.UNDP.CD,dt_nfl_undp_cd
+"Net financial flows, RDB nonconcessional (NFL, current US$)",DT.NFL.RDBN.CD,dt_nfl_rdbn_cd
+"PNG, commercial banks and other creditors (NFL, current US$)",DT.NFL.PNGC.CD,dt_nfl_pngc_cd
+"PPG, bonds (NFL, current US$)",DT.NFL.PBND.CD,dt_nfl_pbnd_cd
+"Net financial flows, multilateral (NFL, current US$)",DT.NFL.MLAT.CD,dt_nfl_mlat_cd
+"Net financial flows, IMF concessional (NFL, current US$)",DT.NFL.IMFC.CD,dt_nfl_imfc_cd
+"Net official flows from UN agencies, FAO (current US$)",DT.NFL.FAOG.CD,dt_nfl_faog_cd
+Present value of external debt (% of GNI),DT.DOD.PVLX.GN.ZS,dt_dod_pvlx_gn_zs
+"PPG, IDA (DOD, current US$)",DT.DOD.MIDA.CD,dt_dod_mida_cd
+Short-term debt (% of total reserves),DT.DOD.DSTC.IR.ZS,dt_dod_dstc_ir_zs
+"External debt stocks, long-term (DOD, current US$)",DT.DOD.DLXF.CD,dt_dod_dlxf_cd
+"Net ODA provided, total (constant 2020 US$)",DC.ODA.TOTL.KD,dc_oda_totl_kd
+"Net ODA provided, to the least developed countries (current US$)",DC.ODA.TLDC.CD,dc_oda_tldc_cd
+"Net bilateral aid flows from DAC donors, Slovenia (current US$)",DC.DAC.SVNL.CD,dc_dac_svnl_cd
+"Net bilateral aid flows from DAC donors, New Zealand (current US$)",DC.DAC.NZLL.CD,dc_dac_nzll_cd
+"Net bilateral aid flows from DAC donors, Korea, Rep. (current US$)",DC.DAC.KORL.CD,dc_dac_korl_cd
+"Net bilateral aid flows from DAC donors, Ireland (current US$)",DC.DAC.IRLL.CD,dc_dac_irll_cd
+"Net bilateral aid flows from DAC donors, France (current US$)",DC.DAC.FRAL.CD,dc_dac_fral_cd
+"Net bilateral aid flows from DAC donors, Germany (current US$)",DC.DAC.DEUL.CD,dc_dac_deul_cd
+"Intentional homicides (per 100,000 people)",VC.IHR.PSRC.P5,vc_ihr_psrc_p5
+"Internally displaced persons, new displacement associated with disasters (number of cases)",VC.IDP.NWDS,vc_idp_nwds
+Transport services (% of commercial service exports),TX.VAL.TRAN.ZS.WT,tx_val_tran_zs_wt
+"Computer, communications and other services (% of commercial service exports)",TX.VAL.OTHR.ZS.WT,tx_val_othr_zs_wt
+"Merchandise exports by the reporting economy, residual (% of total merchandise exports)",TX.VAL.MRCH.RS.ZS,tx_val_mrch_rs_zs
+Merchandise exports to low- and middle-income economies in Latin America & the Caribbean (% of total merchandise exports),TX.VAL.MRCH.R3.ZS,tx_val_mrch_r3_zs
+Merchandise exports to high-income economies (% of total merchandise exports),TX.VAL.MRCH.HI.ZS,tx_val_mrch_hi_zs
+Manufactures exports (% of merchandise exports),TX.VAL.MANF.ZS.UN,tx_val_manf_zs_un
+Food exports (% of merchandise exports),TX.VAL.FOOD.ZS.UN,tx_val_food_zs_un
+Medium and high-tech exports (% manufactured exports),TX.MNF.TECH.ZS.UN,tx_mnf_tech_zs_un
+Commercial service imports (current US$),TM.VAL.SERV.CD.WT,tm_val_serv_cd_wt
+Merchandise imports by the reporting economy (current US$),TM.VAL.MRCH.WL.CD,tm_val_mrch_wl_cd
+Merchandise imports from low- and middle-income economies in Middle East & North Africa (% of total merchandise imports),TM.VAL.MRCH.R4.ZS,tm_val_mrch_r4_zs
+Merchandise imports from low- and middle-income economies outside region (% of total merchandise imports),TM.VAL.MRCH.OR.ZS,tm_val_mrch_or_zs
+Ores and metals imports (% of merchandise imports),TM.VAL.MMTL.ZS.UN,tm_val_mmtl_zs_un
+Fuel imports (% of merchandise imports),TM.VAL.FUEL.ZS.UN,tm_val_fuel_zs_un
+"Tariff rate, most favored nation, weighted mean, primary products (%)",TM.TAX.TCOM.WM.FN.ZS,tm_tax_tcom_wm_fn_zs
+"Tariff rate, applied, simple mean, primary products (%)",TM.TAX.TCOM.SM.AR.ZS,tm_tax_tcom_sm_ar_zs
+"Tariff rate, most favored nation, weighted mean, all products (%)",TM.TAX.MRCH.WM.FN.ZS,tm_tax_mrch_wm_fn_zs
+"Tariff rate, applied, simple mean, all products (%)",TM.TAX.MRCH.SM.AR.ZS,tm_tax_mrch_sm_ar_zs
+"Tariff rate, most favored nation, weighted mean, manufactured products (%)",TM.TAX.MANF.WM.FN.ZS,tm_tax_manf_wm_fn_zs
+"Tariff rate, applied, simple mean, manufactured products (%)",TM.TAX.MANF.SM.AR.ZS,tm_tax_manf_sm_ar_zs
+Import volume index (2000 = 100),TM.QTY.MRCH.XD.WD,tm_qty_mrch_xd_wd
+"International tourism, expenditures for travel items (current US$)",ST.INT.TVLX.CD,st_int_tvlx_cd
+"International tourism, receipts (% of total exports)",ST.INT.RCPT.XP.ZS,st_int_rcpt_xp_zs
+Unmet need for contraception (% of married women ages 15-49),SP.UWT.TFRT,sp_uwt_tfrt
+Rural population (% of total population),SP.RUR.TOTL.ZS,sp_rur_totl_zs
+Completeness of birth registration (%),SP.REG.BRTH.ZS,sp_reg_brth_zs
+"Completeness of birth registration, female (%)",SP.REG.BRTH.FE.ZS,sp_reg_brth_fe_zs
+"Population, female",SP.POP.TOTL.FE.IN,sp_pop_totl_fe_in
+Population growth (annual %),SP.POP.GROW,sp_pop_grow
+Sex ratio at birth (male births per female births),SP.POP.BRTH.MF,sp_pop_brth_mf
+"Population ages 75-79, female (% of female population)",SP.POP.7579.FE.5Y,sp_pop_7579_fe_5y
+"Population ages 65 and above, total",SP.POP.65UP.TO,sp_pop_65up_to
+"Population ages 65 and above, female",SP.POP.65UP.FE.IN,sp_pop_65up_fe_in
+"Population ages 60-64, female (% of female population)",SP.POP.6064.FE.5Y,sp_pop_6064_fe_5y
+"Population ages 50-54, female (% of female population)",SP.POP.5054.FE.5Y,sp_pop_5054_fe_5y
+"Population ages 40-44, female (% of female population)",SP.POP.4044.FE.5Y,sp_pop_4044_fe_5y
+"Population ages 30-34, female (% of female population)",SP.POP.3034.FE.5Y,sp_pop_3034_fe_5y
+"Population ages 20-24, female (% of female population)",SP.POP.2024.FE.5Y,sp_pop_2024_fe_5y
+"Population ages 15-64, male",SP.POP.1564.MA.IN,sp_pop_1564_ma_in
+"Population ages 15-19, female (% of female population)",SP.POP.1519.FE.5Y,sp_pop_1519_fe_5y
+"Population ages 05-09, female (% of female population)",SP.POP.0509.FE.5Y,sp_pop_0509_fe_5y
+"Population ages 0-14, male",SP.POP.0014.MA.IN,sp_pop_0014_ma_in
+"Population ages 00-04, female (% of female population)",SP.POP.0004.FE.5Y,sp_pop_0004_fe_5y
+Female headed households (% of households with a female head),SP.HOU.FEMA.ZS,sp_hou_fema_zs
+"Fertility rate, total (births per woman)",SP.DYN.TFRT.IN,sp_dyn_tfrt_in
+"Mortality rate, infant, male (per 1,000 live births)",SP.DYN.IMRT.MA.IN,sp_dyn_imrt_ma_in
+"Contraceptive prevalence, any modern method (% of married women ages 15-49)",SP.DYN.CONM.ZS,sp_dyn_conm_zs
+"Mortality rate, adult, female (per 1,000 female adults)",SP.DYN.AMRT.FE,sp_dyn_amrt_fe
+Consumption of iodized salt (% of households),SN.ITK.SALT.ZS,sn_itk_salt_zs
+Low-birthweight babies (% of births),SH.STA.BRTW.ZS,sh_sta_brtw_zs
+"People using at least basic sanitation services, urban (% of urban population)",SH.STA.BASS.UR.ZS,sh_sta_bass_ur_zs
+"Mortality rate attributed to household and ambient air pollution, age-standardized (per 100,000 population)",SH.STA.AIRP.P5,sh_sta_airp_p5
+Risk of impoverishing expenditure for surgical care (% of people at risk),SH.SGR.IRSK.ZS,sh_sgr_irsk_zs
+Prevalence of current tobacco use (% of adults),SH.PRV.SMOK,sh_prv_smok
+Number of maternal deaths,SH.MMR.DTHS,sh_mmr_dths
+"Specialist surgical workforce (per 100,000 population)",SH.MED.SAOP.P5,sh_med_saop_p5
+"Hospital beds (per 1,000 people)",SH.MED.BEDS.ZS,sh_med_beds_zs
+Antiretroviral therapy coverage for PMTCT (% of pregnant women living with HIV),SH.HIV.PMTC.ZS,sh_hiv_pmtc_zs
+"Incidence of HIV, all (per 1,000 uninfected population)",SH.HIV.INCD.TL.P3,sh_hiv_incd_tl_p3
+Antiretroviral therapy coverage (% of people living with HIV),SH.HIV.ARTC.ZS,sh_hiv_artc_zs
+People using safely managed drinking water services (% of population),SH.H2O.SMDW.ZS,sh_h2o_smdw_zs
+"People using at least basic drinking water services, urban (% of urban population)",SH.H2O.BASW.UR.ZS,sh_h2o_basw_ur_zs
+"Mortality from CVD, cancer, diabetes or CRD between exact ages 30 and 70 (%)",SH.DYN.NCOM.ZS,sh_dyn_ncom_zs
+"Mortality rate, under-5, female (per 1,000 live births)",SH.DYN.MORT.FE,sh_dyn_mort_fe
+"Probability of dying among youth ages 20-24 years (per 1,000)",SH.DYN.2024,sh_dyn_2024
+Number of neonatal deaths,SH.DTH.NMRT,sh_dth_nmrt
+Number of infant deaths,SH.DTH.IMRT,sh_dth_imrt
+Number of deaths ages 10-14 years,SH.DTH.1014,sh_dth_1014
+Prevalence of anemia among non-pregnant women (% of women ages 15-49),SH.ANM.NPRG.ZS,sh_anm_nprg_zs
+"Total alcohol consumption per capita (liters of pure alcohol, projected estimates, 15+ years of age)",SH.ALC.PCAP.LI,sh_alc_pcap_li
+Women who believe a husband is justified in beating his wife when she neglects the children (%),SG.VAW.NEGL.ZS,sg_vaw_negl_zs
+Proportion of women subjected to physical and/or sexual violence in the last 12 months (% of ever-partnered women ages 15-49),SG.VAW.1549.ZS,sg_vaw_1549_zs
+Proportion of seats held by women in national parliaments (%),SG.GEN.PARL.ZS,sg_gen_parl_zs
+"Government expenditure on education, total (% of government expenditure)",SE.XPD.TOTL.GB.ZS,se_xpd_totl_gb_zs
+"Government expenditure per student, secondary (% of GDP per capita)",SE.XPD.SECO.PC.ZS,se_xpd_seco_pc_zs
+"Current education expenditure, tertiary (% of total expenditure in tertiary public institutions)",SE.XPD.CTER.ZS,se_xpd_cter_zs
+"School enrollment, tertiary, male (% gross)",SE.TER.ENRR.MA,se_ter_enrr_ma
+"Educational attainment, at least completed short-cycle tertiary, population 25+, total (%) (cumulative)",SE.TER.CUAT.ST.ZS,se_ter_cuat_st_zs
+"Educational attainment, at least Master's or equivalent, population 25+, male (%) (cumulative)",SE.TER.CUAT.MS.MA.ZS,se_ter_cuat_ms_ma_zs
+"Educational attainment, Doctoral or equivalent, population 25+, female (%) (cumulative)",SE.TER.CUAT.DO.FE.ZS,se_ter_cuat_do_fe_zs
+Adolescents out of school (% of lower secondary school age),SE.SEC.UNER.LO.ZS,se_sec_uner_lo_zs
+"Secondary education, teachers, female",SE.SEC.TCHR.FE,se_sec_tchr_fe
+"Trained teachers in upper secondary education, male (% of male teachers)",SE.SEC.TCAQ.UP.MA.ZS,se_sec_tcaq_up_ma_zs
+"Trained teachers in lower secondary education, male (% of male teachers)",SE.SEC.TCAQ.LO.MA.ZS,se_sec_tcaq_lo_ma_zs
+"Progression to secondary school, male (%)",SE.SEC.PROG.MA.ZS,se_sec_prog_ma_zs
+"School enrollment, secondary, female (% net)",SE.SEC.NENR.FE,se_sec_nenr_fe
+"School enrollment, secondary (% gross)",SE.SEC.ENRR,se_sec_enrr
+"Pupil-teacher ratio, secondary",SE.SEC.ENRL.TC.ZS,se_sec_enrl_tc_zs
+"Secondary education, pupils (% female)",SE.SEC.ENRL.FE.ZS,se_sec_enrl_fe_zs
+"Educational attainment, at least completed upper secondary, population 25+, male (%) (cumulative)",SE.SEC.CUAT.UP.MA.ZS,se_sec_cuat_up_ma_zs
+"Educational attainment, at least completed post-secondary, population 25+, female (%) (cumulative)",SE.SEC.CUAT.PO.FE.ZS,se_sec_cuat_po_fe_zs
+"Lower secondary completion rate, total (% of relevant age group)",SE.SEC.CMPT.LO.ZS,se_sec_cmpt_lo_zs
+Children out of school (% of primary school age),SE.PRM.UNER.ZS,se_prm_uner_zs
+"Children out of school, primary, female",SE.PRM.UNER.FE,se_prm_uner_fe
+"Adjusted net enrollment rate, primary (% of primary school age children)",SE.PRM.TENR,se_prm_tenr
+"Trained teachers in primary education, male (% of male teachers)",SE.PRM.TCAQ.MA.ZS,se_prm_tcaq_ma_zs
+"Repeaters, primary, female (% of female enrollment)",SE.PRM.REPT.FE.ZS,se_prm_rept_fe_zs
+"Persistence to grade 5, total (% of cohort)",SE.PRM.PRS5.ZS,se_prm_prs5_zs
+"Over-age students, primary (% of enrollment)",SE.PRM.OENR.ZS,se_prm_oenr_zs
+"Net intake rate in grade 1, male (% of official school-age population)",SE.PRM.NINT.MA.ZS,se_prm_nint_ma_zs
+"School enrollment, primary (% net)",SE.PRM.NENR,se_prm_nenr
+"School enrollment, primary, male (% gross)",SE.PRM.ENRR.MA,se_prm_enrr_ma
+"Primary education, pupils (% female)",SE.PRM.ENRL.FE.ZS,se_prm_enrl_fe_zs
+"Educational attainment, at least completed primary, population 25+ years, male (%) (cumulative)",SE.PRM.CUAT.MA.ZS,se_prm_cuat_ma_zs
+"Primary completion rate, female (% of relevant age group)",SE.PRM.CMPT.FE.ZS,se_prm_cmpt_fe_zs
+"Trained teachers in preprimary education, female (% of female teachers)",SE.PRE.TCAQ.FE.ZS,se_pre_tcaq_fe_zs
+"Pupil-teacher ratio, preprimary",SE.PRE.ENRL.TC.ZS,se_pre_enrl_tc_zs
+"School enrollment, primary and secondary (gross), gender parity index (GPI)",SE.ENR.PRSC.FM.ZS,se_enr_prsc_fm_zs
+"Literacy rate, adult male (% of males ages 15 and above)",SE.ADT.LITR.MA.ZS,se_adt_litr_ma_zs
+"Literacy rate, youth (ages 15-24), gender parity index (GPI)",SE.ADT.1524.LT.FM.ZS,se_adt_1524_lt_fm_zs
+Coverage of social insurance programs in 4th quintile (% of population),per_si_allsi.cov_q4_tot,per_si_allsi_cov_q4_tot
+Coverage of social insurance programs (% of population),per_si_allsi.cov_pop_tot,per_si_allsi_cov_pop_tot
+Coverage of social safety net programs in 4th quintile (% of population),per_sa_allsa.cov_q4_tot,per_sa_allsa_cov_q4_tot
+Coverage of social safety net programs (% of population),per_sa_allsa.cov_pop_tot,per_sa_allsa_cov_pop_tot
+Coverage of unemployment benefits and ALMP in 4th quintile (% of population),per_lm_alllm.cov_q4_tot,per_lm_alllm_cov_q4_tot
+"Net official flows from UN agencies, UNFPA (current US$)",DT.NFL.UNFP.CD,dt_nfl_unfp_cd
+"Net official flows from UN agencies, UNHCR (current US$)",DT.NFL.UNCR.CD,dt_nfl_uncr_cd
+"Net financial flows, RDB concessional (NFL, current US$)",DT.NFL.RDBC.CD,dt_nfl_rdbc_cd
+"PNG, bonds (NFL, current US$)",DT.NFL.PNGB.CD,dt_nfl_pngb_cd
+"PPG, official creditors (NFL, current US$)",DT.NFL.OFFT.CD,dt_nfl_offt_cd
+"Net financial flows, IDA (NFL, current US$)",DT.NFL.MIDA.CD,dt_nfl_mida_cd
+"Net official flows from UN agencies, ILO (current US$)",DT.NFL.ILOG.CD,dt_nfl_ilog_cd
+"Net flows on external debt, private nonguaranteed (PNG) (NFL, current US$)",DT.NFL.DPNG.CD,dt_nfl_dpng_cd
+"Present value of external debt (% of exports of goods, services and primary income)",DT.DOD.PVLX.EX.ZS,dt_dod_pvlx_ex_zs
+"PPG, IBRD (DOD, current US$)",DT.DOD.MIBR.CD,dt_dod_mibr_cd
+"External debt stocks, short-term (DOD, current US$)",DT.DOD.DSTC.CD,dt_dod_dstc_cd
+"Use of IMF credit (DOD, current US$)",DT.DOD.DIMF.CD,dt_dod_dimf_cd
+"Net ODA provided, total (% of GNI)",DC.ODA.TOTL.GN.ZS,dc_oda_totl_gn_zs
+"Net bilateral aid flows from DAC donors, United States (current US$)",DC.DAC.USAL.CD,dc_dac_usal_cd
+"Net bilateral aid flows from DAC donors, Slovak Republic (current US$)",DC.DAC.SVKL.CD,dc_dac_svkl_cd
+"Net bilateral aid flows from DAC donors, Norway (current US$)",DC.DAC.NORL.CD,dc_dac_norl_cd
+"Net bilateral aid flows from DAC donors, Japan (current US$)",DC.DAC.JPNL.CD,dc_dac_jpnl_cd
+"Net bilateral aid flows from DAC donors, Hungary (current US$)",DC.DAC.HUNL.CD,dc_dac_hunl_cd
+"Net bilateral aid flows from DAC donors, Finland (current US$)",DC.DAC.FINL.CD,dc_dac_finl_cd
+Households and NPISHs final consumption expenditure (% of GDP),NE.CON.PRVT.ZS,ne_con_prvt_zs
+Households and NPISHs Final consumption expenditure per capita (constant 2015 US$),NE.CON.PRVT.PC.KD,ne_con_prvt_pc_kd
+Households and NPISHs final consumption expenditure: linked series (current LCU),NE.CON.PRVT.CN.AD,ne_con_prvt_cn_ad
+General government final consumption expenditure (constant LCU),NE.CON.GOVT.KN,ne_con_govt_kn
+General government final consumption expenditure (current US$),NE.CON.GOVT.CD,ne_con_govt_cd
+Military expenditure (current LCU),MS.MIL.XPND.CN,ms_mil_xpnd_cn
+Arms imports (SIPRI trend indicator values),MS.MIL.MPRT.KD,ms_mil_mprt_kd
+Logistics performance index: Competence and quality of logistics services (1=low to 5=high),LP.LPI.LOGS.XQ,lp_lpi_logs_xq
+"Lead time to import, median case (days)",LP.IMP.DURS.MD,lp_imp_durs_md
+Secure Internet servers,IT.NET.SECR,it_net_secr
+Fixed telephone subscriptions,IT.MLT.MAIN,it_mlt_main
+Liner shipping connectivity index (maximum value in 2004 = 100),IS.SHP.GCNW.XQ,is_shp_gcnw_xq
+"Air transport, passengers carried",IS.AIR.PSGR,is_air_psgr
+Statistical performance indicators (SPI): Pillar 4 data sources score (scale 0-100),IQ.SPI.PIL4,iq_spi_pil4
+Statistical performance indicators (SPI): Overall score (scale 0-100),IQ.SPI.OVRL,iq_spi_ovrl
+Methodology assessment of statistical capacity (scale 0 - 100),IQ.SCI.MTHD,iq_sci_mthd
+CPIA policies for social inclusion/equity cluster average (1=low to 6=high),IQ.CPA.SOCI.XQ,iq_cpa_soci_xq
+CPIA property rights and rule-based governance rating (1=low to 6=high),IQ.CPA.PROP.XQ,iq_cpa_prop_xq
+IDA resource allocation index (1=low to 6=high),IQ.CPA.IRAI.XQ,iq_cpa_irai_xq
+CPIA financial sector rating (1=low to 6=high),IQ.CPA.FINS.XQ,iq_cpa_fins_xq
+CPIA debt policy rating (1=low to 6=high),IQ.CPA.DEBT.XQ,iq_cpa_debt_xq
+"Patent applications, residents",IP.PAT.RESD,ip_pat_resd
+"Industrial design applications, nonresident, by count",IP.IDS.NRCT,ip_ids_nrct
+Public private partnerships investment in energy (current US$),IE.PPN.ENGY.CD,ie_ppn_engy_cd
+Investment in energy with private participation (current US$),IE.PPI.ENGY.CD,ie_ppi_engy_cd
+Profit tax (% of commercial profits),IC.TAX.PRFT.CP.ZS,ic_tax_prft_cp_zs
+Labor tax and contributions (% of commercial profits),IC.TAX.LABR.CP.ZS,ic_tax_labr_cp_zs
+"Start-up procedures to register a business, female (number)",IC.REG.PROC.FE,ic_reg_proc_fe
+Time required to start a business (days),IC.REG.DURS,ic_reg_durs
+Procedures to register property (number),IC.PRP.PROC,ic_prp_proc
+Time to resolve insolvency (years),IC.ISV.DURS,ic_isv_durs
+"Cost to import, border compliance (US$)",IC.IMP.CSBC.CD,ic_imp_csbc_cd
+Firms that spend on R&D (% of firms),IC.FRM.RSDV.ZS,ic_frm_rsdv_zs
+Firms formally registered when operations started (% of firms),IC.FRM.FREG.ZS,ic_frm_freg_zs
+Losses due to theft and vandalism (% of annual sales of affected firms),IC.FRM.CRIM.ZS,ic_frm_crim_zs
+Firms using banks to finance investment (% of firms),IC.FRM.BNKS.ZS,ic_frm_bnks_zs
+"Cost to export, documentary compliance (US$)",IC.EXP.CSDC.CD,ic_exp_csdc_cd
+Power outages in firms in a typical month (number),IC.ELC.OUTG,ic_elc_outg
+Private credit bureau coverage (% of adults),IC.CRD.PRVT.ZS,ic_crd_prvt_zs
+Ease of doing business rank (1=most business-friendly regulations),IC.BUS.EASE.XQ,ic_bus_ease_xq
+"Human capital index (HCI), female, upper bound (scale 0-1)",HD.HCI.OVRL.UB.FE,hd_hci_ovrl_ub_fe
+"Human capital index (HCI), female, lower bound (scale 0-1)",HD.HCI.OVRL.LB.FE,hd_hci_ovrl_lb_fe
+Primary government expenditures as a proportion of original approved budget (%),GF.XPD.BUDG.ZS,gf_xpd_budg_zs
+Expense (current LCU),GC.XPN.TOTL.CN,gc_xpn_totl_cn
+Interest payments (% of revenue),GC.XPN.INTP.RV.ZS,gc_xpn_intp_rv_zs
+Compensation of employees (% of expense),GC.XPN.COMP.ZS,gc_xpn_comp_zs
+"Taxes on income, profits and capital gains (current LCU)",GC.TAX.YPKG.CN,gc_tax_ypkg_cn
+Other taxes (current LCU),GC.TAX.OTHR.CN,gc_tax_othr_cn
+Wholesale price index (2010 = 100),FP.WPI.TOTL,fp_wpi_totl
+Broad money to total reserves ratio,FM.LBL.BMNY.IR.ZS,fm_lbl_bmny_ir_zs
+Monetary Sector credit to private sector (% GDP),FM.AST.PRVT.GD.ZS,fm_ast_prvt_gd_zs
+Claims on central government (annual growth as % of broad money),FM.AST.CGOV.ZG.M3,fm_ast_cgov_zg_m3
+"Total reserves (includes gold, current US$)",FI.RES.TOTL.CD,fi_res_totl_cd
+"Borrowers from commercial banks (per 1,000 adults)",FB.CBK.BRWR.P3,fb_cbk_brwr_p3
+Bank nonperforming loans to total gross loans (%),FB.AST.NPER.ZS,fb_ast_nper_zs
+Renewable internal freshwater resources per capita (cubic meters),ER.H2O.INTR.PC,er_h2o_intr_pc
+Level of water stress: freshwater withdrawal as a proportion of available freshwater resources,ER.H2O.FWST.ZS,er_h2o_fwst_zs
+"Water productivity, total (constant 2015 US$ GDP per cubic meter of total freshwater withdrawal)",ER.GDP.FWTL.M3.KD,er_gdp_fwtl_m3_kd
+Pump price for gasoline (US$ per liter),EP.PMP.SGAS.CD,ep_pmp_sgas_cd
+Population in the largest city (% of urban population),EN.URB.LCTY.UR.ZS,en_urb_lcty_ur_zs
+Urban population living in areas where elevation is below 5 meters (% of total population),EN.POP.EL5M.UR.ZS,en_pop_el5m_ur_zs
+"Plant species (higher), threatened",EN.HPT.THRD.NO,en_hpt_thrd_no
+CO2 emissions from manufacturing industries and construction (% of total fuel combustion),EN.CO2.MANF.ZS,en_co2_manf_zs
+GHG net emissions/removals by LUCF (Mt of CO2 equivalent),EN.CLC.GHGR.MT.CE,en_clc_ghgr_mt_ce
+"PM2.5 air pollution, population exposed to levels exceeding WHO guideline value (% of total)",EN.ATM.PM25.MC.ZS,en_atm_pm25_mc_zs
+"PM2.5 air pollution, mean annual exposure (micrograms per cubic meter)",EN.ATM.PM25.MC.M3,en_atm_pm25_mc_m3
+Nitrous oxide emissions in energy sector (% of total),EN.ATM.NOXE.EG.ZS,en_atm_noxe_eg_zs
+Methane emissions (% change from 1990),EN.ATM.METH.ZG,en_atm_meth_zg
+Agricultural methane emissions (% of total),EN.ATM.METH.AG.ZS,en_atm_meth_ag_zs
+Total greenhouse gas emissions (kt of CO2 equivalent),EN.ATM.GHGT.KT.CE,en_atm_ghgt_kt_ce
+CO2 emissions from solid fuel consumption (kt),EN.ATM.CO2E.SF.KT,en_atm_co2e_sf_kt
+CO2 emissions from liquid fuel consumption (% of total),EN.ATM.CO2E.LF.ZS,en_atm_co2e_lf_zs
+CO2 emissions from gaseous fuel consumption (% of total),EN.ATM.CO2E.GF.ZS,en_atm_co2e_gf_zs
+Electric power consumption (kWh per capita),EG.USE.ELEC.KH.PC,eg_use_elec_kh_pc
+Alternative and nuclear energy (% of total energy use),EG.USE.COMM.CL.ZS,eg_use_comm_cl_zs
+Renewable energy consumption (% of total final energy consumption),EG.FEC.RNEW.ZS,eg_fec_rnew_zs
+Electricity production from oil sources (% of total),EG.ELC.PETR.ZS,eg_elc_petr_zs
+Electricity production from hydroelectric sources (% of total),EG.ELC.HYRO.ZS,eg_elc_hyro_zs
+"Access to electricity, urban (% of urban population)",EG.ELC.ACCS.UR.ZS,eg_elc_accs_ur_zs
+"Access to clean fuels and technologies for cooking, urban (% of urban population)",EG.CFT.ACCS.UR.ZS,eg_cft_accs_ur_zs
+"Public and publicly guaranteed debt service (% of exports of goods, services and primary income)",DT.TDS.DPPG.XP.ZS,dt_tds_dppg_xp_zs
+"IMF repurchases and charges (TDS, current US$)",DT.TDS.DIMF.CD,dt_tds_dimf_cd
+Net ODA received (% of central government expense),DT.ODA.ODAT.XP.ZS,dt_oda_odat_xp_zs
+Net ODA received (% of GNI),DT.ODA.ODAT.GN.ZS,dt_oda_odat_gn_zs
+Net official aid received (current US$),DT.ODA.OATL.CD,dt_oda_oatl_cd
+"Net official flows from UN agencies, WFP (current US$)",DT.NFL.WFPG.CD,dt_nfl_wfpg_cd
+"Net official flows from UN agencies, UNPBF (current US$)",DT.NFL.UNPB.CD,dt_nfl_unpb_cd
+"Net official flows from UN agencies, UNECE (current US$)",DT.NFL.UNEC.CD,dt_nfl_unec_cd
+"Transport services (% of service exports, BoP)",BX.GSR.TRAN.ZS,bx_gsr_tran_zs
+"Goods exports (BoP, current US$)",BX.GSR.MRCH.CD,bx_gsr_mrch_cd
+"Communications, computer, etc. (% of service exports, BoP)",BX.GSR.CMCP.ZS,bx_gsr_cmcp_zs
+"Grants, excluding technical cooperation (BoP, current US$)",BX.GRT.EXTA.CD.WD,bx_grt_exta_cd_wd
+"Portfolio investment, net (BoP, current US$)",BN.KLT.PTXL.CD,bn_klt_ptxl_cd
+"Net trade in goods and services (BoP, current US$)",BN.GSR.GNFS.CD,bn_gsr_gnfs_cd
+"Current account balance (BoP, current US$)",BN.CAB.XOKA.CD,bn_cab_xoka_cd
+"Foreign direct investment, net outflows (BoP, current US$)",BM.KLT.DINV.CD.WD,bm_klt_dinv_cd_wd
+"Charges for the use of intellectual property, payments (BoP, current US$)",BM.GSR.ROYL.CD,bm_gsr_royl_cd
+"Imports of goods and services (BoP, current US$)",BM.GSR.GNFS.CD,bm_gsr_gnfs_cd
+Cereal yield (kg per hectare),AG.YLD.CREL.KG,ag_yld_crel_kg
+Crop production index (2014-2016 = 100),AG.PRD.CROP.XD,ag_prd_crop_xd
+Rural land area (sq. km),AG.LND.TOTL.RU.K2,ag_lnd_totl_ru_k2
+Forest area (% of land area),AG.LND.FRST.ZS,ag_lnd_frst_zs
+Urban land area where elevation is below 5 meters (sq. km),AG.LND.EL5M.UR.K2,ag_lnd_el5m_ur_k2
+Land under cereal production (hectares),AG.LND.CREL.HA,ag_lnd_crel_ha
+Agricultural land (% of land area),AG.LND.AGRI.ZS,ag_lnd_agri_zs
+"Agricultural machinery, tractors",AG.AGR.TRAC.NO,ag_agr_trac_no
+"International migrant stock, total",SM.POP.TOTL,sm_pop_totl
+"Children in employment, wage workers (% of children in employment, ages 7-14)",SL.WAG.0714.ZS,sl_wag_0714_zs
+"Unemployment, total (% of total labor force) (national estimate)",SL.UEM.TOTL.NE.ZS,sl_uem_totl_ne_zs
+"Unemployment, female (% of female labor force) (national estimate)",SL.UEM.TOTL.FE.NE.ZS,sl_uem_totl_fe_ne_zs
+Unemployment with intermediate education (% of total labor force with intermediate education),SL.UEM.INTM.ZS,sl_uem_intm_zs
+"Unemployment with basic education, male (% of male labor force with basic education)",SL.UEM.BASC.MA.ZS,sl_uem_basc_ma_zs
+"Unemployment with advanced education, female (% of female labor force with advanced education)",SL.UEM.ADVN.FE.ZS,sl_uem_advn_fe_zs
+"Unemployment, youth male (% of male labor force ages 15-24) (national estimate)",SL.UEM.1524.MA.NE.ZS,sl_uem_1524_ma_ne_zs
+"Labor force, female (% of total labor force)",SL.TLF.TOTL.FE.ZS,sl_tlf_totl_fe_zs
+Labor force with intermediate education (% of total working-age population with intermediate education),SL.TLF.INTM.ZS,sl_tlf_intm_zs
+"Labor force participation rate, total (% of total population ages 15+) (national estimate)",SL.TLF.CACT.NE.ZS,sl_tlf_cact_ne_zs
+Ratio of female to male labor force participation rate (%) (national estimate),SL.TLF.CACT.FM.NE.ZS,sl_tlf_cact_fm_ne_zs
+"Labor force with basic education, male (% of male working-age population with basic education)",SL.TLF.BASC.MA.ZS,sl_tlf_basc_ma_zs
+"Labor force with advanced education, female (% of female working-age population with advanced education)",SL.TLF.ADVN.FE.ZS,sl_tlf_advn_fe_zs
+"Labor force participation rate for ages 15-24, total (%) (modeled ILO estimate)",SL.TLF.ACTI.1524.ZS,sl_tlf_acti_1524_zs
+"Labor force participation rate for ages 15-24, female (%) (modeled ILO estimate)",SL.TLF.ACTI.1524.FE.ZS,sl_tlf_acti_1524_fe_zs
+"Average working hours of children, working only, ages 7-14 (hours per week)",SL.TLF.0714.WK.TM,sl_tlf_0714_wk_tm
+"Average working hours of children, working only, female, ages 7-14 (hours per week)",SL.TLF.0714.WK.FE.TM,sl_tlf_0714_wk_fe_tm
+"Average working hours of children, study and work, male, ages 7-14 (hours per week)",SL.TLF.0714.SW.MA.TM,sl_tlf_0714_sw_ma_tm
+"Children in employment, female (% of female children ages 7-14)",SL.TLF.0714.FE.ZS,sl_tlf_0714_fe_zs
+Child employment in services (% of economically active children ages 7-14),SL.SRV.0714.ZS,sl_srv_0714_zs
+"Children in employment, self-employed, male (% of male children in employment, ages 7-14)",SL.SLF.0714.MA.ZS,sl_slf_0714_ma_zs
+"Child employment in manufacturing, female (% of female economically active children ages 7-14)",SL.MNF.0714.FE.ZS,sl_mnf_0714_fe_zs
+GDP per person employed (constant 2017 PPP $),SL.GDP.PCAP.EM.KD,sl_gdp_pcap_em_kd
+"Children in employment, unpaid family workers (% of children in employment, ages 7-14)",SL.FAM.0714.ZS,sl_fam_0714_zs
+"Wage and salaried workers, male (% of male employment) (modeled ILO estimate)",SL.EMP.WORK.MA.ZS,sl_emp_work_ma_zs
+"Vulnerable employment, female (% of female employment) (modeled ILO estimate)",SL.EMP.VULN.FE.ZS,sl_emp_vuln_fe_zs
+"Employment to population ratio, 15+, male (%) (national estimate)",SL.EMP.TOTL.SP.MA.NE.ZS,sl_emp_totl_sp_ma_ne_zs
+"Self-employed, total (% of total employment) (modeled ILO estimate)",SL.EMP.SELF.ZS,sl_emp_self_zs
+"Employers, male (% of male employment) (modeled ILO estimate)",SL.EMP.MPYR.MA.ZS,sl_emp_mpyr_ma_zs
+"Employment to population ratio, ages 15-24, male (%) (modeled ILO estimate)",SL.EMP.1524.SP.MA.ZS,sl_emp_1524_sp_ma_zs
+Employment in agriculture (% of total employment) (modeled ILO estimate),SL.AGR.EMPL.ZS,sl_agr_empl_zs
+"Child employment in agriculture, male (% of male economically active children ages 7-14)",SL.AGR.0714.MA.ZS,sl_agr_0714_ma_zs
+"Annualized average growth rate in per capita real survey mean consumption or income, bottom 40% of population (%)",SI.SPR.PC40.ZG,si_spr_pc40_zg
+Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,si_pov_umic_gp
+"Multidimensional poverty headcount ratio, male (% of male population)",SI.POV.MDIM.MA,si_pov_mdim_ma
+"Multidimensional poverty index, children (population ages 0-17) (scale 0-1)",SI.POV.MDIM.17.XQ,si_pov_mdim_17_xq
+Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,si_pov_lmic
+Income share held by lowest 20%,SI.DST.FRST.20,si_dst_frst_20
+Income share held by highest 20%,SI.DST.05TH.20,si_dst_05th_20
+"Domestic private health expenditure per capita, PPP (current international $)",SH.XPD.PVTD.PP.CD,sh_xpd_pvtd_pp_cd
+Out-of-pocket expenditure per capita (current US$),SH.XPD.OOPC.PC.CD,sh_xpd_oopc_pc_cd
+Domestic general government health expenditure (% of general government expenditure),SH.XPD.GHED.GE.ZS,sh_xpd_ghed_ge_zs
+External health expenditure per capita (current US$),SH.XPD.EHEX.PC.CD,sh_xpd_ehex_pc_cd
+Current health expenditure (% of GDP),SH.XPD.CHEX.GD.ZS,sh_xpd_chex_gd_zs
+Number of people spending more than 25% of household consumption or income on out-of-pocket health care expenditure,SH.UHC.OOPC.25.TO,sh_uhc_oopc_25_to
+Increase in poverty gap at $3.20 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (% of poverty line),SH.UHC.NOP2.ZG,sh_uhc_nop2_zg
+Increase in poverty gap at $1.90 ($ 2011 PPP) poverty line due to out-of-pocket health care expenditure (% of poverty line),SH.UHC.NOP1.ZG,sh_uhc_nop1_zg
+"Tuberculosis case detection rate (%, all forms)",SH.TBS.DTEC.ZS,sh_tbs_dtec_zs
+"Prevalence of severe wasting, weight for height, female (% of children under 5)",SH.SVR.WAST.FE.ZS,sh_svr_wast_fe_zs
+Coverage of unemployment benefits and ALMP (% of population),per_lm_alllm.cov_pop_tot,per_lm_alllm_cov_pop_tot
+Benefit incidence of social protection and labor programs to poorest quintile (% of total SPL benefits),per_allsp.ben_q1_tot,per_allsp_ben_q1_tot
+"PPP conversion factor, GDP (LCU per international $)",PA.NUS.PPP,pa_nus_ppp
+Net secondary income (Net current transfers from abroad) (constant LCU),NY.TRF.NCTR.KN,ny_trf_nctr_kn
+Taxes less subsidies on products (current LCU),NY.TAX.NIND.CN,ny_tax_nind_cn
+Net primary income (Net income from abroad) (current US$),NY.GSR.NFCY.CD,ny_gsr_nfcy_cd
+Gross savings (current US$),NY.GNS.ICTR.CD,ny_gns_ictr_cd
+GNI per capita growth (annual %),NY.GNP.PCAP.KD.ZG,ny_gnp_pcap_kd_zg
+"GNI, PPP (constant 2017 international $)",NY.GNP.MKTP.PP.KD,ny_gnp_mktp_pp_kd
+GNI (constant 2015 US$),NY.GNP.MKTP.KD,ny_gnp_mktp_kd
+"GNI, Atlas method (current US$)",NY.GNP.ATLS.CD,ny_gnp_atls_cd
+Gross domestic savings (current US$),NY.GDS.TOTL.CD,ny_gds_totl_cd
+"GDP per capita, PPP (current international $)",NY.GDP.PCAP.PP.CD,ny_gdp_pcap_pp_cd
+GDP per capita (current LCU),NY.GDP.PCAP.CN,ny_gdp_pcap_cn
+"GDP, PPP (current international $)",NY.GDP.MKTP.PP.CD,ny_gdp_mktp_pp_cd
+GDP: linked series (current LCU),NY.GDP.MKTP.CN.AD,ny_gdp_mktp_cn_ad
+Forest rents (% of GDP),NY.GDP.FRST.RT.ZS,ny_gdp_frst_rt_zs
+Gross value added at basic prices (GVA) (current US$),NY.GDP.FCST.CD,ny_gdp_fcst_cd
+GDP deflator (base year varies by country),NY.GDP.DEFL.ZS,ny_gdp_defl_zs
+Exports as a capacity to import (constant LCU),NY.EXP.CAPM.KN,ny_exp_capm_kn
+"Adjusted net savings, including particulate emission damage (current US$)",NY.ADJ.SVNG.CD,ny_adj_svng_cd
+Adjusted net national income (annual % growth),NY.ADJ.NNTY.KD.ZG,ny_adj_nnty_kd_zg
+Adjusted savings: net national savings (current US$),NY.ADJ.NNAT.CD,ny_adj_nnat_cd
+Adjusted savings: particulate emission damage (current US$),NY.ADJ.DPEM.CD,ny_adj_dpem_cd
+Adjusted savings: mineral depletion (current US$),NY.ADJ.DMIN.CD,ny_adj_dmin_cd
+Adjusted savings: net forest depletion (current US$),NY.ADJ.DFOR.CD,ny_adj_dfor_cd
+Adjusted savings: education expenditure (current US$),NY.ADJ.AEDU.CD,ny_adj_aedu_cd
+"Services, value added (constant 2015 US$)",NV.SRV.TOTL.KD,nv_srv_totl_kd
+Textiles and clothing (% of value added in manufacturing),NV.MNF.TXTL.ZS.UN,nv_mnf_txtl_zs_un
+"Food, beverages and tobacco (% of value added in manufacturing)",NV.MNF.FBTO.ZS.UN,nv_mnf_fbto_zs_un
+"Industry (including construction), value added (annual % growth)",NV.IND.TOTL.KD.ZG,nv_ind_totl_kd_zg
+"Manufacturing, value added (% of GDP)",NV.IND.MANF.ZS,nv_ind_manf_zs
+"Manufacturing, value added (current LCU)",NV.IND.MANF.CN,nv_ind_manf_cn
+Financial intermediary services indirectly Measured (FISIM) (current LCU),NV.FSM.TOTL.CN,nv_fsm_totl_cn
+"Agriculture, forestry, and fishing, value added (constant 2015 US$)",NV.AGR.TOTL.KD,nv_agr_totl_kd
+Trade (% of GDP),NE.TRD.GNFS.ZS,ne_trd_gnfs_zs
+External balance on goods and services (current US$),NE.RSB.GNFS.CD,ne_rsb_gnfs_cd
+Imports of goods and services (constant 2015 US$),NE.IMP.GNFS.KD,ne_imp_gnfs_kd
+Gross capital formation (constant LCU),NE.GDI.TOTL.KN,ne_gdi_totl_kn
+Gross capital formation (current US$),NE.GDI.TOTL.CD,ne_gdi_totl_cd
+Gross fixed capital formation (% of GDP),NE.GDI.FTOT.ZS,ne_gdi_ftot_zs
+Gross fixed capital formation (current LCU),NE.GDI.FTOT.CN,ne_gdi_ftot_cn
+Exports of goods and services (% of GDP),NE.EXP.GNFS.ZS,ne_exp_gnfs_zs
+Exports of goods and services (current LCU),NE.EXP.GNFS.CN,ne_exp_gnfs_cn
+Gross national expenditure (constant 2015 US$),NE.DAB.TOTL.KD,ne_dab_totl_kd
+Final consumption expenditure (% of GDP),NE.CON.TOTL.ZS,ne_con_totl_zs
+Final consumption expenditure (current LCU),NE.CON.TOTL.CN,ne_con_totl_cn
+"Households and NPISHs Final consumption expenditure, PPP (current international $)",NE.CON.PRVT.PP.CD,ne_con_prvt_pp_cd
+Households and NPISHs Final consumption expenditure (annual % growth),NE.CON.PRVT.KD.ZG,ne_con_prvt_kd_zg
+Households and NPISHs Final consumption expenditure (current US$),NE.CON.PRVT.CD,ne_con_prvt_cd
+"Prevalence of current tobacco use, females (% of female adults)",SH.PRV.SMOK.FE,sh_prv_smok_fe
+Lifetime risk of maternal death (1 in: rate varies by country),SH.MMR.RISK,sh_mmr_risk
+"Incidence of malaria (per 1,000 population at risk)",SH.MLR.INCD.P3,sh_mlr_incd_p3
+"Community health workers (per 1,000 people)",SH.MED.CMHW.P3,sh_med_cmhw_p3
+"Immunization, HepB3 (% of one-year-old children)",SH.IMM.HEPB,sh_imm_hepb
+Young people (ages 15-24) newly infected with HIV,SH.HIV.INCD.YG,sh_hiv_incd_yg
+Adults (ages 15-49) newly infected with HIV,SH.HIV.INCD,sh_hiv_incd
+Children (0-14) living with HIV,SH.HIV.0014,sh_hiv_0014
+People using at least basic drinking water services (% of population),SH.H2O.BASW.ZS,sh_h2o_basw_zs
+"Mortality rate, neonatal (per 1,000 live births)",SH.DYN.NMRT,sh_dyn_nmrt
+"Mortality rate, under-5, male (per 1,000 live births)",SH.DYN.MORT.MA,sh_dyn_mort_ma
+Women's share of population ages 15+ living with HIV (%),SH.DYN.AIDS.FE.ZS,sh_dyn_aids_fe_zs
+"Probability of dying among children ages 5-9 years (per 1,000)",SH.DYN.0509,sh_dyn_0509
+"Cause of death, by injury (% of total)",SH.DTH.INJR.ZS,sh_dth_injr_zs
+Number of deaths ages 15-19 years,SH.DTH.1519,sh_dth_1519
+"Condom use, population ages 15-24, female (% of females ages 15-24)",SH.CON.1524.FE.ZS,sh_con_1524_fe_zs
+"Total alcohol consumption per capita, male (liters of pure alcohol, projected estimates, male 15+ years of age)",SH.ALC.PCAP.MA.LI,sh_alc_pcap_ma_li
+Women who believe a husband is justified in beating his wife (any of five reasons) (%),SG.VAW.REAS.ZS,sg_vaw_reas_zs
+Women who believe a husband is justified in beating his wife when she argues with him (%),SG.VAW.ARGU.ZS,sg_vaw_argu_zs
+Women Business and the Law Index Score (scale 1-100),SG.LAW.INDX,sg_law_indx
+"Government expenditure on education, total (% of GDP)",SE.XPD.TOTL.GD.ZS,se_xpd_totl_gd_zs
+Expenditure on secondary education (% of government expenditure on education),SE.XPD.SECO.ZS,se_xpd_seco_zs
+"Current education expenditure, total (% of total expenditure in public institutions)",SE.XPD.CTOT.ZS,se_xpd_ctot_zs
+"Tertiary education, academic staff (% female)",SE.TER.TCHR.FE.ZS,se_ter_tchr_fe_zs
+"Pupil-teacher ratio, tertiary",SE.TER.ENRL.TC.ZS,se_ter_enrl_tc_zs
+"Educational attainment, at least Master's or equivalent, population 25+, total (%) (cumulative)",SE.TER.CUAT.MS.ZS,se_ter_cuat_ms_zs
+"Educational attainment, Doctoral or equivalent, population 25+, male (%) (cumulative)",SE.TER.CUAT.DO.MA.ZS,se_ter_cuat_do_ma_zs
+"Educational attainment, at least Bachelor's or equivalent, population 25+, female (%) (cumulative)",SE.TER.CUAT.BA.FE.ZS,se_ter_cuat_ba_fe_zs
+"Secondary education, teachers (% female)",SE.SEC.TCHR.FE.ZS,se_sec_tchr_fe_zs
+Trained teachers in upper secondary education (% of total teachers),SE.SEC.TCAQ.UP.ZS,se_sec_tcaq_up_zs
+Trained teachers in lower secondary education (% of total teachers),SE.SEC.TCAQ.LO.ZS,se_sec_tcaq_lo_zs
+Progression to secondary school (%),SE.SEC.PROG.ZS,se_sec_prog_zs
+"School enrollment, secondary, male (% net)",SE.SEC.NENR.MA,se_sec_nenr_ma
+"School enrollment, secondary, female (% gross)",SE.SEC.ENRR.FE,se_sec_enrr_fe
+"Pupil-teacher ratio, upper secondary",SE.SEC.ENRL.UP.TC.ZS,se_sec_enrl_up_tc_zs
+"Secondary education, general pupils",SE.SEC.ENRL.GC,se_sec_enrl_gc
+"Educational attainment, at least completed upper secondary, population 25+, total (%) (cumulative)",SE.SEC.CUAT.UP.ZS,se_sec_cuat_up_zs
+"Educational attainment, at least completed post-secondary, population 25+, male (%) (cumulative)",SE.SEC.CUAT.PO.MA.ZS,se_sec_cuat_po_ma_zs
+"Educational attainment, at least completed lower secondary, population 25+, female (%) (cumulative)",SE.SEC.CUAT.LO.FE.ZS,se_sec_cuat_lo_fe_zs
+Lower secondary school starting age (years),SE.SEC.AGES,se_sec_ages
+"Children out of school, female (% of female primary school age)",SE.PRM.UNER.FE.ZS,se_prm_uner_fe_zs
+"Adjusted net enrollment rate, primary, female (% of primary school age children)",SE.PRM.TENR.FE,se_prm_tenr_fe
+Trained teachers in primary education (% of total teachers),SE.PRM.TCAQ.ZS,se_prm_tcaq_zs
+"Repeaters, primary, male (% of male enrollment)",SE.PRM.REPT.MA.ZS,se_prm_rept_ma_zs
+"Persistence to last grade of primary, female (% of cohort)",SE.PRM.PRSL.FE.ZS,se_prm_prsl_fe_zs
+"School enrollment, primary, private (% of total primary)",SE.PRM.PRIV.ZS,se_prm_priv_zs
+Net intake rate in grade 1 (% of official school-age population),SE.PRM.NINT.ZS,se_prm_nint_zs
+"School enrollment, primary, female (% net)",SE.PRM.NENR.FE,se_prm_nenr_fe
+"Gross intake ratio in first grade of primary education, female (% of relevant age group)",SE.PRM.GINT.FE.ZS,se_prm_gint_fe_zs
+"Pupil-teacher ratio, primary",SE.PRM.ENRL.TC.ZS,se_prm_enrl_tc_zs
+"Educational attainment, at least completed primary, population 25+ years, total (%) (cumulative)",SE.PRM.CUAT.ZS,se_prm_cuat_zs
+"Primary completion rate, male (% of relevant age group)",SE.PRM.CMPT.MA.ZS,se_prm_cmpt_ma_zs
+"Trained teachers in preprimary education, male (% of male teachers)",SE.PRE.TCAQ.MA.ZS,se_pre_tcaq_ma_zs
+"School enrollment, preprimary (% gross)",SE.PRE.ENRR,se_pre_enrr
+"School enrollment, secondary (gross), gender parity index (GPI)",SE.ENR.SECO.FM.ZS,se_enr_seco_fm_zs
+"Literacy rate, adult total (% of people ages 15 and above)",SE.ADT.LITR.ZS,se_adt_litr_zs
+"Literacy rate, youth male (% of males ages 15-24)",SE.ADT.1524.LT.MA.ZS,se_adt_1524_lt_ma_zs
+Coverage of social insurance programs in richest quintile (% of population),per_si_allsi.cov_q5_tot,per_si_allsi_cov_q5_tot
+Coverage of social insurance programs in poorest quintile (% of population),per_si_allsi.cov_q1_tot,per_si_allsi_cov_q1_tot
+Coverage of social safety net programs in richest quintile (% of population),per_sa_allsa.cov_q5_tot,per_sa_allsa_cov_q5_tot
+Coverage of social safety net programs in poorest quintile (% of population),per_sa_allsa.cov_q1_tot,per_sa_allsa_cov_q1_tot
+Coverage of unemployment benefits and ALMP in richest quintile (% of population),per_lm_alllm.cov_q5_tot,per_lm_alllm_cov_q5_tot
+Coverage of unemployment benefits and ALMP in poorest quintile (% of population),per_lm_alllm.cov_q1_tot,per_lm_alllm_cov_q1_tot
+Coverage of social protection and labor programs (% of population),per_allsp.cov_pop_tot,per_allsp_cov_pop_tot
+Price level ratio of PPP conversion factor (GDP) to market exchange rate,PA.NUS.PPPC.RF,pa_nus_pppc_rf
+Terms of trade adjustment (constant LCU),NY.TTF.GNFS.KN,ny_ttf_gnfs_kn
+Taxes less subsidies on products (constant LCU),NY.TAX.NIND.KN,ny_tax_nind_kn
+"Net bilateral aid flows from DAC donors, Switzerland (current US$)",DC.DAC.CHEL.CD,dc_dac_chel_cd
+"Net bilateral aid flows from DAC donors, Austria (current US$)",DC.DAC.AUTL.CD,dc_dac_autl_cd
+"Stocks traded, total value (current US$)",CM.MKT.TRAD.CD,cm_mkt_trad_cd
+S&P Global Equity Indices (annual % change),CM.MKT.INDX.ZG,cm_mkt_indx_zg
+"Secondary income receipts (BoP, current US$)",BX.TRF.CURR.CD,bx_trf_curr_cd
+"Travel services (% of service exports, BoP)",BX.GSR.TRVL.ZS,bx_gsr_trvl_zs
+"Service exports (BoP, current US$)",BX.GSR.NFSV.CD,bx_gsr_nfsv_cd
+"Primary income receipts (BoP, current US$)",BX.GSR.FCTY.CD,bx_gsr_fcty_cd
+"Technical cooperation grants (BoP, current US$)",BX.GRT.TECH.CD.WD,bx_grt_tech_cd_wd
+"Reserves and related items (BoP, current US$)",BN.RES.INCL.CD,bn_res_incl_cd
+"Net trade in goods (BoP, current US$)",BN.GSR.MRCH.CD,bn_gsr_mrch_cd
+Current account balance (% of GDP),BN.CAB.XOKA.GD.ZS,bn_cab_xoka_gd_zs
+"Foreign direct investment, net outflows (% of GDP)",BM.KLT.DINV.WD.GD.ZS,bm_klt_dinv_wd_gd_zs
+"Imports of goods, services and primary income (BoP, current US$)",BM.GSR.TOTL.CD,bm_gsr_totl_cd
+"Insurance and financial services (% of service imports, BoP)",BM.GSR.INSF.ZS,bm_gsr_insf_zs
+Trade in services (% of GDP),BG.GSR.NFSV.GD.ZS,bg_gsr_nfsv_gd_zs
+Food production index (2014-2016 = 100),AG.PRD.FOOD.XD,ag_prd_food_xd
+Urban land area (sq. km),AG.LND.TOTL.UR.K2,ag_lnd_totl_ur_k2
+Agricultural irrigated land (% of total agricultural land),AG.LND.IRIG.AG.ZS,ag_lnd_irig_ag_zs
+Urban land area where elevation is below 5 meters (% of total land area),AG.LND.EL5M.UR.ZS,ag_lnd_el5m_ur_zs
+Permanent cropland (% of land area),AG.LND.CROP.ZS,ag_lnd_crop_zs
+Arable land (hectares),AG.LND.ARBL.HA,ag_lnd_arbl_ha
+Fertilizer consumption (% of fertilizer production),AG.CON.FERT.PT.ZS,ag_con_fert_pt_zs
+"Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate)",SL.UEM.1524.FE.ZS,sl_uem_1524_fe_zs
+"Part time employment, total (% of total employment)",SL.TLF.PART.ZS,sl_tlf_part_zs
+"Labor force with intermediate education, male (% of male working-age population with intermediate education)",SL.TLF.INTM.MA.ZS,sl_tlf_intm_ma_zs
+"Labor force participation rate, male (% of male population ages 15+) (modeled ILO estimate)",SL.TLF.CACT.MA.ZS,sl_tlf_cact_ma_zs
+"Labor force participation rate, female (% of female population ages 15+) (modeled ILO estimate)",SL.TLF.CACT.FE.ZS,sl_tlf_cact_fe_zs
+"Labor force with basic education, female (% of female working-age population with basic education)",SL.TLF.BASC.FE.ZS,sl_tlf_basc_fe_zs
+"Labor force participation rate, total (% of total population ages 15-64) (modeled ILO estimate)",SL.TLF.ACTI.ZS,sl_tlf_acti_zs
+"Labor force participation rate for ages 15-24, total (%) (national estimate)",SL.TLF.ACTI.1524.NE.ZS,sl_tlf_acti_1524_ne_zs
+"Labor force participation rate for ages 15-24, female (%) (national estimate)",SL.TLF.ACTI.1524.FE.NE.ZS,sl_tlf_acti_1524_fe_ne_zs
+"Children in employment, work only, male (% of male children in employment, ages 7-14)",SL.TLF.0714.WK.MA.ZS,sl_tlf_0714_wk_ma_zs
+"Children in employment, study and work (% of children in employment, ages 7-14)",SL.TLF.0714.SW.ZS,sl_tlf_0714_sw_zs
+"Children in employment, study and work, female (% of female children in employment, ages 7-14)",SL.TLF.0714.SW.FE.ZS,sl_tlf_0714_sw_fe_zs
+Employment in services (% of total employment) (modeled ILO estimate),SL.SRV.EMPL.ZS,sl_srv_empl_zs
+"Child employment in services, male (% of male economically active children ages 7-14)",SL.SRV.0714.MA.ZS,sl_srv_0714_ma_zs
+"Children in employment, self-employed, female (% of female children in employment, ages 7-14)",SL.SLF.0714.FE.ZS,sl_slf_0714_fe_zs
+Employment in industry (% of total employment) (modeled ILO estimate),SL.IND.EMPL.ZS,sl_ind_empl_zs
+"Contributing family workers, total (% of total employment) (modeled ILO estimate)",SL.FAM.WORK.ZS,sl_fam_work_zs
+"Children in employment, unpaid family workers, male (% of male children in employment, ages 7-14)",SL.FAM.0714.MA.ZS,sl_fam_0714_ma_zs
+"Wage and salaried workers, female (% of female employment) (modeled ILO estimate)",SL.EMP.WORK.FE.ZS,sl_emp_work_fe_zs
+"Employment to population ratio, 15+, total (%) (modeled ILO estimate)",SL.EMP.TOTL.SP.ZS,sl_emp_totl_sp_zs
+"Employment to population ratio, 15+, female (%) (modeled ILO estimate)",SL.EMP.TOTL.SP.FE.ZS,sl_emp_totl_sp_fe_zs
+"Self-employed, male (% of male employment) (modeled ILO estimate)",SL.EMP.SELF.MA.ZS,sl_emp_self_ma_zs
+"Employers, female (% of female employment) (modeled ILO estimate)",SL.EMP.MPYR.FE.ZS,sl_emp_mpyr_fe_zs
+"Employment to population ratio, ages 15-24, male (%) (national estimate)",SL.EMP.1524.SP.MA.NE.ZS,sl_emp_1524_sp_ma_ne_zs
+"Employment in agriculture, male (% of male employment) (modeled ILO estimate)",SL.AGR.EMPL.MA.ZS,sl_agr_empl_ma_zs
+"Child employment in agriculture, female (% of female economically active children ages 7-14)",SL.AGR.0714.FE.ZS,sl_agr_0714_fe_zs
+"Survey mean consumption or income per capita, bottom 40% of population (2017 PPP $ per day)",SI.SPR.PC40,si_spr_pc40
+Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,si_pov_umic
+Multidimensional poverty intensity (average share of deprivations experienced by the poor),SI.POV.MDIM.IT,si_pov_mdim_it
+"Multidimensional poverty headcount ratio, children (% of population ages 0-17)",SI.POV.MDIM.17,si_pov_mdim_17
+Gini index,SI.POV.GINI,si_pov_gini
+Income share held by lowest 10%,SI.DST.FRST.10,si_dst_frst_10
+Income share held by fourth 20%,SI.DST.04TH.20,si_dst_04th_20
+Domestic private health expenditure per capita (current US$),SH.XPD.PVTD.PC.CD,sh_xpd_pvtd_pc_cd
+Out-of-pocket expenditure (% of current health expenditure),SH.XPD.OOPC.CH.ZS,sh_xpd_oopc_ch_zs
+Domestic general government health expenditure (% of GDP),SH.XPD.GHED.GD.ZS,sh_xpd_ghed_gd_zs
+External health expenditure (% of current health expenditure),SH.XPD.EHEX.CH.ZS,sh_xpd_ehex_ch_zs
+Newborns protected against tetanus (%),SH.VAC.TTNS.ZS,sh_vac_ttns_zs
+Proportion of population spending more than 10% of household consumption or income on out-of-pocket health care expenditure (%),SH.UHC.OOPC.10.ZS,sh_uhc_oopc_10_zs
+Number of people pushed below the $3.20 ($ 2011 PPP) poverty line by out-of-pocket health care expenditure,SH.UHC.NOP2.TO,sh_uhc_nop2_to
+Number of people pushed below the $1.90 ($ 2011 PPP) poverty line by out-of-pocket health care expenditure,SH.UHC.NOP1.TO,sh_uhc_nop1_to
+Tuberculosis treatment success rate (% of new cases),SH.TBS.CURE.ZS,sh_tbs_cure_zs
+"Prevalence of wasting, weight for height (% of children under 5)",SH.STA.WAST.ZS,sh_sta_wast_zs
+"Mortality caused by road traffic injury (per 100,000 population)",SH.STA.TRAF.P5,sh_sta_traf_p5
+"Prevalence of stunting, height for age (% of children under 5)",SH.STA.STNT.ZS,sh_sta_stnt_zs
+People using safely managed sanitation services (% of population),SH.STA.SMSS.ZS,sh_sta_smss_zs
+"Mortality rate attributed to unintentional poisoning, female (per 100,000 female population)",SH.STA.POIS.P5.FE,sh_sta_pois_p5_fe
+"Prevalence of overweight, weight for height, male (% of children under 5)",SH.STA.OWGH.MA.ZS,sh_sta_owgh_ma_zs
+People practicing open defecation (% of population),SH.STA.ODFC.ZS,sh_sta_odfc_zs
+"Maternal mortality ratio (modeled estimate, per 100,000 live births)",SH.STA.MMRT,sh_sta_mmrt
+People with basic handwashing facilities including soap and water (% of population),SH.STA.HYGN.ZS,sh_sta_hygn_zs
+Diabetes prevalence (% of population ages 20 to 79),SH.STA.DIAB.ZS,sh_sta_diab_zs
+People using at least basic sanitation services (% of population),SH.STA.BASS.ZS,sh_sta_bass_zs
+Pregnant women receiving prenatal care (%),SH.STA.ANVC.ZS,sh_sta_anvc_zs
+"Number of surgical procedures (per 100,000 population)",SH.SGR.PROC.P5,sh_sgr_proc_p5
+Adequacy of social insurance programs (% of total welfare of beneficiary households),per_si_allsi.adq_pop_tot,per_si_allsi_adq_pop_tot
+Coverage of social safety net programs in 2nd quintile (% of population),per_sa_allsa.cov_q2_tot,per_sa_allsa_cov_q2_tot
+Adequacy of social safety net programs (% of total welfare of beneficiary households),per_sa_allsa.adq_pop_tot,per_sa_allsa_adq_pop_tot
+Coverage of unemployment benefits and ALMP in 2nd quintile (% of population),per_lm_alllm.cov_q2_tot,per_lm_alllm_cov_q2_tot
+Adequacy of unemployment benefits and ALMP (% of total welfare of beneficiary households),per_lm_alllm.adq_pop_tot,per_lm_alllm_adq_pop_tot
+"PPP conversion factor, private consumption (LCU per international $)",PA.NUS.PRVT.PP,pa_nus_prvt_pp
+DEC alternative conversion factor (LCU per US$),PA.NUS.ATLS,pa_nus_atls
+Net secondary income (Net current transfers from abroad) (current US$),NY.TRF.NCTR.CD,ny_trf_nctr_cd
+Net primary income (Net income from abroad) (constant LCU),NY.GSR.NFCY.KN,ny_gsr_nfcy_kn
+Gross savings (% of GNI),NY.GNS.ICTR.GN.ZS,ny_gns_ictr_gn_zs
+"GNI per capita, PPP (current international $)",NY.GNP.PCAP.PP.CD,ny_gnp_pcap_pp_cd
+GNI per capita (current LCU),NY.GNP.PCAP.CN,ny_gnp_pcap_cn
+GNI (constant LCU),NY.GNP.MKTP.KN,ny_gnp_mktp_kn
+GNI (current LCU),NY.GNP.MKTP.CN,ny_gnp_mktp_cn
+Gross domestic savings (% of GDP),NY.GDS.TOTL.ZS,ny_gds_totl_zs
+Oil rents (% of GDP),NY.GDP.PETR.RT.ZS,ny_gdp_petr_rt_zs
+GDP per capita growth (annual %),NY.GDP.PCAP.KD.ZG,ny_gdp_pcap_kd_zg
+Natural gas rents (% of GDP),NY.GDP.NGAS.RT.ZS,ny_gdp_ngas_rt_zs
+GDP growth (annual %),NY.GDP.MKTP.KD.ZG,ny_gdp_mktp_kd_zg
+GDP (current US$),NY.GDP.MKTP.CD,ny_gdp_mktp_cd
+Gross value added at basic prices (GVA) (constant 2015 US$),NY.GDP.FCST.KD,ny_gdp_fcst_kd
+Discrepancy in expenditure estimate of GDP (current LCU),NY.GDP.DISC.CN,ny_gdp_disc_cn
+"Inflation, GDP deflator (annual %)",NY.GDP.DEFL.KD.ZG,ny_gdp_defl_kd_zg
+"Adjusted net savings, excluding particulate emission damage (current US$)",NY.ADJ.SVNX.CD,ny_adj_svnx_cd
+Adjusted net national income per capita (constant 2015 US$),NY.ADJ.NNTY.PC.KD,ny_adj_nnty_pc_kd
+Adjusted net national income (current US$),NY.ADJ.NNTY.CD,ny_adj_nnty_cd
+Adjusted savings: natural resources depletion (% of GNI),NY.ADJ.DRES.GN.ZS,ny_adj_dres_gn_zs
+Adjusted savings: energy depletion (current US$),NY.ADJ.DNGY.CD,ny_adj_dngy_cd
+Adjusted savings: consumption of fixed capital (current US$),NY.ADJ.DKAP.CD,ny_adj_dkap_cd
+Adjusted savings: carbon dioxide damage (current US$),NY.ADJ.DCO2.CD,ny_adj_dco2_cd
+"Services, value added (constant LCU)",NV.SRV.TOTL.KN,nv_srv_totl_kn
+"Services, value added (current US$)",NV.SRV.TOTL.CD,nv_srv_totl_cd
+Other manufacturing (% of value added in manufacturing),NV.MNF.OTHR.ZS.UN,nv_mnf_othr_zs_un
+"Industry (including construction), value added (% of GDP)",NV.IND.TOTL.ZS,nv_ind_totl_zs
+"Industry (including construction), value added (current LCU)",NV.IND.TOTL.CN,nv_ind_totl_cn
+"Manufacturing, value added (annual % growth)",NV.IND.MANF.KD.ZG,nv_ind_manf_kd_zg
+"Industry (including construction), value added per worker (constant 2015 US$)",NV.IND.EMPL.KD,nv_ind_empl_kd
+"Agriculture, forestry, and fishing, value added (constant LCU)",NV.AGR.TOTL.KN,nv_agr_totl_kn
+"Agriculture, forestry, and fishing, value added (current US$)",NV.AGR.TOTL.CD,nv_agr_totl_cd
+External balance on goods and services (constant LCU),NE.RSB.GNFS.KN,ne_rsb_gnfs_kn
+Imports of goods and services (constant LCU),NE.IMP.GNFS.KN,ne_imp_gnfs_kn
+Imports of goods and services (current US$),NE.IMP.GNFS.CD,ne_imp_gnfs_cd
+Gross capital formation (constant 2015 US$),NE.GDI.TOTL.KD,ne_gdi_totl_kd
+Changes in inventories (current LCU),NE.GDI.STKB.CN,ne_gdi_stkb_cn
+Gross fixed capital formation (annual % growth),NE.GDI.FTOT.KD.ZG,ne_gdi_ftot_kd_zg
+"Gross fixed capital formation, private sector (% of GDP)",NE.GDI.FPRV.ZS,ne_gdi_fprv_zs
+Exports of goods and services (annual % growth),NE.EXP.GNFS.KD.ZG,ne_exp_gnfs_kd_zg
+Gross national expenditure (% of GDP),NE.DAB.TOTL.ZS,ne_dab_totl_zs
+Gross national expenditure (current US$),NE.DAB.TOTL.CD,ne_dab_totl_cd
+Final consumption expenditure (annual % growth),NE.CON.TOTL.KD.ZG,ne_con_totl_kd_zg

@@ -1,0 +1,686 @@
+---
+title: "slides day 2"
+author: "Christopher M. Loan, MS"
+date: 'February 21, 2022'
+output: xaringan::moon_reader
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(ranger)
+library(rsample)
+library(pdp)
+library(vip)
+library(kableExtra)
+library(missRanger)
+library(emojifont)
+ptitanic <- rpart.plot::ptitanic
+```
+
+```{r}
+ptitanic <- 
+  ptitanic %>% 
+  mutate(
+    survived = relevel(survived, ref = 'died')
+  )
+
+split_data <- initial_split(ptitanic)
+training_data <- training(split_data)
+testing_data <- testing(split_data)
+```
+
+
+---
+
+class: center, middle
+
+# Random Forests
+
+---
+
+# Random Forests
+
+Random forests are an **ensemble** method designed to improve several shortcomings of decision trees.
+
+The logic is relatively simple: 
+  * Create a bootstrapped data set
+  * Fit a decision tree with a random subset of variables at each split point (often called `mtry`)
+  * Repeat 500+ times (often called `ntree`/`num_tree`, etc.)
+  
+  
+Prediction with RFs is just weighted DTs
+* Each (e.g.) 500 trees predict the outcome with new data
+* Typically, each tree gets a weight of 1/`ntree` 
+
+
+.center[
+$prediction_{total} = \Sigma(\frac{1}{ntree} * prediction_{indiviual})$
+]
+
+---
+
+# Connecting to Decision Trees
+
+<u>**B**</u>ootstrap <u>**AG**</u>gregated predictions are called <u>**bag**</u>ged predictions
+
+If the RFs could select from all variables, RFs would be bootstrap aggregated ("bagged") decision trees.
+
+* Resampling is done with replacement, which results in some non-selected cases
+* These cases are called the out-of-bag (OOB) sample
+* The OOB sample can be used to test prediction accuracy
+* OOB Error can thus be a measure of accuracy / error, and can be inspected similarly to residuals
+
+---
+class: center, middle
+
+# Bootstrapping
+
+![](imgs/bootstraping.png)
+
+---
+
+class: center, middle
+
+# Subsetting Predictors
+
+![](imgs/subsetting_predictors.png)
+
+---
+
+RFs use the aggregate prediction from many, highly different trees
+Trees which comprise the RF can vary greatly compared to a traditional DT on the same sample because they
+    * Use a bootstrapped sample for repeats
+    * Leverage only a subset of variables at each tree 
+This allows them to make more accurate predictions on unseen data than decision trees
+Thus, the difference in model performance between DTs and RFs increases as the difference between original and new samples increase
+
+---
+
+# Benefits of Random Forests
+
+* when number of predictors > number of observed units
+  * established protocols for variable importance 
+  * not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)
+  
+There are ways to handle missing data with random forests
+* `ranger` does not embed them
+* [`missRanger`](https://cran.r-project.org/web/packages/missRanger/vignettes/missRanger.html) (built on `ranger` actually), `mice`, and `Ameila` can all be used to impute data
+* this is beyond the scope of the workshop
+
+
+```{r}
+rf_1 <- 
+ ranger(
+    survived ~ ., 
+    data = drop_na(training_data, age),
+    importance = 'impurity',
+    probability = TRUE
+    )
+```
+
+---
+
+# Variable Importance Plot
+
+.left-column[
+The VIP from the RF is very similar to the VIP from the DT
+]
+
+.right-column[
+```{r echo = FALSE, include = TRUE}
+vip(rf_1) + theme_bw(base_size = 18) + labs(y = 'Importance (Gini Impurity Index)')
+```
+]
+# Comparative Accuracy Plot
+
+```{r echo = FALSE, include = TRUE}
+library(rpart)
+all_var_DT <- 
+  rpart(
+    survived ~ ., 
+    data = training_data
+    )
+glm_comparison <-
+  glm(
+    data = training_data,
+    formula = survived ~ ., 
+    family = binomial(link = "logit")
+  )
+
+tmp_tbl <- 
+  testing_data %>% 
+  drop_na(age) %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(all_var_DT, newdata = .)[, 'survived'], 
+    predicted_glm = 
+      predict(
+        glm_comparison,
+        newdata = ., 
+        type = 'response'
+        ), 
+    predicted_rf = 
+       predict(rf_1, data = .)$predictions[,'survived'],
+    actual = survived
+  )
+
+tmp_plt_df <- 
+  tmp_tbl %>%
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm, predicted_rf), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %>% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    accuracy = 
+      if_else(predicted_class == survived, 'correct', 'incorrect')
+        )
+
+
+plt_df <- 
+  tmp_plt_df %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  mutate(
+    proportion = 
+      paste0(
+        round(
+          (n / sum(n))* 100), 
+        '%'
+        )
+    )
+```
+
+```{r include=TRUE, echo=FALSE}
+pos_tmp <-
+  position_dodge(width = 1)
+
+comp_acc_plt <- 
+  plt_df %>% 
+  ggplot(
+    aes(
+      x = accuracy,
+      y = n, 
+      fill = model
+    )
+  ) + 
+  geom_col(
+    position = pos_tmp,
+    alpha = 0.6, 
+    color = 'black'
+  ) +
+  geom_label(
+    aes(label = proportion), 
+    position = pos_tmp
+  ) +
+  theme_bw() + 
+  labs(
+    x = 'Accuracy', 
+    y = 'Count',
+    title = 
+       'Performance of three models\nMissing Values Deleted from Testing'
+         
+  ) + 
+  theme(
+    plot.title.position = 'plot', 
+    plot.caption.position = 'plot'
+  )
+```
+
+```{r include=TRUE, echo=FALSE}
+comp_acc_plt
+```
+
+---
+
+# In-Depth Accuracy
+
+```{r echo = FALSE, include=TRUE}
+tmp_plt_df %>%
+  mutate(
+   type_of_prediction =
+     case_when(
+       actual == 'died' & predicted_class == 'died' ~ 
+         'true negative',
+       actual == 'died' & predicted_class == 'survived' ~ 
+         'false negative',
+       actual == 'survived' & predicted_class == 'died' ~ 
+         'false positive',
+       actual == 'survived' & predicted_class == 'survived' ~ 
+         'true positive'
+     )
+  ) %>%
+  group_by(model) %>% 
+  count(type_of_prediction) %>% 
+  mutate(
+    percent = paste0(round(100*n/sum(n)), '%')
+  ) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    id_cols = model,
+    names_from = type_of_prediction, 
+    values_from = percent
+    ) %>% 
+  kbl(caption = 'Model Performance (no imputation)')
+```
+
+
+---
+class: center, middle 
+
+# What about those missing cases we just deleted?
+
+---
+
+# A quick robustness check
+
+Let's use `missRanger` and then calculate accuracy without deleting missing data (code in workshop folder).
+
+Results are very similar to non-imputed
+
+```{r include = TRUE, echo = FALSE}
+missRanger(testing_data, verbose = 0) %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(all_var_DT, newdata = .)[, 'survived'], 
+    predicted_glm = 
+      predict(
+        glm_comparison,
+        newdata = ., 
+        type = 'response'
+        ), 
+    predicted_rf = 
+       predict(rf_1, data = .)$predictions[,'survived'],
+    actual = survived
+  ) %>% 
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm, predicted_rf), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %>% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    accuracy = 
+      if_else(predicted_class == survived, 'correct', 'incorrect')
+        ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  mutate(
+    percent = paste0(round(100*n/sum(n)), '%')
+  ) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    id_cols = model,
+    names_from = accuracy, 
+    values_from = percent
+    ) %>% 
+  kbl(caption = 'Model Performance (with Imputation)') 
+```
+
+---
+
+# Hyperparameters
+
+hyperparameters = <u>Analyst-specified</u> parameters
+
+* Specified by analyst
+* These parameters can be thought of as the "settings" of your model 
+* Different settings are better for different circumstances
+
+Hyperparameters influence <u>model-estimated</u> parameters
+
+* Learned from the data
+* *Conceptually* similar to regression coefficients
+
+
+___
+
+The process of modifying these is called hyperparameter "tuning"
+
+"Hyperparameter optimization (HPO)" may be used interchangeably with tuning, though some take this to imply automated tuning procedures
+
+We'll start with manual tuning
+
+---
+
+# Hyperparameters 
+
+Another analogy comes from calibrating any machine.
+
+For example, consider a camera `r emoji('camera')`
+
+* You can change the lens, film, aperture, focal distance etc., (hyperparameters)
+* The camera will allow light onto the film and store the emergent pattern (parameters)
+* Clear pictures do not always occur with the same settings
+* Different input data (scale/lighting/etc.) are best captured with different settings
+* You can use input data to automatically tune hyperparameters
+    * Same concept as "auto-focusing" cameras
+    * Beyond the scope of this workshop
+
+---
+
+# Random Forest
+
+We have discussed 2 hyperparameters for random forests:
+
+* `mtry` - the number of variables to choose from at each split
+* `ntree` - the number of decision trees to grow
+* there are many others though
+* a few important hyperparameters are:
+     * `importance` - 
+     * `max.depth`
+     * `min.node.size`
+
+* see `?ranger` to see additional
+
+---
+
+We've outgrown the titanic example at this point. There are so few variables available.
+
+Let's load the WB South East Asia Data
+
+```{r}
+key <- read.csv('data/world_bank_key.csv')
+dat <- read.csv('data/se_asia_imputed_world_bank.csv')
+sea_split <- initial_split(dat)
+sea_training <- training(sea_split) %>% select(-se_com_durs)
+sea_testing <- testing(sea_split) %>% select(-se_com_durs)
+```
+
+---
+
+# Varying ntree
+
+```{r}
+tree_sizes <- 
+  seq(300, 5000, 100)
+
+
+rfs_num_tree <- vector('list', length(tree_sizes))
+
+for (i in 1:length(tree_sizes)){
+  rfs_num_tree[[i]] <- 
+    ranger(
+      outcome_next_year ~ ., 
+      data = sea_training,
+      num.trees = tree_sizes[[i]]
+    )
+  
+  print(paste0('iteration #', i, ' complete'))
+    
+}
+
+names(rfs_num_tree) <- paste0('num.trees = ', tree_sizes)
+
+pred_errors_num_tree <- 
+  rfs_num_tree %>%  
+  map_dbl(~.x$prediction.error) 
+
+data.frame(
+  pred_error = pred_errors_num_tree, 
+  num_trees = tree_sizes
+) %>% 
+  ggplot(
+    aes(
+      x = num_trees,
+      y = pred_errors
+      )
+  ) + 
+  geom_line() +
+  geom_vline(
+    xintercept = 500, 
+    size = 1.5, 
+    linetype = 2, 
+    color = 'gray50'
+  ) +
+  geom_smooth() +
+  labs(title = 'OOB Prediction Error by Number of Trees') +
+  theme_bw() +
+  geom_hline(color = 'pink', yintercept = manually_tuned_rf$prediction.error)
+
+```
+
+
+
+Overall out of bag prediction error. For classification this is the fraction of missclassified samples, for probability estimation the Brier score, for regression the mean squared error and for survival one minus Harrell's C-index.
+
+```{r}
+
+# Default is the (rounded down) square root of the number variables. Alternatively, a single argument function returning an integer, given the number of independent variables.
+
+mtry_values <- 
+  seq(1, ncol(sea_testing)-1, 1)
+
+rfs_mtry <- vector('list', length(mtry_values))
+
+for (i in 1:length(mtry_values)){
+  rfs_mtry[[i]] <- 
+    ranger(
+      outcome_next_year ~ ., 
+      data = sea_training,
+      num.trees = tree_sizes[[i]],
+      num.threads = 8L
+    )
+  
+  print(paste0('iteration #', i, ' complete'))
+    
+}
+
+names(rfs_mtry) <- paste0('mtry = ', mtry_values)
+
+pred_errors_mtry <- 
+  rfs_mtry %>%  
+  map_dbl(~.x$prediction.error) 
+
+data.frame(
+  pred_error = pred_errors_mtry, 
+  mtry = mtry_values
+) %>% 
+  ggplot(
+    aes(
+      x = mtry,
+      y = pred_error
+      )
+  ) + 
+   geom_vline(
+    xintercept = floor(sqrt(ncol(sea_training)-1)), 
+    size = 1.5, 
+    linetype = 2, 
+    color = 'gray50'
+  ) +
+  geom_line() +
+  theme_bw() +
+  labs(
+    title = 'OOB Prediction Error by mtry'
+  ) +
+  geom_hline(color = 'pink', yintercept = manually_tuned_rf$prediction.error)
+```
+
+```{r}
+
+manually_tuned_rf <- 
+  ranger(
+    outcome_next_year ~ ., 
+    data = sea_training,
+    num.trees = tree_sizes[which.min(pred_errors_num_tree)],
+    mtry = mtry_values[which.min(pred_errors_mtry)]
+  )
+ncol(sea_training)
+```
+
+```{r}
+source('functions.R')
+library(dials)
+cv_obj <- vfold_cv(sea_training, v = 5)
+
+max_entropy_grid <- 
+  grid_max_entropy(
+    # default = floor(sqrt(ncol(sea_training))) = 24
+    mtry(range = c(2, ncol(sea_training)-1)),
+    trees(range = c(400, 1000)), 
+    size = 30
+  )
+
+tuned_res <- 
+  cv_it_complex(
+    cv_obj = cv_obj, 
+    outcome_string = 'outcome_next_year',
+    seed = 333,
+    mod_formula = outcome_next_year ~ .,
+    tuning_grid = max_entropy_grid,
+    model_type = 'rf',
+    mode = 'regression'
+    ) 
+```
+
+```{r}
+
+manually_tuned_rmse <- 
+  rmse(
+  observed_y = sea_testing$outcome_next_year, 
+  predicted_y = predict(manually_tuned_rf, data = sea_testing)$prediction
+)
+tuned_res %>% 
+  arrange(rmse_mean)
+```
+
+
+
+```{r}
+pos_d <- 
+  position_dodge(width = 1)
+
+
+
+plot_df <- 
+  tuned_res %>% 
+  pivot_longer(
+    cols = c(rmse_mean:mae_se),
+    names_to = c('metric', '.value'),
+    names_sep = '_'
+  ) 
+
+plot_df %>% 
+  ggplot(
+    aes(
+      y = factor(grid_index), 
+      x = mean, 
+      fill = metric,
+      group = metric, 
+      xmin = mean - 1.96*se, 
+      xmax = mean + 1.96*se
+    )
+  ) + 
+  geom_col(color = 'black') + 
+  geom_errorbar(width = 0.2, color = 'black') + 
+  geom_label(
+    aes(label = round(mean, 3)),
+    color = 'black'
+  ) +
+  theme_bw() + 
+  labs(
+    caption = 
+      '95% CIs drawn with t-distribution\nuse to conceptualize spread, not assess significance'
+  ) +
+  theme(
+    plot.caption.position = 'plot',
+    plot.title.position = 'plot'
+  ) +
+  facet_wrap(vars(metric), scales = 'free') + 
+  labs(
+    y = 'Grid index',
+    x = 'Average Fit'
+  )
+```
+
+```{r}
+final_mtry <- 
+  tuned_res %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
+  pull(mtry)
+
+final_trees <- 
+  tuned_res %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
+  pull(trees)
+```
+
+```{r}
+rf_tuned <- 
+  ranger(
+    data = sea_training, 
+    formula = outcome_next_year ~ .,
+    importance = 'permutation',
+    mtry = final_mtry,
+    num.trees = final_trees
+  )
+```
+
+```{r}
+preds <- 
+  sea_testing %>% 
+  mutate(
+    # predicted_DT = 
+    #   predict(dt_training, newdata = sea_training), 
+    predicted_RF.manual = 
+      predict(manually_tuned_rf, data = .)$predictions,
+    predicted_RF.tuned = 
+      predict(rf_tuned, data = .)$predictions,
+  ) 
+```
+
+
+```{r}
+preds %>% 
+  mutate(
+    which_closer = 
+      case_when(
+        abs(outcome_next_year - predicted_RF.manual) ==
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Same',
+        abs(outcome_next_year - predicted_RF.manual) >
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Grid Tune',
+        abs(outcome_next_year - predicted_RF.manual) <
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Manually',
+        )
+  ) %>% 
+  ggplot(
+    aes(
+      x = predicted_RF.tuned, 
+      y = predicted_RF.manual, 
+      color = which_closer,
+    )
+  ) +
+  geom_point(size = 4, alpha = 0.4)  + 
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw() +
+  labs(x = 'Grid Tuned', y = 'Manually Tuned')
+```
+
+
+```{r}
+
+actual_vs_pred %>% 
+  group_by(model) %>% 
+  summarize(
+    MAE = mae(
+      observed_y = outcome_next_year, 
+      predicted_y = prediction
+    ), 
+    RMSE = rmse(
+      observed_y = outcome_next_year, 
+      predicted_y = prediction
+    )
+  )
+```
+

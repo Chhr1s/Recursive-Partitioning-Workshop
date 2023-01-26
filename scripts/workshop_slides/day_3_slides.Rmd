@@ -1,0 +1,530 @@
+---
+title: "Day 3\nRecursive Partitioning & Decision Trees"
+author: "Christopher M. Loan, MS"
+date: 'February 20, 2022'
+output: xaringan::moon_reader
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Feature Extraction & Interpretation
+.pull-left[
+
+```{r}
+library(pdp)
+## two `partial` loaded:
+## `pdp::partial` 
+## `purrr::partial`
+## make sure we use former
+partial <- pdp::partial
+```
+]
+
+.pull-right[
+
+```{r}
+univariate_pdp_sex <- 
+  partial(
+    two_var_DT, 
+    pred.var = 'sex',
+    type = 'classification',
+    which.class = 'survived',
+    # return predicted probability 
+    prob = TRUE
+    )
+```
+]
+.center[
+```{r echo=FALSE, fig.width=10, fig.height=3}
+univariate_pdp_sex %>% 
+  ggplot(
+    aes(y = sex, x = yhat, fill = sex)
+  ) +
+  geom_col(show.legend = F, alpha = 0.4, color = 'black') +
+  theme_bw(base_size = 15) +
+  labs(
+    y = 'Passenger Sex', 
+    x = 'Predicted Probability of Surviving', 
+    title = 'Males Display a substantially lower probability of survival'
+    ) +
+  geom_label(
+    aes(
+      label = round(yhat, 2)
+    )
+  ) + 
+  theme(plot.title.position = 'plot')
+```
+]
+
+---
+```{r}
+univariate_pdp_age <- 
+  partial(
+    two_var_DT, 
+    pred.var = 'age',
+    type = 'classification',
+    which.class = 'survived',
+    prob = TRUE
+    )
+```
+
+```{r}
+age_plt1 <- 
+  univariate_pdp_age %>% 
+  ggplot(
+    aes(x = age, y = yhat)
+  ) +
+  geom_point() +
+  theme_bw(base_size = 15) +
+  labs(
+    x = 'Passenger Age', 
+    y = 'Predicted Probability of Surviving', 
+    title = 'Younger individuals display a \nsubstantially higher probability of survival'
+    ) +
+  theme(plot.title.position = 'plot') +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.25)
+    )
+```
+
+---
+
+```{r}
+age_plt1
+```
+
+---
+
+```{r}
+bivariate_pdp <- 
+  partial(
+    two_var_DT, 
+    pred.var = c('age', 'sex'),
+    type = 'classification',
+    which.class = 'survived',
+    prob = TRUE,
+    )
+```
+
+---
+
+```{r}
+bi_pdp_plt <- 
+  bivariate_pdp %>% 
+  ggplot(
+    aes(
+      y = yhat, 
+      x = age,
+      color = sex
+    )
+  ) + 
+  theme_bw() +
+  geom_point() +
+  theme_bw(base_size = 15) +
+  labs(
+    x = 'Passenger Age', 
+    y = 'Predicted Probability of Surviving', 
+    title = 'Women & younger men display a substantially
+higher probability of survival',
+    fill = 'Passenger\nSex'
+    ) +
+  theme(
+    plot.title.position = 'plot'
+    ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1 , 0.25)
+    )
+
+```
+
+---
+
+```{r}
+bi_pdp_plt
+```
+
+---
+
+
+---
+
+# Three Variable PDP!
+
+I do not recommend doing more than 2 variable PDPs in many cases. 
+
+Run times can be **MASSIVE**, even with good machines. 
+
+  1. make sure you save your `.Rmd` before running this
+  2. with ≥ 2 variable PDPs, be aware of:
+  
+    a. the dimensions of the data set (rows x columns)
+    
+    b. your computer's capability 
+
+```{r}
+three_variable_pdp <- 
+  partial(
+    all_var_DT, 
+    pred.var = c('age', 'sex', 'pclass'),
+    type = 'classification',
+    which.class = 'survived',
+    prob = TRUE
+    )
+```
+
+---
+
+# Visualizing 
+
+PDPs get harder to visualize as number of variables included increase.
+
+We can make a slightly more complex plot to show this.
+
+```{r}
+three_variable_plt <- 
+  three_variable_pdp %>% 
+  ggplot(
+    aes(
+      y = yhat, 
+      x = age,
+      color = pclass
+    )
+  ) + 
+  theme_bw() + 
+  geom_jitter(
+    width = 0.02, 
+    height = 0.02,
+    alpha = 0.5
+    ) +
+  facet_wrap(vars(sex), ncol = 2)
+```
+
+---
+
+# Slightly Formating the Visualization
+
+```{r}
+three_variable_plt <-
+  three_variable_plt +
+  theme_bw(base_size = 15) +
+  labs(
+    x = 'Passenger Age', 
+    y = 'Predicted Probability of Surviving', 
+    title = 'Women & younger men display a substantially\n higher probability of survival',
+    fill = 'Passenger Class',
+    color = 'Passenger Class',
+    caption = 'Points are minimally jittered in x- and y-dimensions to show density'
+    ) +
+  theme(
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot', 
+    legend.position = 'bottom'
+    )
+```
+
+---
+
+```{r, fig.align='center'}
+three_variable_plt
+```
+
+---
+
+Why are 1st class young men not seeing the younger protection effect?
+
+```{r echo=FALSE, fig.align='center', fig.width=10, fig.height=7.5}
+
+three_variable_plt + 
+  theme_bw(base_size = 20) +
+  geom_point(
+    inherit.aes = FALSE,
+    data = 
+      tibble(
+        x = 7.5, 
+        y = 0.35, 
+        sex = 'male'
+      ),
+    aes(x = x, y = y, fill = sex),
+    size = 23,
+    shape = 1,
+    show.legend = FALSE
+  )
+```
+
+---
+
+# Deep Dive: Composition of Training Data
+
+We can see what actually happened to the young, 1st class males in the sample.
+
+```{r include=TRUE, echo = FALSE}
+training_data %>% 
+  filter(
+    pclass == '1st', 
+    sex == 'male', 
+    age < 13
+  ) %>% 
+  tibble()
+```
+
+* In reality all observed cases survived
+* Reality ≠ Prediction
+* Misclassification of only 3 cases "does not matter"
+* **So, they did get the same protection, but the model prioritized other effects** 
+
+---
+
+# Look back at the decision tree
+
+If you're a 2nd or 3rd class male, the model split on other variables, however, in first class males it assigns everyone the same class. 
+
+```{r, fig.align='center', fig.height=6,fig.width=11}
+rpart.plot(all_var_DT)
+```
+
+---
+
+# Why did the model do that?
+
+Well, there aren't that many young, 1st class men. Basically, it's not a priority to the model.
+
+```{r fig.align='center', fig.height=3, fig.width=8}
+training_data %>% 
+  filter(sex == 'male') %>% 
+  ggplot(aes(y = pclass, x = age, fill = pclass)) + 
+  ggridges::geom_density_ridges(alpha = 0.2) + 
+  theme_bw(base_size = 15) + 
+  theme(legend.position = 'none')
+```
+
+---
+
+
+
+# Hyperparameter Tuning
+
+
+---
+
+# YIKES
+
+that model is not easy to interpret
+
+```{r include=TRUE,echo=FALSE}
+overly_complex_dt <- 
+  rpart(
+  formula = survived ~ ., 
+  data = training_data,
+  cp = 0.001
+)
+```
+
+```{r include=TRUE,echo=FALSE}
+rpart.plot(overly_complex_dt)
+```
+
+
+---
+
+# Specific Cases
+
+Does this model oversimplify things still?
+
+Let's look at those odd cases, 1st class young males for both models:
+
+Training data (seen):
+
+```{r include=TRUE, echo=FALSE}
+training_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  filter(
+    age < 13, 
+    sex == 'male', 
+    pclass == '1st'
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+testing data (unseen):
+
+```{r include=TRUE, echo=FALSE}
+testing_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  filter(
+    age < 13, 
+    sex == 'male', 
+    pclass == '1st'
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+---
+# Prediction Accuracy 
+
+For these fringe cases:
+
+* the complex model was correct for 100% 
+* the simple was correct 0% of the time. 
+
+This is only 4 cases, though. 
+
+Let's look at **all** predictions.
+
+```{r include=TRUE,echo=FALSE}
+testing_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+The simple model outperforms the more complex model in aggregate.
+
+
+---
+
+
+
+---
+
+# PDPs
+
+Aggregated predictions will lead to more possible predicted probability values than the single tree
+
+Our RF PDPs will have more variance than those made yesterday with DTs
+
+```{r}
+partial <- pdp::partial
+
+rf_3_pdp <- 
+  partial(
+    rf_1, 
+    pred.var = c('age', 'sex', 'pclass'),
+    type = 'classification',
+    which.class = 'survived', 
+    prob = TRUE
+  )
+```
+
+---
+
+class: center, middle
+
+# PDPs
+
+```{r include=TRUE,echo=FALSE}
+rf_3_pdp %>% 
+  ggplot(
+    aes(
+      y = yhat, 
+      x = age,
+      shape = sex,
+      color = sex
+    )
+  ) + 
+  geom_hline(yintercept = 0.5, linetype = 2) + 
+  theme_bw() +
+  geom_point(
+    size = 4, 
+    alpha = 0.4
+  ) +
+  theme_bw(base_size = 15) +
+  theme(
+    plot.title.position = 'plot'
+    ) +
+  facet_wrap(
+    vars(pclass), 
+    ncol = 1
+    ) +
+  labs(
+    y = 'Predicted Probability of Survival'
+  )
+```
+
+---
+
+class: middle, center
+
+```{r eval=TRUE, include=FALSE}
+library(rpart)
+all_var_DT <- 
+  rpart(
+    survived ~ ., 
+    data = training_data
+    )
+glm_comparison <-
+  glm(
+    data = training_data,
+    formula = survived ~ ., 
+    family = binomial(link = "logit")
+  )
+```
+
+
+```{r eval=TRUE, include=FALSE}
+tmp_tbl <- 
+  testing_data %>% 
+  drop_na(age) %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(all_var_DT, newdata = .)[, 'survived'], 
+    predicted_glm = 
+      predict(
+        glm_comparison,
+        newdata = ., 
+        type = 'response'
+        ), 
+    predicted_rf = 
+       predict(rf_1, data = .)$predictions[,'survived'],
+    actual = survived
+  )
+```

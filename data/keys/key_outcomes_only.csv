@@ -1,0 +1,315 @@
+indicator_name,indicator_code,janitor_version
+"PPP conversion factor, private consumption (LCU per international $)",PA.NUS.PRVT.PP,pa_nus_prvt_pp
+"PPP conversion factor, GDP (LCU per international $)",PA.NUS.PPP,pa_nus_ppp
+DEC alternative conversion factor (LCU per US$),PA.NUS.ATLS,pa_nus_atls
+Terms of trade adjustment (constant LCU),NY.TTF.GNFS.KN,ny_ttf_gnfs_kn
+Net secondary income (Net current transfers from abroad) (current LCU),NY.TRF.NCTR.CN,ny_trf_nctr_cn
+Net secondary income (Net current transfers from abroad) (current US$),NY.TRF.NCTR.CD,ny_trf_nctr_cd
+Net primary income (Net income from abroad) (current LCU),NY.GSR.NFCY.CN,ny_gsr_nfcy_cn
+Net primary income (Net income from abroad) (current US$),NY.GSR.NFCY.CD,ny_gsr_nfcy_cd
+Gross savings (% of GDP),NY.GNS.ICTR.ZS,ny_gns_ictr_zs
+Gross savings (% of GNI),NY.GNS.ICTR.GN.ZS,ny_gns_ictr_gn_zs
+Gross savings (current LCU),NY.GNS.ICTR.CN,ny_gns_ictr_cn
+Gross savings (current US$),NY.GNS.ICTR.CD,ny_gns_ictr_cd
+"GNI per capita, PPP (current international $)",NY.GNP.PCAP.PP.CD,ny_gnp_pcap_pp_cd
+GNI per capita (current LCU),NY.GNP.PCAP.CN,ny_gnp_pcap_cn
+"GNI per capita, Atlas method (current US$)",NY.GNP.PCAP.CD,ny_gnp_pcap_cd
+"GNI, PPP (current international $)",NY.GNP.MKTP.PP.CD,ny_gnp_mktp_pp_cd
+GNI: linked series (current LCU),NY.GNP.MKTP.CN.AD,ny_gnp_mktp_cn_ad
+GNI (current LCU),NY.GNP.MKTP.CN,ny_gnp_mktp_cn
+GNI (current US$),NY.GNP.MKTP.CD,ny_gnp_mktp_cd
+"GNI, Atlas method (current US$)",NY.GNP.ATLS.CD,ny_gnp_atls_cd
+Gross domestic income (constant LCU),NY.GDY.TOTL.KN,ny_gdy_totl_kn
+Gross domestic savings (% of GDP),NY.GDS.TOTL.ZS,ny_gds_totl_zs
+Gross domestic savings (current LCU),NY.GDS.TOTL.CN,ny_gds_totl_cn
+Gross domestic savings (current US$),NY.GDS.TOTL.CD,ny_gds_totl_cd
+"GDP per capita, PPP (constant 2017 international $)",NY.GDP.PCAP.PP.KD,ny_gdp_pcap_pp_kd
+"GDP per capita, PPP (current international $)",NY.GDP.PCAP.PP.CD,ny_gdp_pcap_pp_cd
+GDP per capita (constant LCU),NY.GDP.PCAP.KN,ny_gdp_pcap_kn
+GDP per capita growth (annual %),NY.GDP.PCAP.KD.ZG,ny_gdp_pcap_kd_zg
+GDP per capita (constant 2015 US$),NY.GDP.PCAP.KD,ny_gdp_pcap_kd
+GDP per capita (current LCU),NY.GDP.PCAP.CN,ny_gdp_pcap_cn
+GDP per capita (current US$),NY.GDP.PCAP.CD,ny_gdp_pcap_cd
+"GDP, PPP (constant 2017 international $)",NY.GDP.MKTP.PP.KD,ny_gdp_mktp_pp_kd
+"GDP, PPP (current international $)",NY.GDP.MKTP.PP.CD,ny_gdp_mktp_pp_cd
+GDP (constant LCU),NY.GDP.MKTP.KN,ny_gdp_mktp_kn
+GDP growth (annual %),NY.GDP.MKTP.KD.ZG,ny_gdp_mktp_kd_zg
+GDP (constant 2015 US$),NY.GDP.MKTP.KD,ny_gdp_mktp_kd
+GDP: linked series (current LCU),NY.GDP.MKTP.CN.AD,ny_gdp_mktp_cn_ad
+GDP (current LCU),NY.GDP.MKTP.CN,ny_gdp_mktp_cn
+GDP (current US$),NY.GDP.MKTP.CD,ny_gdp_mktp_cd
+Discrepancy in expenditure estimate of GDP (current LCU),NY.GDP.DISC.CN,ny_gdp_disc_cn
+GDP deflator (base year varies by country),NY.GDP.DEFL.ZS,ny_gdp_defl_zs
+"Inflation, GDP deflator (annual %)",NY.GDP.DEFL.KD.ZG,ny_gdp_defl_kd_zg
+Exports as a capacity to import (constant LCU),NY.EXP.CAPM.KN,ny_exp_capm_kn
+"Adjusted net savings, excluding particulate emission damage (% of GNI)",NY.ADJ.SVNX.GN.ZS,ny_adj_svnx_gn_zs
+"Adjusted net savings, excluding particulate emission damage (current US$)",NY.ADJ.SVNX.CD,ny_adj_svnx_cd
+"Adjusted net savings, including particulate emission damage (% of GNI)",NY.ADJ.SVNG.GN.ZS,ny_adj_svng_gn_zs
+"Adjusted net savings, including particulate emission damage (current US$)",NY.ADJ.SVNG.CD,ny_adj_svng_cd
+Adjusted net national income per capita (current US$),NY.ADJ.NNTY.PC.CD,ny_adj_nnty_pc_cd
+Adjusted net national income (current US$),NY.ADJ.NNTY.CD,ny_adj_nnty_cd
+Adjusted savings: net national savings (% of GNI),NY.ADJ.NNAT.GN.ZS,ny_adj_nnat_gn_zs
+Adjusted savings: net national savings (current US$),NY.ADJ.NNAT.CD,ny_adj_nnat_cd
+Adjusted savings: gross savings (% of GNI),NY.ADJ.ICTR.GN.ZS,ny_adj_ictr_gn_zs
+Adjusted savings: natural resources depletion (% of GNI),NY.ADJ.DRES.GN.ZS,ny_adj_dres_gn_zs
+Adjusted savings: particulate emission damage (% of GNI),NY.ADJ.DPEM.GN.ZS,ny_adj_dpem_gn_zs
+Adjusted savings: particulate emission damage (current US$),NY.ADJ.DPEM.CD,ny_adj_dpem_cd
+Adjusted savings: energy depletion (% of GNI),NY.ADJ.DNGY.GN.ZS,ny_adj_dngy_gn_zs
+Adjusted savings: energy depletion (current US$),NY.ADJ.DNGY.CD,ny_adj_dngy_cd
+Adjusted savings: mineral depletion (% of GNI),NY.ADJ.DMIN.GN.ZS,ny_adj_dmin_gn_zs
+Adjusted savings: mineral depletion (current US$),NY.ADJ.DMIN.CD,ny_adj_dmin_cd
+Adjusted savings: consumption of fixed capital (% of GNI),NY.ADJ.DKAP.GN.ZS,ny_adj_dkap_gn_zs
+Adjusted savings: consumption of fixed capital (current US$),NY.ADJ.DKAP.CD,ny_adj_dkap_cd
+Adjusted savings: net forest depletion (% of GNI),NY.ADJ.DFOR.GN.ZS,ny_adj_dfor_gn_zs
+Adjusted savings: net forest depletion (current US$),NY.ADJ.DFOR.CD,ny_adj_dfor_cd
+Adjusted savings: carbon dioxide damage (% of GNI),NY.ADJ.DCO2.GN.ZS,ny_adj_dco2_gn_zs
+Adjusted savings: carbon dioxide damage (current US$),NY.ADJ.DCO2.CD,ny_adj_dco2_cd
+Adjusted savings: education expenditure (% of GNI),NY.ADJ.AEDU.GN.ZS,ny_adj_aedu_gn_zs
+Adjusted savings: education expenditure (current US$),NY.ADJ.AEDU.CD,ny_adj_aedu_cd
+"Services, value added (% of GDP)",NV.SRV.TOTL.ZS,nv_srv_totl_zs
+"Services, value added (constant LCU)",NV.SRV.TOTL.KN,nv_srv_totl_kn
+"Services, value added (annual % growth)",NV.SRV.TOTL.KD.ZG,nv_srv_totl_kd_zg
+"Services, value added (constant 2015 US$)",NV.SRV.TOTL.KD,nv_srv_totl_kd
+"Services, value added (current LCU)",NV.SRV.TOTL.CN,nv_srv_totl_cn
+"Services, value added (current US$)",NV.SRV.TOTL.CD,nv_srv_totl_cd
+Medium and high-tech manufacturing value added (% manufacturing value added),NV.MNF.TECH.ZS.UN,nv_mnf_tech_zs_un
+"Industry (including construction), value added (% of GDP)",NV.IND.TOTL.ZS,nv_ind_totl_zs
+"Industry (including construction), value added (constant LCU)",NV.IND.TOTL.KN,nv_ind_totl_kn
+"Industry (including construction), value added (annual % growth)",NV.IND.TOTL.KD.ZG,nv_ind_totl_kd_zg
+"Industry (including construction), value added (constant 2015 US$)",NV.IND.TOTL.KD,nv_ind_totl_kd
+"Industry (including construction), value added (current LCU)",NV.IND.TOTL.CN,nv_ind_totl_cn
+"Industry (including construction), value added (current US$)",NV.IND.TOTL.CD,nv_ind_totl_cd
+"Manufacturing, value added (% of GDP)",NV.IND.MANF.ZS,nv_ind_manf_zs
+"Manufacturing, value added (constant LCU)",NV.IND.MANF.KN,nv_ind_manf_kn
+"Manufacturing, value added (annual % growth)",NV.IND.MANF.KD.ZG,nv_ind_manf_kd_zg
+"Manufacturing, value added (constant 2015 US$)",NV.IND.MANF.KD,nv_ind_manf_kd
+"Manufacturing, value added (current LCU)",NV.IND.MANF.CN,nv_ind_manf_cn
+"Manufacturing, value added (current US$)",NV.IND.MANF.CD,nv_ind_manf_cd
+"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,nv_agr_totl_zs
+"Agriculture, forestry, and fishing, value added (constant LCU)",NV.AGR.TOTL.KN,nv_agr_totl_kn
+"Agriculture, forestry, and fishing, value added (annual % growth)",NV.AGR.TOTL.KD.ZG,nv_agr_totl_kd_zg
+"Agriculture, forestry, and fishing, value added (constant 2015 US$)",NV.AGR.TOTL.KD,nv_agr_totl_kd
+"Agriculture, forestry, and fishing, value added (current LCU)",NV.AGR.TOTL.CN,nv_agr_totl_cn
+"Agriculture, forestry, and fishing, value added (current US$)",NV.AGR.TOTL.CD,nv_agr_totl_cd
+"Agriculture, forestry, and fishing, value added per worker (constant 2015 US$)",NV.AGR.EMPL.KD,nv_agr_empl_kd
+Trade (% of GDP),NE.TRD.GNFS.ZS,ne_trd_gnfs_zs
+External balance on goods and services (% of GDP),NE.RSB.GNFS.ZS,ne_rsb_gnfs_zs
+External balance on goods and services (current LCU),NE.RSB.GNFS.CN,ne_rsb_gnfs_cn
+External balance on goods and services (current US$),NE.RSB.GNFS.CD,ne_rsb_gnfs_cd
+Imports of goods and services (% of GDP),NE.IMP.GNFS.ZS,ne_imp_gnfs_zs
+Imports of goods and services (constant LCU),NE.IMP.GNFS.KN,ne_imp_gnfs_kn
+Imports of goods and services (annual % growth),NE.IMP.GNFS.KD.ZG,ne_imp_gnfs_kd_zg
+Imports of goods and services (constant 2015 US$),NE.IMP.GNFS.KD,ne_imp_gnfs_kd
+Imports of goods and services (current LCU),NE.IMP.GNFS.CN,ne_imp_gnfs_cn
+Imports of goods and services (current US$),NE.IMP.GNFS.CD,ne_imp_gnfs_cd
+Gross capital formation (% of GDP),NE.GDI.TOTL.ZS,ne_gdi_totl_zs
+Gross capital formation (current LCU),NE.GDI.TOTL.CN,ne_gdi_totl_cn
+Gross capital formation (current US$),NE.GDI.TOTL.CD,ne_gdi_totl_cd
+Changes in inventories (constant LCU),NE.GDI.STKB.KN,ne_gdi_stkb_kn
+Changes in inventories (current LCU),NE.GDI.STKB.CN,ne_gdi_stkb_cn
+Changes in inventories (current US$),NE.GDI.STKB.CD,ne_gdi_stkb_cd
+Gross fixed capital formation (% of GDP),NE.GDI.FTOT.ZS,ne_gdi_ftot_zs
+Gross fixed capital formation (constant LCU),NE.GDI.FTOT.KN,ne_gdi_ftot_kn
+Gross fixed capital formation (annual % growth),NE.GDI.FTOT.KD.ZG,ne_gdi_ftot_kd_zg
+Gross fixed capital formation (constant 2015 US$),NE.GDI.FTOT.KD,ne_gdi_ftot_kd
+Gross fixed capital formation (current LCU),NE.GDI.FTOT.CN,ne_gdi_ftot_cn
+Gross fixed capital formation (current US$),NE.GDI.FTOT.CD,ne_gdi_ftot_cd
+Exports of goods and services (% of GDP),NE.EXP.GNFS.ZS,ne_exp_gnfs_zs
+Exports of goods and services (constant LCU),NE.EXP.GNFS.KN,ne_exp_gnfs_kn
+Exports of goods and services (annual % growth),NE.EXP.GNFS.KD.ZG,ne_exp_gnfs_kd_zg
+Exports of goods and services (constant 2015 US$),NE.EXP.GNFS.KD,ne_exp_gnfs_kd
+Exports of goods and services (current LCU),NE.EXP.GNFS.CN,ne_exp_gnfs_cn
+Exports of goods and services (current US$),NE.EXP.GNFS.CD,ne_exp_gnfs_cd
+Gross national expenditure (% of GDP),NE.DAB.TOTL.ZS,ne_dab_totl_zs
+Gross national expenditure (current LCU),NE.DAB.TOTL.CN,ne_dab_totl_cn
+Gross national expenditure (current US$),NE.DAB.TOTL.CD,ne_dab_totl_cd
+Final consumption expenditure (% of GDP),NE.CON.TOTL.ZS,ne_con_totl_zs
+Final consumption expenditure (constant LCU),NE.CON.TOTL.KN,ne_con_totl_kn
+Final consumption expenditure (annual % growth),NE.CON.TOTL.KD.ZG,ne_con_totl_kd_zg
+Final consumption expenditure (constant 2015 US$),NE.CON.TOTL.KD,ne_con_totl_kd
+Final consumption expenditure (current LCU),NE.CON.TOTL.CN,ne_con_totl_cn
+Final consumption expenditure (current US$),NE.CON.TOTL.CD,ne_con_totl_cd
+Households and NPISHs final consumption expenditure (% of GDP),NE.CON.PRVT.ZS,ne_con_prvt_zs
+"Households and NPISHs Final consumption expenditure, PPP (constant 2017 international $)",NE.CON.PRVT.PP.KD,ne_con_prvt_pp_kd
+"Households and NPISHs Final consumption expenditure, PPP (current international $)",NE.CON.PRVT.PP.CD,ne_con_prvt_pp_cd
+Households and NPISHs Final consumption expenditure per capita growth (annual %),NE.CON.PRVT.PC.KD.ZG,ne_con_prvt_pc_kd_zg
+Households and NPISHs Final consumption expenditure per capita (constant 2015 US$),NE.CON.PRVT.PC.KD,ne_con_prvt_pc_kd
+Households and NPISHs Final consumption expenditure (constant LCU),NE.CON.PRVT.KN,ne_con_prvt_kn
+Households and NPISHs Final consumption expenditure (annual % growth),NE.CON.PRVT.KD.ZG,ne_con_prvt_kd_zg
+Households and NPISHs Final consumption expenditure (constant 2015 US$),NE.CON.PRVT.KD,ne_con_prvt_kd
+Households and NPISHs final consumption expenditure: linked series (current LCU),NE.CON.PRVT.CN.AD,ne_con_prvt_cn_ad
+Households and NPISHs Final consumption expenditure (current LCU),NE.CON.PRVT.CN,ne_con_prvt_cn
+Households and NPISHs Final consumption expenditure (current US$),NE.CON.PRVT.CD,ne_con_prvt_cd
+General government final consumption expenditure (% of GDP),NE.CON.GOVT.ZS,ne_con_govt_zs
+General government final consumption expenditure (constant LCU),NE.CON.GOVT.KN,ne_con_govt_kn
+General government final consumption expenditure (annual % growth),NE.CON.GOVT.KD.ZG,ne_con_govt_kd_zg
+General government final consumption expenditure (constant 2015 US$),NE.CON.GOVT.KD,ne_con_govt_kd
+General government final consumption expenditure (current LCU),NE.CON.GOVT.CN,ne_con_govt_cn
+General government final consumption expenditure (current US$),NE.CON.GOVT.CD,ne_con_govt_cd
+"Inflation, consumer prices (annual %)",FP.CPI.TOTL.ZG,fp_cpi_totl_zg
+Total reserves minus gold (current US$),FI.RES.XGLD.CD,fi_res_xgld_cd
+"Total reserves (includes gold, current US$)",FI.RES.TOTL.CD,fi_res_totl_cd
+"Personal remittances, received (% of GDP)",BX.TRF.PWKR.DT.GD.ZS,bx_trf_pwkr_dt_gd_zs
+"Personal remittances, received (current US$)",BX.TRF.PWKR.CD.DT,bx_trf_pwkr_cd_dt
+"Secondary income receipts (BoP, current US$)",BX.TRF.CURR.CD,bx_trf_curr_cd
+"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,bx_klt_dinv_wd_gd_zs
+"Foreign direct investment, net inflows (BoP, current US$)",BX.KLT.DINV.CD.WD,bx_klt_dinv_cd_wd
+"Travel services (% of service exports, BoP)",BX.GSR.TRVL.ZS,bx_gsr_trvl_zs
+"Transport services (% of service exports, BoP)",BX.GSR.TRAN.ZS,bx_gsr_tran_zs
+"Exports of goods, services and primary income (BoP, current US$)",BX.GSR.TOTL.CD,bx_gsr_totl_cd
+"Service exports (BoP, current US$)",BX.GSR.NFSV.CD,bx_gsr_nfsv_cd
+"Goods exports (BoP, current US$)",BX.GSR.MRCH.CD,bx_gsr_mrch_cd
+"Exports of goods and services (BoP, current US$)",BX.GSR.GNFS.CD,bx_gsr_gnfs_cd
+"Primary income receipts (BoP, current US$)",BX.GSR.FCTY.CD,bx_gsr_fcty_cd
+"Communications, computer, etc. (% of service exports, BoP)",BX.GSR.CMCP.ZS,bx_gsr_cmcp_zs
+"ICT service exports (% of service exports, BoP)",BX.GSR.CCIS.ZS,bx_gsr_ccis_zs
+"ICT service exports (BoP, current US$)",BX.GSR.CCIS.CD,bx_gsr_ccis_cd
+"Technical cooperation grants (BoP, current US$)",BX.GRT.TECH.CD.WD,bx_grt_tech_cd_wd
+"Net secondary income (BoP, current US$)",BN.TRF.CURR.CD,bn_trf_curr_cd
+"Reserves and related items (BoP, current US$)",BN.RES.INCL.CD,bn_res_incl_cd
+"Portfolio investment, net (BoP, current US$)",BN.KLT.PTXL.CD,bn_klt_ptxl_cd
+"Foreign direct investment, net (BoP, current US$)",BN.KLT.DINV.CD,bn_klt_dinv_cd
+"Net errors and omissions (BoP, current US$)",BN.KAC.EOMS.CD,bn_kac_eoms_cd
+"Net trade in goods (BoP, current US$)",BN.GSR.MRCH.CD,bn_gsr_mrch_cd
+"Net trade in goods and services (BoP, current US$)",BN.GSR.GNFS.CD,bn_gsr_gnfs_cd
+"Net primary income (BoP, current US$)",BN.GSR.FCTY.CD,bn_gsr_fcty_cd
+"Net financial account (BoP, current US$)",BN.FIN.TOTL.CD,bn_fin_totl_cd
+Current account balance (% of GDP),BN.CAB.XOKA.GD.ZS,bn_cab_xoka_gd_zs
+"Current account balance (BoP, current US$)",BN.CAB.XOKA.CD,bn_cab_xoka_cd
+"Secondary income, other sectors, payments (BoP, current US$)",BM.TRF.PRVT.CD,bm_trf_prvt_cd
+"Travel services (% of service imports, BoP)",BM.GSR.TRVL.ZS,bm_gsr_trvl_zs
+"Transport services (% of service imports, BoP)",BM.GSR.TRAN.ZS,bm_gsr_tran_zs
+"Imports of goods, services and primary income (BoP, current US$)",BM.GSR.TOTL.CD,bm_gsr_totl_cd
+"Service imports (BoP, current US$)",BM.GSR.NFSV.CD,bm_gsr_nfsv_cd
+"Goods imports (BoP, current US$)",BM.GSR.MRCH.CD,bm_gsr_mrch_cd
+"Imports of goods and services (BoP, current US$)",BM.GSR.GNFS.CD,bm_gsr_gnfs_cd
+"Primary income payments (BoP, current US$)",BM.GSR.FCTY.CD,bm_gsr_fcty_cd
+"Communications, computer, etc. (% of service imports, BoP)",BM.GSR.CMCP.ZS,bm_gsr_cmcp_zs
+Trade in services (% of GDP),BG.GSR.NFSV.GD.ZS,bg_gsr_nfsv_gd_zs
+Exports as a capacity to import (constant LCU),NY.EXP.CAPM.KN,ny_exp_capm_kn_2
+Trade (% of GDP),NE.TRD.GNFS.ZS,ne_trd_gnfs_zs_2
+External balance on goods and services (% of GDP),NE.RSB.GNFS.ZS,ne_rsb_gnfs_zs_2
+External balance on goods and services (current US$),NE.RSB.GNFS.CD,ne_rsb_gnfs_cd_2
+Imports of goods and services (% of GDP),NE.IMP.GNFS.ZS,ne_imp_gnfs_zs_2
+Imports of goods and services (annual % growth),NE.IMP.GNFS.KD.ZG,ne_imp_gnfs_kd_zg_2
+Imports of goods and services (constant 2015 US$),NE.IMP.GNFS.KD,ne_imp_gnfs_kd_2
+Imports of goods and services (current US$),NE.IMP.GNFS.CD,ne_imp_gnfs_cd_2
+Exports of goods and services (% of GDP),NE.EXP.GNFS.ZS,ne_exp_gnfs_zs_2
+Exports of goods and services (annual % growth),NE.EXP.GNFS.KD.ZG,ne_exp_gnfs_kd_zg_2
+Exports of goods and services (constant 2015 US$),NE.EXP.GNFS.KD,ne_exp_gnfs_kd_2
+Exports of goods and services (current US$),NE.EXP.GNFS.CD,ne_exp_gnfs_cd_2
+"Travel services (% of service exports, BoP)",BX.GSR.TRVL.ZS,bx_gsr_trvl_zs_2
+"Transport services (% of service exports, BoP)",BX.GSR.TRAN.ZS,bx_gsr_tran_zs_2
+"Exports of goods, services and primary income (BoP, current US$)",BX.GSR.TOTL.CD,bx_gsr_totl_cd_2
+"Service exports (BoP, current US$)",BX.GSR.NFSV.CD,bx_gsr_nfsv_cd_2
+"Goods exports (BoP, current US$)",BX.GSR.MRCH.CD,bx_gsr_mrch_cd_2
+"Exports of goods and services (BoP, current US$)",BX.GSR.GNFS.CD,bx_gsr_gnfs_cd_2
+"Communications, computer, etc. (% of service exports, BoP)",BX.GSR.CMCP.ZS,bx_gsr_cmcp_zs_2
+"ICT service exports (% of service exports, BoP)",BX.GSR.CCIS.ZS,bx_gsr_ccis_zs_2
+"ICT service exports (BoP, current US$)",BX.GSR.CCIS.CD,bx_gsr_ccis_cd_2
+"Net trade in goods (BoP, current US$)",BN.GSR.MRCH.CD,bn_gsr_mrch_cd_2
+"Net trade in goods and services (BoP, current US$)",BN.GSR.GNFS.CD,bn_gsr_gnfs_cd_2
+"Travel services (% of service imports, BoP)",BM.GSR.TRVL.ZS,bm_gsr_trvl_zs_2
+"Transport services (% of service imports, BoP)",BM.GSR.TRAN.ZS,bm_gsr_tran_zs_2
+"Imports of goods, services and primary income (BoP, current US$)",BM.GSR.TOTL.CD,bm_gsr_totl_cd_2
+"Service imports (BoP, current US$)",BM.GSR.NFSV.CD,bm_gsr_nfsv_cd_2
+"Goods imports (BoP, current US$)",BM.GSR.MRCH.CD,bm_gsr_mrch_cd_2
+"Imports of goods and services (BoP, current US$)",BM.GSR.GNFS.CD,bm_gsr_gnfs_cd_2
+"Communications, computer, etc. (% of service imports, BoP)",BM.GSR.CMCP.ZS,bm_gsr_cmcp_zs_2
+Trade in services (% of GDP),BG.GSR.NFSV.GD.ZS,bg_gsr_nfsv_gd_zs_2
+"ICT service exports (% of service exports, BoP)",BX.GSR.CCIS.ZS,bx_gsr_ccis_zs_3
+"ICT service exports (BoP, current US$)",BX.GSR.CCIS.CD,bx_gsr_ccis_cd_3
+Population ages 15-64 (% of total population),SP.POP.1564.TO.ZS,sp_pop_1564_to_zs
+Population ages 0-14 (% of total population),SP.POP.0014.TO.ZS,sp_pop_0014_to_zs
+"Unemployment, total (% of total labor force) (modeled ILO estimate)",SL.UEM.TOTL.ZS,sl_uem_totl_zs
+"Unemployment, male (% of male labor force) (modeled ILO estimate)",SL.UEM.TOTL.MA.ZS,sl_uem_totl_ma_zs
+"Unemployment, female (% of female labor force) (modeled ILO estimate)",SL.UEM.TOTL.FE.ZS,sl_uem_totl_fe_zs
+"Labor force, total",SL.TLF.TOTL.IN,sl_tlf_totl_in
+"Labor force, female (% of total labor force)",SL.TLF.TOTL.FE.ZS,sl_tlf_totl_fe_zs
+"Probability of dying among youth ages 20-24 years (per 1,000)",SH.DYN.2024,sh_dyn_2024
+"Probability of dying among adolescents ages 15-19 years (per 1,000)",SH.DYN.1519,sh_dyn_1519
+"Probability of dying among adolescents ages 10-14 years (per 1,000)",SH.DYN.1014,sh_dyn_1014
+"Probability of dying among children ages 5-9 years (per 1,000)",SH.DYN.0509,sh_dyn_0509
+Number of deaths ages 20-24 years,SH.DTH.2024,sh_dth_2024
+Number of deaths ages 15-19 years,SH.DTH.1519,sh_dth_1519
+Number of deaths ages 10-14 years,SH.DTH.1014,sh_dth_1014
+Number of deaths ages 5-9 years,SH.DTH.0509,sh_dth_0509
+"Secondary education, duration (years)",SE.SEC.DURS,se_sec_durs
+Lower secondary school starting age (years),SE.SEC.AGES,se_sec_ages
+"Primary education, teachers",SE.PRM.TCHR,se_prm_tchr
+"School enrollment, primary, male (% gross)",SE.PRM.ENRR.MA,se_prm_enrr_ma
+"School enrollment, primary, female (% gross)",SE.PRM.ENRR.FE,se_prm_enrr_fe
+"School enrollment, primary (% gross)",SE.PRM.ENRR,se_prm_enrr
+"Primary education, pupils",SE.PRM.ENRL,se_prm_enrl
+"Preprimary education, duration (years)",SE.PRE.DURS,se_pre_durs
+"Compulsory education, duration (years)",SE.COM.DURS,se_com_durs
+Travel services (% of commercial service exports),TX.VAL.TRVL.ZS.WT,tx_val_trvl_zs_wt
+Transport services (% of commercial service exports),TX.VAL.TRAN.ZS.WT,tx_val_tran_zs_wt
+Commercial service exports (current US$),TX.VAL.SERV.CD.WT,tx_val_serv_cd_wt
+"Computer, communications and other services (% of commercial service exports)",TX.VAL.OTHR.ZS.WT,tx_val_othr_zs_wt
+Export value index (2000 = 100),TX.VAL.MRCH.XD.WD,tx_val_mrch_xd_wd
+Merchandise exports by the reporting economy (current US$),TX.VAL.MRCH.WL.CD,tx_val_mrch_wl_cd
+"Merchandise exports by the reporting economy, residual (% of total merchandise exports)",TX.VAL.MRCH.RS.ZS,tx_val_mrch_rs_zs
+Merchandise exports to low- and middle-income economies in Sub-Saharan Africa (% of total merchandise exports),TX.VAL.MRCH.R6.ZS,tx_val_mrch_r6_zs
+Merchandise exports to low- and middle-income economies in South Asia (% of total merchandise exports),TX.VAL.MRCH.R5.ZS,tx_val_mrch_r5_zs
+Merchandise exports to low- and middle-income economies in Middle East & North Africa (% of total merchandise exports),TX.VAL.MRCH.R4.ZS,tx_val_mrch_r4_zs
+Merchandise exports to low- and middle-income economies in Latin America & the Caribbean (% of total merchandise exports),TX.VAL.MRCH.R3.ZS,tx_val_mrch_r3_zs
+Merchandise exports to low- and middle-income economies in Europe & Central Asia (% of total merchandise exports),TX.VAL.MRCH.R2.ZS,tx_val_mrch_r2_zs
+Merchandise exports to low- and middle-income economies in East Asia & Pacific (% of total merchandise exports),TX.VAL.MRCH.R1.ZS,tx_val_mrch_r1_zs
+Merchandise exports to low- and middle-income economies outside region (% of total merchandise exports),TX.VAL.MRCH.OR.ZS,tx_val_mrch_or_zs
+Merchandise exports to high-income economies (% of total merchandise exports),TX.VAL.MRCH.HI.ZS,tx_val_mrch_hi_zs
+Merchandise exports (current US$),TX.VAL.MRCH.CD.WT,tx_val_mrch_cd_wt
+Merchandise exports to economies in the Arab World (% of total merchandise exports),TX.VAL.MRCH.AL.ZS,tx_val_mrch_al_zs
+Ores and metals exports (% of merchandise exports),TX.VAL.MMTL.ZS.UN,tx_val_mmtl_zs_un
+Manufactures exports (% of merchandise exports),TX.VAL.MANF.ZS.UN,tx_val_manf_zs_un
+Fuel exports (% of merchandise exports),TX.VAL.FUEL.ZS.UN,tx_val_fuel_zs_un
+Food exports (% of merchandise exports),TX.VAL.FOOD.ZS.UN,tx_val_food_zs_un
+Agricultural raw materials exports (% of merchandise exports),TX.VAL.AGRI.ZS.UN,tx_val_agri_zs_un
+Export unit value index (2015 = 100),TX.UVI.MRCH.XD.WD,tx_uvi_mrch_xd_wd
+Export volume index (2000 = 100),TX.QTY.MRCH.XD.WD,tx_qty_mrch_xd_wd
+Medium and high-tech exports (% manufactured exports),TX.MNF.TECH.ZS.UN,tx_mnf_tech_zs_un
+Net barter terms of trade index (2000 = 100),TT.PRI.MRCH.XD.WD,tt_pri_mrch_xd_wd
+Travel services (% of commercial service imports),TM.VAL.TRVL.ZS.WT,tm_val_trvl_zs_wt
+Transport services (% of commercial service imports),TM.VAL.TRAN.ZS.WT,tm_val_tran_zs_wt
+Commercial service imports (current US$),TM.VAL.SERV.CD.WT,tm_val_serv_cd_wt
+"Computer, communications and other services (% of commercial service imports)",TM.VAL.OTHR.ZS.WT,tm_val_othr_zs_wt
+Import value index (2000 = 100),TM.VAL.MRCH.XD.WD,tm_val_mrch_xd_wd
+Merchandise imports by the reporting economy (current US$),TM.VAL.MRCH.WL.CD,tm_val_mrch_wl_cd
+"Merchandise imports by the reporting economy, residual (% of total merchandise imports)",TM.VAL.MRCH.RS.ZS,tm_val_mrch_rs_zs
+Merchandise imports from low- and middle-income economies in Sub-Saharan Africa (% of total merchandise imports),TM.VAL.MRCH.R6.ZS,tm_val_mrch_r6_zs
+Merchandise imports from low- and middle-income economies in South Asia (% of total merchandise imports),TM.VAL.MRCH.R5.ZS,tm_val_mrch_r5_zs
+Merchandise imports from low- and middle-income economies in Middle East & North Africa (% of total merchandise imports),TM.VAL.MRCH.R4.ZS,tm_val_mrch_r4_zs
+Merchandise imports from low- and middle-income economies in Latin America & the Caribbean (% of total merchandise imports),TM.VAL.MRCH.R3.ZS,tm_val_mrch_r3_zs
+Merchandise imports from low- and middle-income economies in Europe & Central Asia (% of total merchandise imports),TM.VAL.MRCH.R2.ZS,tm_val_mrch_r2_zs
+Merchandise imports from low- and middle-income economies in East Asia & Pacific (% of total merchandise imports),TM.VAL.MRCH.R1.ZS,tm_val_mrch_r1_zs
+Merchandise imports from low- and middle-income economies outside region (% of total merchandise imports),TM.VAL.MRCH.OR.ZS,tm_val_mrch_or_zs
+Merchandise imports from high-income economies (% of total merchandise imports),TM.VAL.MRCH.HI.ZS,tm_val_mrch_hi_zs
+Merchandise imports (current US$),TM.VAL.MRCH.CD.WT,tm_val_mrch_cd_wt
+Merchandise imports from economies in the Arab World (% of total merchandise imports),TM.VAL.MRCH.AL.ZS,tm_val_mrch_al_zs
+Ores and metals imports (% of merchandise imports),TM.VAL.MMTL.ZS.UN,tm_val_mmtl_zs_un
+Manufactures imports (% of merchandise imports),TM.VAL.MANF.ZS.UN,tm_val_manf_zs_un
+Fuel imports (% of merchandise imports),TM.VAL.FUEL.ZS.UN,tm_val_fuel_zs_un
+Food imports (% of merchandise imports),TM.VAL.FOOD.ZS.UN,tm_val_food_zs_un
+Agricultural raw materials imports (% of merchandise imports),TM.VAL.AGRI.ZS.UN,tm_val_agri_zs_un
+Import unit value index (2015 = 100),TM.UVI.MRCH.XD.WD,tm_uvi_mrch_xd_wd
+Import volume index (2000 = 100),TM.QTY.MRCH.XD.WD,tm_qty_mrch_xd_wd
+Merchandise trade (% of GDP),TG.VAL.TOTL.GD.ZS,tg_val_totl_gd_zs
+"International tourism, expenditures (% of total imports)",ST.INT.XPND.MP.ZS,st_int_xpnd_mp_zs
+"International tourism, expenditures (current US$)",ST.INT.XPND.CD,st_int_xpnd_cd
+"International tourism, expenditures for travel items (current US$)",ST.INT.TVLX.CD,st_int_tvlx_cd
+"International tourism, receipts for travel items (current US$)",ST.INT.TVLR.CD,st_int_tvlr_cd
+"International tourism, receipts (% of total exports)",ST.INT.RCPT.XP.ZS,st_int_rcpt_xp_zs
+"International tourism, receipts (current US$)",ST.INT.RCPT.CD,st_int_rcpt_cd
+"International tourism, number of arrivals",ST.INT.ARVL,st_int_arvl
+Individuals using the Internet (% of population),IT.NET.USER.ZS,it_net_user_zs
+Fixed broadband subscriptions (per 100 people),IT.NET.BBND.P2,it_net_bbnd_p2
+Fixed broadband subscriptions,IT.NET.BBND,it_net_bbnd
+Fixed telephone subscriptions (per 100 people),IT.MLT.MAIN.P2,it_mlt_main_p2
+Fixed telephone subscriptions,IT.MLT.MAIN,it_mlt_main
+Mobile cellular subscriptions (per 100 people),IT.CEL.SETS.P2,it_cel_sets_p2
+Mobile cellular subscriptions,IT.CEL.SETS,it_cel_sets
+"Air transport, passengers carried",IS.AIR.PSGR,is_air_psgr
+"Air transport, freight (million ton-km)",IS.AIR.GOOD.MT.K1,is_air_good_mt_k1
+"Air transport, registered carrier departures worldwide",IS.AIR.DPRT,is_air_dprt
+Renewable internal freshwater resources per capita (cubic meters),ER.H2O.INTR.PC,er_h2o_intr_pc
+"Renewable internal freshwater resources, total (billion cubic meters)",ER.H2O.INTR.K3,er_h2o_intr_k3

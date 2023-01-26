@@ -1,0 +1,607 @@
+---
+title: "Day 1 \nIntroductions & (abbreviated) Foundations in R"
+author: "Christopher M. Loan, MS"
+date: 'February 20, 2022'
+output: xaringan::moon_reader
+---
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+set.seed(123)
+library(tidyverse)
+library(emojifont)
+```
+
+```{r xaringanExtra-clipboard, echo=FALSE}
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #90BE6D\"></i>",
+    error_text = "<i class=\"fa fa-times-circle\" style=\"color: #F94144\"></i>"
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+
+chk._ <- emoji('white_check_mark')
+pkg._ <- emoji('package')
+cmptr._ <- emoji('computer')
+sml._ <- emoji('upside_down_face')
+c._ <- emoji('car')
+```
+
+# Day 1 Agenda 
+
+* Introduction and Overview **(9:00 am - 11:59 am)**
+    * `r chk._` Introductions & KZ Lecture 
+    * `r chk._` coffee break
+    * `R` refresher (**up next**)
+    * `dplyr`, ` %>% `, & `ggplot2` refresher
+    * Lab activity
+  
+* Lunch **(12:00 pm - 12:59 pm)**
+
+* Describing and Fitting Decision Tree Models **(1:00 pm - 4:00 pm)**
+    * Lecture / worked examples: Decision Trees
+    * Lab activity
+    * Lecture / worked examples: diving deeper
+    * Summary, cons, and avenues for model improvement
+    
+```{r eval=FALSE, include=FALSE, echo=FALSE}
+# ---
+# 
+# # Installing packages
+# 
+# * Open `RStudio` by double clicking the `.Rproj` file
+# 
+# * Use `install.packages()` to install these packages:
+#     1. `tidyverse`
+#     2. `rsample`
+#     3. `rpart`
+#     4. `rpart.plot`
+#     5. `vip`
+#     6. `pdp`
+# 
+# ```{r include=TRUE, eval=FALSE}
+# package_name_vector <- 
+#   c('tidyverse',
+#     'rsample',
+#     'rpart',
+#     'rpart.plot',
+#     'vip',
+#     'pdp'
+#   )
+# 
+# install.packages(package_name_vector)
+#```
+
+```
+---
+
+# A Quick Note about the Workshop
+
+I want this to be a comfortable environment for all attendees.
+
+I'm from another University and don't know your curricula or norms, so I want to establish that.
+
+* I am a former high school teacher (high school students are rambunctious!)
+* Oregon & the University of Oregon are also relatively "laid back" 
+* As long as you raise your hand, feel free to interrupt me if you have questions - no need to wait until the end!
+* the only exception will be technical issues which concern just 1 person and not the group
+* for technical issues, I'm happy to help individuals during coffee breaks and/or lunch
+
+As long as it's polite, I'm a big fan of informal `r sml._` 
+
+---
+
+class: middle, center
+
+# Now, let's get started! 
+
+---
+# Packages `r pkg._` in `R`
+
+In `R`, objects, functions, data, and anything besides the coding language itself need to be loaded.
+
+These are bundled together as "packages" `r pkg._` and placed on CRAN* for download with the built-in `install.packages()` function.
+
+(*CRAN = the Comprehensive R Archive Network )
+
+_____
+
+By default, `R` has many functions loaded when you boot up.
+
+Without default packages (or your loaded ones)
+
+  * only `R`'s language structure would remain. 
+  * even simple functions - e.g., `max()` - would be re-written every project
+
+
+---
+
+class: center, middle
+
+# Refresher: Coding in `R` `r cmptr._`
+
+---
+
+# Reading in Data
+
+* Reading in data is really easy as long as you know the file path.
+* `R` will search for your file path within the project folder. 
+* File paths can get complicated in R, but using projects makes it easier.
+* Running `getwd()` will tell you the working directory
+
+```{r}
+getwd()
+```
+
+
+---
+
+# Reading in Data
+
+For this workshop, all data will be pre-loaded or formatted as `.csv` files.
+
+___
+
+**Packaged Data**
+
+Data loaded from a package can be loaded with `data()`:
+
+```{r}
+library(rpart.plot)
+ptitantic <- data(ptitanic)
+```
+
+___
+
+**Import from `.csv`**
+
+Data loaded from a `.csv` can be loaded with `read.csv()`.
+
+I typically make a `data` folder within my `R` projects. 
+
+```{r echo=TRUE, eval=FALSE, include=TRUE}
+ex_dat <- read.csv('data/example_filename.csv')
+```
+
+The `data/` in the file name tells it that `example_file.csv` is in the `data` folder.
+
+---
+
+# Importing Data
+
+Let's load some data from the World Bank (WB):
+
+* The WB describes these as their "educational" data
+* I classify them as Prevention Science data, but I'm biased `r sml._`
+* In a folder called `data`
+* called `se_asia_imputed_world_bank.csv`
+
+
+**Don't forget to store the data as an object with `<-`**
+```{r}
+# dat / df are short for "data frame"
+# they are commonly used names in programming
+# I will inevitably slip these in
+dat <- read.csv('data/se_asia_imputed_world_bank.csv')
+```
+
+---
+
+# Inspecting data
+
+* Inspecting data is as easy as running the object name.
+* Before doing so, I am going to use `tibble()` to format the data frame slightly
+* I'll overwrite the prior object `dat` with itself as a tibble. 
+
+```{r}
+dat <- tibble(dat)
+```
+
+`tibbles`
+
+* are part of the `tidyverse` framework 
+* differ very slightly from data frame (mostly beyond our scope)
+* default to only printing 10 rows, which is nice for our purposes
+
+---
+
+Now I'll inspect the object:
+
+It is `r nrow(dat)` observations (rows) of data on some Southeast Asian countries.
+
+Each observation (row) has many variables (columns). 
+
+There are dozens of equivalent ways to refer to the dimensions (rows and columns). 
+
+**Now and Later: If I slip into using an unfamiliar term, please ask!!**
+
+```{r}
+head(dat)
+```
+
+---
+
+# Factors
+
+I'm assuming this is a familiar term to `R` users, but wanted to address it
+
+* How `R` organizes categorical data
+* With many models, how we handle categorical data is important
+    * distributional assumptions with GLM (e.g., logistic & probit regression)
+    * splitting rules with decision trees (we'll cover this later!)
+* In well-written packages, factors cue the function to properly handle categorical data
+
+Setting variables as factors is easy:
+
+```{r}
+class(dat$country_name)
+dat$country_name <- factor(dat$country_name)
+class(dat$country_name)
+```
+
+---
+
+# Quick Dummy-Coding
+
+* Reference category is omitted from the model
+* Dummy-codes are made with all other factor levels (i.e., 0/1 value for each level)
+* By default R uses the alpha-numerically first category (i.e., "a" or "1" etc.)
+
+
+```{r}
+levels(dat$country_name)[1]
+```
+
+Often, factor level is printed as a suffix to the variable name in output
+
+```{r}
+coef(lm(data = dat, formula = sp_pop_0014_to_zs ~ country_name))
+```
+
+---
+
+# Useful Warnings
+
+Here is a nonsensical model, to show what some warnings might look like
+
+```{r, warning=TRUE}
+useless_model <- lm(data = dat, formula = country_name ~ year)
+```
+
+If these sorts of warnings ever come out of your model, something (probably) didn't got as planned
+
+The model actually runs, but it doesn't mean anything. 
+
+
+---
+
+# Under the Hood `r c._`
+
+Internally, `R` is converting the factor to the levels of the factor, i.e., `r sort(unique(as.numeric(dat$country_name)))`
+
+```{r}
+# factor levels
+unique(dat$country_name)
+```
+
+
+```{r}
+# numeric equivalent
+unique(as.numeric(dat$country_name))
+```
+
+Even though the prior model ran, `R` suspected you did something wrong and is letting you know
+
+---
+
+# The pipe `%>%` or `|>`
+
+* A very useful feature of the `tidyverse` framework is the pipe
+* The pipe takes an object and passes it along as the first argument of a function
+* It's use with `dplyr` - a `tidyverse` package - is one of my favorite use cases.
+* (examples coming next slide)
+___
+* `%>%` longstanding piece of `tidyverse` framework
+* Base `R` incorporated a "base pipe" `|>` recently
+* They are functionally almost identical
+* I load the tidyverse in 100% of my projects, so I use `%>%` out of habit
+
+---
+
+# Examples
+
+Make a pipe by typing 
+
+* the pieces out (`%` & `>` / `|` & `>` )
+* `cmd`/`cntrl` + `shift` + `m`  (mac/PC, respectively)
+
+____
+
+* `dplyr` is perhaps the easiest way to use the pipe effectively
+* `dplyr` function names are written to make code sound like a sentence
+* with this logic, you read the pipe as "then" or "and then"
+
+**Example 1: Let's print all distinct countries present in our data.**
+
+```{r}
+# [using] the data [then] 
+#      find distinct `country_name`
+cntries <- 
+  dat %>% 
+  distinct(country_name) 
+```
+
+---
+
+```{r}
+cntries
+```
+
+---
+
+# Examples
+
+**Example 2: Let's count the number of countries with data per year.**
+
+```{r}
+# [using] the data [then] 
+#      count `year`
+cnts <- 
+  dat %>% 
+  count(year) 
+
+ex_plt <- cnts %>% 
+  ggplot(
+    aes(x = year, y = n, label = n)
+  ) + 
+  geom_col(alpha = 0.7, fill = 'cornflowerblue') + 
+  geom_label(nudge_y = 0.2) + 
+  scale_y_continuous(breaks = seq(0, 10, 2)) +
+  theme_bw(base_size = 18) +
+  labs(
+    y = 'count',
+    title = 'Observations by Year',
+    caption = 'World Bank Data on SE Asian Countries'
+  )
+```
+
+---
+
+# Plot it
+
+```{r fig.align='center'}
+ex_plt
+```
+
+
+---
+
+# Considerations with the Pipe
+
+To print the first 3 rows of data, you can call: 
+
+```{r eval=FALSE, include=TRUE}
+head(dat, 3)
+# or
+dat %>% head(3) 
+```
+
+* These are the same because
+  * The object on the left of the pipe is given the the function on the right as the first argument
+  * The first argument of `head()` is data (the second is the number of rows)
+
+This, though, will give an error
+
+```{r eval=FALSE, include=TRUE}
+dat %>% 
+  lm(sp_pop_1564_to_zs ~ year + country_name)
+```
+    Error in as.data.frame.default(data) : 
+      cannot coerce class ‘"formula"’ to a data.frame
+      
+---
+# Considerations with the Pipe
+
+The issue was that the first argument of `lm()` is `formula` 
+    
+    (see `?lm()` for documentation)
+We can get around this, though:
+
+```{r eval=FALSE, include=TRUE}
+dat %>% 
+  lm(
+    data = .,
+    formula = sp_pop_1564_to_zs ~ year + country_name
+    )
+```
+
+We can use the period `.` to tell where we want to put the piped object.
+
+---
+
+# Why do we care about `dplyr` &  %>%?
+
+* Gave a framework to review a few things about `R`
+* Allows me to show pipes with less confusion
+* In some later cases, it is *substantially* easier to read code with pipes
+
+**Example: get the mean and standard deviation of `sp_pop_1564_to_zs` for each year**
+
+`sp_pop_1564_to_zs` is the percent of the population between 15-64.
+
+In `tidyverse` framework:
+
+```{r inclued=TRUE, eval=FALSE}
+dat %>% 
+  group_by(year) %>% 
+  summarize(
+    means = mean(sp_pop_1564_to_zs),
+    sds = sd(sp_pop_1564_to_zs)
+    ) 
+```
+
+---
+
+# Why do we care about `dplyr` &  %>%?
+
+Example continued (in base)
+
+```{r inclued=TRUE, eval=FALSE}
+year_list <- split(dat, dat$year)
+means <- 
+  vapply(
+    X = year_list, 
+    FUN = function(x) mean(x$sp_pop_1564_to_zs), 
+    FUN.VALUE = double(1)
+  ) 
+sds <- vapply(
+  X = year_list, 
+  FUN = function(x) sd(x$sp_pop_1564_to_zs),
+  FUN.VALUE = double(1)
+  ) 
+data.frame(
+  years = names(year_list),
+  means = means,
+  sds = sds
+)
+```
+
+
+---
+
+# ggplot2
+
+GG stands for "grammar of graphics"
+
+The basic concept is:
+
+* observed data is mapped to several "aesthetics" 
+    * `x`, `y`, `color`, `fill`, `size`, etc.
+    * this concept is easiest to understand with an x and y axis
+* Layers which represent those aesthetics are layered on top
+    * `geom_point` = scatter plot
+    * `geom_smooth` = line of best fit between `y` and `x` aesthetics
+    * `geom_col` = column plot
+* `ggplot2` objects are considered stacked in layers for that reason, 
+* we use `+` instead of pipes to add layers
+* let's look at an example
+---
+
+# Mapping Aesthetics
+
+Let's map:
+
+* y-axis = `sp_pop_1564_to_zs` (percent of country population between 15-64)  
+* x-axis = `year`
+
+`ggplot2` will use observed values to choose limits to these, but no data will appear
+
+```{r}
+plot_mapping <- 
+  dat %>% 
+  ggplot(
+    mapping = 
+      aes(
+        y = sp_pop_1564_to_zs, 
+        x = year
+      )
+  )
+```
+
+
+---
+
+```{r}
+plot_mapping
+```
+
+
+---
+
+# `geom_point()`
+
+
+```{r}
+plot_mapping + geom_point()
+```
+
+---
+
+# `geom_smooth()`
+
+```{r}
+plot_mapping + geom_point() + geom_smooth()
+```
+
+
+---
+
+### `geom_smooth()` by `country_name`
+
+```{r}
+plot_mapping + geom_point() + geom_smooth() + 
+  aes(color = country_name) 
+```
+
+---
+
+# Format the plot
+
+```{r}
+cleaner_plot <- 
+  plot_mapping + 
+  aes(color = country_name) +
+  geom_point() + 
+  geom_smooth() +
+  theme_bw(base_size = 15) + 
+  scale_y_continuous(
+    breaks = seq(0, 100, 10), 
+    limits = c(0, 100)
+  ) +
+  scale_x_continuous(
+    breaks = seq(2000, 2018, 3)
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot',
+    legend.position = c(0.5, 0.2),
+    legend.direction = 'horizontal'
+    )
+```
+
+---
+
+# Add labels
+
+```{r}
+plt_labled <- 
+  cleaner_plot + 
+  labs(
+    y = 'Percent (%) of Population between ages 15-64',
+    caption = 'World Bank Education Data: 2000:2018',
+    title = 'Percent of Population between ages 15-64 in SE Asia'
+    ) 
+```
+
+---
+
+```{r echo=FALSE, include=TRUE, fig.align='center', fig.width=10, fig.height=8}
+plt_labled
+```
+
+---
+class: center, middle
+
+# [Exit Slides & Give `?`/Documentation Tutorial]
+
+---
+class: center, middle
+
+# Activity
+
+Now, it's your turn. Open `refresher_activies.Rmd` and work section 3
+
+There are more activities after, please review the answer key after class today.
