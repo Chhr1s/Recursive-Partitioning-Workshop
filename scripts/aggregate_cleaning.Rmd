@@ -11,20 +11,23 @@ output: html_document
 ```
 
 ```{r}
-set.seed(4444)
+outcome_next_year <- 'se_prm_enrr'
 library(tidyverse)
 library(janitor)
-source(here::here('functions.R'))
+library(sjmisc)
+library(parallel)
+source(here::here('scripts/functions.R'))
 ```
 
 
 ```{r}
-library(tidyverse)
-library(janitor)
 raw_files <- 
   list.files(here::here('data/raw_data'))
 
-names(raw_files) <- gsub('.csv', '', gsub('wb_all_countries_economic_', '', raw_files))
+names(raw_files) <- 
+  gsub('.csv', '', 
+       gsub('wb_all_countries_', '', raw_files)
+       )
 
 se_asia <- 
   c(
@@ -83,9 +86,6 @@ key <-
 ```
 
 ```{r}
-library(sjmisc)
-library(parallel)
-
 cleaned <- 
   dat %>% 
   group_by(country_name) %>% 
@@ -140,7 +140,11 @@ missingness_counter <-
   unnest(data) %>%
   ungroup()
 
-missingness_counter %>% arrange(desc(data))
+missingness_counter %>% 
+  arrange(desc(data)) 
+
+
+sum(is.na(cleaned)) / (ncol(cleaned) * nrow(cleaned))
 ```
 
 ```{r}
@@ -148,24 +152,35 @@ library(janitor)
 clean_subset <- 
   cleaned %>% 
   filter(
-    country_name %in% se_asia & year >= 2000
+    year >= 2000
     ) %>% 
   remove_constant() %>% 
   remove_empty(which = 'cols') %>% 
   remove_empty(which = 'rows') 
-
 ```
 
-
 ```{r}
-near_zero_variance <- 
-  names(which(apply(clean_subset, 2, var, na.rm = TRUE) < 0.2))
+variables_to_include <- 
+  key %>% 
+  mutate(
+    base_info = sub("\\s*\\(.*", "", indicator_name)
+  ) %>% 
+  distinct(base_info, .keep_all = TRUE) %>% 
+  pull(janitor_version) 
+
+
+near_zero_variance <-
+  names(which(apply(select(clean_subset, -country_name), 2, var, na.rm = TRUE) < 0.2))
 
 df_to_impute <-
   clean_subset %>% 
   select(
-    where(~sum(is.na(.x))/nrow(clean_subset) < 0.25)   & -all_of(near_zero_variance)
+    where(
+      ~sum(is.na(.x))/nrow(clean_subset) < 0.25 
+      ) & -all_of(near_zero_variance)
   ) 
+
+# removing variables which are in different units but are otherwise equivalent
 
 eligible_vars <- 
   df_to_impute %>% 
@@ -174,41 +189,36 @@ eligible_vars <-
 impute_key <- 
   key %>% 
   filter(
-    janitor_version %in% eligible_vars
+    janitor_version %in% variables_to_include & 
+      janitor_version %in% eligible_vars
   ) 
 
+
   
-# only 7 % missing is good balance of lots of variables 
+# only 9 % missing is good balance of lots of variables 
 sum(is.na(df_to_impute))/(nrow(df_to_impute)*ncol(df_to_impute))
 # select an outcome with no missingness
 
 full_variables <- 
   df_to_impute %>% 
-  # only retain rows with < 10% missingness:
-  select(where(~sum(is.na(.x)) < 0.2*nrow(df_to_impute))) %>% 
+  # only retain rows with < 5% missingness:
+  select(where(~sum(is.na(.x)) < 0.05*nrow(df_to_impute))) %>% 
   # no missingness:
   #select(where(~sum(is.na(.x))==0)) %>% 
   names()
 
 
-df_to_impute %>% 
-  select(all_of(full_variables)) %>% 
-  summarize(across(.cols = everything(), .fns = var, na.rm = T)) 
-
 outcome_key <- 
   key %>% 
   filter(
-     janitor_version %in% full_variables & 
-       !janitor_version %in% near_zero_variance
+     janitor_version %in% full_variables #& 
+       #!janitor_version %in% near_zero_variance
   )
-
-outcome_key %>% View()
-# https://ilostat.ilo.org/resources/concepts-and-definitions/ilo-modelled-estimates/
 
 
 outcome_descriptor <-
   outcome_key %>% 
-  filter(janitor_version == 'ny_gdp_pcap_kd') %>% 
+  filter(janitor_version == outcome_next_year) %>% 
   pull(indicator_name)
 
 # more information at:
@@ -217,42 +227,18 @@ outcome_descriptor <-
 ```
 
 
-we're going to use median impute
-
-```{r eval=FALSE, include=FALSE}
-plt <-
-  cleaned %>% 
-  pivot_longer(
-    cols = -year
-  ) %>% 
-  ggplot(
-    aes(
-      x = value, 
-      color = name, 
-      fill = name
-    )
-  ) + 
-  geom_density(
-    show.legend = FALSE
-  ) 
-
-plt +
-  lims(x = c(0, 25))
-``` 
-
 ```{r}
-# differences between mean and median aren't that great (in most cases)
-cleaned %>% 
-  select(-country_name) %>% 
-  summarize(
-    across(.cols = everything(),.fns = ~median(.x, na.rm = T) - mean(.x, na.rm = T))
-  ) 
-```
-
-
-```{r}
+# because we're in the world of random forests
+# i'm going to use `missRanger` to impute the data. this works 
+library(missRanger)
+set.seed(123)
 imputed <- 
   df_to_impute %>% 
+  missRanger(pmm.k = 3, seed = 123)
+  
+
+output_data <- 
+  imputed %>% 
   group_by(country_name) %>% 
   nest() %>% 
   mutate(
@@ -264,34 +250,26 @@ imputed <-
           arrange(year) %>% 
           mutate(
             ## check this
-            outcome_next_year = lead(ny_gdp_pcap_kd, order_by = year)
+            outcome_next_year = lead(!!sym(outcome_next_year), order_by = year)
           ) %>% 
         # removes any potential issue from the `lead()` call
         # also removes prediction into covid years
-          drop_na(outcome_next_year) %>% 
-          mutate(
-            across(
-              # no missigness in the outcome
-              .cols = everything(),
-              .fns =
-                ~ifelse(
-                  is.na(.x),
-                  median(.x, na.rm = T),
-                  .x)
-            )
-      )
+          drop_na(outcome_next_year) 
   )
   ) %>% 
   unnest(data) %>% 
   ungroup() %>% 
   # this keeps out covid issues and also 
   filter(year <= 2018) 
+
+# output_data %>% 
+#   select(outcome_next_year, !!sym(outcome_next_year), year, country_name)
 ```
 
 ```{r}
-# rio::export(imputed, here::here('data', 'se_asia_imputed_world_bank.csv'))
-# rio::export(key, here::here('data', 'keys/key_full.csv'))
-# rio::export(impute_key, here::here('data', 'keys/key_imputed.csv'))
-# rio::export(outcome_key, here::here('data', 'keys/key_outcomes_only.csv'))
+rio::export(output_data, here::here('data', 'se_asia_imputed_world_bank.csv'))
+rio::export(key, here::here('data', 'keys/key_full.csv'))
+rio::export(impute_key, here::here('data', 'keys/key_impute.csv'))
+rio::export(outcome_key, here::here('data', 'keys/key_outcomes_only.csv'))
 ```
 

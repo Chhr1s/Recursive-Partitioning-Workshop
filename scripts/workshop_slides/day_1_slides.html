@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Day 1 Recursive Partitioning &amp; Decision Trees</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Christopher M. Loan, MS" />
+    <meta name="date" content="2022-02-20" />
+    <script src="day_1_slides_files/header-attrs-2.16/header-attrs.js"></script>
+    <link href="day_1_slides_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="day_1_slides_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <script src="day_1_slides_files/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="day_1_slides_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="day_1_slides_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="day_1_slides_files/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="day_1_slides_files/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <script src="day_1_slides_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="day_1_slides_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Day 1
+Recursive Partitioning &amp; Decision Trees
+]
+.author[
+### Christopher M. Loan, MS
+]
+.date[
+### February 20, 2022
+]
+
+---
+
+
+class: center, middle
+
+
+
+
+
+
+# A Recommended Reference
+
+.left[
+
+**Strobl et al. (2009)**
+
+* offer a great review of the material in this workshop
+* has been cited &gt;2,300 times (according to Google Scholar)
+* technical, but directed towards applied researchers and practitioners
+
+] 
+
+&lt;img src="../../imgs/main_article.png" width="2819" /&gt;
+
+
+---
+class: center
+
+# An Essential Consideration in Applied Computational Research 
+
+.left[
+
+Software packages come with default settings
+
+Be aware that:
+
+* Defaults are **rarely** the best approach (robustness, flexibility, speed)
+
+* &lt;u&gt;**You ALWAYS need to read the software documentation when you use something**&lt;/u&gt;
+
+* This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**. 
+
+* This is very important when we "tune hyperparameters" later
+
+]
+
+---
+
+
+
+# Recursive Partitioning: The focus on this workshop
+
+
+
+**Recursive** — Successive or Repetitive
+
+**Partitioning** — Splitting or Dividing
+
+___
+
+* Binary splits are almost always used (some "multi-way" splitting models exist)
+
+* This works because repeated binary splits can approximate any functional form based on observed data (i.e., Y to X relationship)
+
+* Binary splits are intuitive — can be interpreted as "yes/no" questions
+
+___ 
+
+**Decision Trees &amp; Random Forests are**
+
+* 2 of the most prominent applications of recursive partitioning
+* the focus of the workshop
+
+---
+class: center, middle
+
+# What fields subsume recursive partitioning? 
+.left[
+* "Machine Learning" (ML) because the algorithm "learns" from the data. 
+* "supervised" because the algorithm can only learn what is **labeled** in the data (i.e., humans who make the data are "supervising")
+]
+&lt;img src="../../imgs/AI_ML_RP.png" width="1280" /&gt;
+
+
+---
+
+# Decision Trees &amp; Random Forests
+
+Many consider the automated interaction detection proposed in 1963 to be the seminal reference in this field.
+
+`Morgan, J. N., &amp; Sonquist, J. A. (1963). Problems in the analysis of survey data, and a proposal. Journal of the American Statis- tical Association, 58, 415–434.`
+
+This was (in some ways) superseded by 
+
+`Breiman, L., Friedman, J. H., Olshen, R. A., &amp; Stone, C. J. (1984). Classification and regression trees. New York: Chapman &amp; Hall.`
+
+The same first author later released this
+
+`Breiman, L. (2001a). Random forests. Machine Learning, 45, 5–32.`
+
+---
+
+# Decision Trees
+
+Decision Trees (DTs) are a straightforward application of recursive partitioning.
+___
+
+**Overarching concept (non-technical)**
+
+*Make subgroups of the observed variables which are similar in the outcome*
+___
+
+**Overarching concept (technical)**
+
+*Use training data to identify splitting rules which optimally divide features into non-overlapping regions; as determined via optimization of an objective function, these regions should ensure cases within each region are maximally similar with respect to the outcome*
+
+---
+
+# Decision Trees
+
+They have many benefits: 
+
+* Easy to interpret
+* Make no assumptions about distribution of data (non-parametric)
+
+* Can identify compounding effects from observed data, even if unspecified, e.g.,
+  * non-linear effects (the variable compounding on itself)
+  * interactions (the variable compounding on another)
+
+* Understanding DTs makes understanding complex extensions (e.g., bagging, boosting, random forests) easier
+
+* Better handle large numbers of predictors, compared to parametric models:
+  * Do not need to do dimension reduction (e.g., PCA/SEM) with many variables
+  * Do not "lose power" with more variables
+
+---
+
+class: middle, center
+
+# What is the **bare-minimum** process to fitting a decision tree?
+
+(i.e., saying *"it's okay"* to use defaults for everything)
+
+---
+
+# Fitting a Decision Tree
+
+
+&lt;img src="../../imgs/training_tree.png" width="1280" /&gt;
+
+Need &lt;u&gt;"features" / predictor variables&lt;/u&gt; &amp; &lt;u&gt; *corresponding "response" / outcome variables* &lt;/u&gt;
+
+---
+
+# Designed for Prediction 
+
+&lt;img src="../../imgs/predicting_tree.png" width="1280" /&gt;
+
+---
+# Understanding Predictions
+
+Visual structure makes understanding predictions intuitive
+
+&lt;img src="../../imgs/inspecting_tree.png" width="1280" /&gt;
+
+---
+# Some Terminology
+
+In this software (`rpart`) "yes" to the splitting rule is on the left &amp; "no" is right
+
+&lt;img src="../../imgs/labeled_img.png" width="1059" /&gt;
+
+---
+
+## Let's look at an example: 
+
+`?rpart.plot::ptitanic`
+
+Outcome / response variable
+* dichotomous (survived vs. died) 
+* this DT is a **classification tree**
+
+&lt;img src="../../imgs/titanic_help.png" width="1043" /&gt;
+
+---
+
+# Setting up
+
+We need a package for actually fitting the data.
+
+
+```r
+# install.packages('rpart')
+library(rpart)
+```
+
+This extension to `rpart` allows simple plotting, and we'll use a built-in data set from this package for our first example (data set = `ptitanic`)
+
+
+
+```r
+# install.packages('rpart.plot')
+library(rpart.plot)
+```
+
+`rsample` is a relatively minimal, but useful package to set up the data.
+
+
+```r
+# install.packages('rsample')
+library(rsample)
+```
+
+---
+# Setting up
+
+ADD SOME INFORMATION ON WHAT HAPPENED TO THE TITANIC
+
+
+```r
+data(ptitanic)
+ptitanic &lt;- 
+  ptitanic %&gt;% 
+  mutate(
+    survived = relevel(survived, ref = 'died')
+  )
+# this is how we'll keep training and testing data apart
+split_data &lt;- initial_split(ptitanic)
+training_data &lt;- training(split_data)
+testing_data &lt;- testing(split_data)
+```
+
+We will start with 2 variables to predict `survival`: `age` &amp; `sex`
+
+
+---
+
+
+
+
+### Some descriptives 
+
+In the whole sample, ~38% survived the incident.
+
+Records show:
+* 843 coded as male
+* 466 coded as female:
+* Age - Mean = 29.88 years
+* Age - Std. Dev. = 14.41 years
+
+---
+
+# Fit the decision tree
+
+Basic syntax is: `outcome_variable ~ predictors`
+
+Let's start with a really simple model to get the hang of DTs.
+
+
+```r
+two_var_DT &lt;- 
+  rpart(
+    survived ~ sex + age, 
+    data = training_data
+  )
+```
+
+This asks the model to build a decision tree that could predict `survival` based on these two variables in the data (coded `sex` and `age`)
+
+
+
+---
+
+# Decision Tree Results
+
+.left-column[
+
+Each node shows
+* predominant predicted class
+* predicted probability of survival
+* percent of total sample in this node
+
+We can make it look a little different too
+
+]
+
+.right-column[
+![](day_1_slides_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+]
+---
+
+# Decision Tree Results
+
+.pull-left[
+
+Split order, Predicted probabilities, &amp; node size give sense of the observed training data
+
+* `sex` was most impacted survival
+
+* more men than women
+
+* Men (~12%) survived at a lower rate than women (~26%)
+
+]
+
+.pull-right[
+![](day_1_slides_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+]
+
+---
+
+# Zoomed in
+
+![](day_1_slides_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+---
+
+# Variable Importance Plots
+
+* Variable importance give the relative contribution of each variable to the model. 
+* As complexity / size of tree increases, VIPs become more helpful after the fist few splits.
+* Depending on the modeling framework, they are created with slightly different approaches.
+* The name gives the underlying logic, though
+
+with the `vip` package, you can get a basic VIP easily.
+
+You can add layers from `ggplot2` to the VIP
+
+
+```r
+library(vip)
+vip(two_var_DT, include_type = TRUE) + 
+  theme_bw(base_size = 15) +
+  labs(
+    title = 'Variable Importance Plot for Decision Tree',
+    subtitle = 'Data from `ptitanic`',
+  )
+```
+
+---
+
+# Variable Importance Plot
+
+.left-column[
+
+Many modeling frameworks have their own measures of variable importance (VI). 
+
+Interpretation of VI magnitudes depends on the measure.
+
+This is beyond the scope of this workshop.
+
+]
+.right-column[
+![](day_1_slides_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+]
+---
+
+# Another way to look at it
+
+.left-column[
+Visually, the model is finding the best split to separate the shapes. 
+
+This case is intuitive (2 splitting variables &amp; 2 total splits)
+
+Higher dimensional models do the same thing, but harder to conceptualize.
+
+]
+
+.right-column[
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+]
+---
+
+Here's an animated graphic of a decision tree (on another dataset)
+
+
+
+---
+
+# Evaluate Performance
+
+We can see how well the trained model performs with the withheld testing data:
+
+* pipe the data to mutate, and use `predict()`
+* specify where the piped information needs to go 
+  * `predict()` wants the model as the first argument
+  * `newdata = .`
+
+Remember, the model has not seen `testing_data`
+
+
+
+```r
+pred_df &lt;- 
+  testing_data %&gt;% 
+  mutate(
+    predicted = predict(two_var_DT, newdata = ., type = 'class')
+    )
+```
+
+---
+
+# Predictions with Decision Trees
+
+Let's peak at the data we made:
+
+
+```r
+pred_df %&gt;% 
+  select(predicted, survived) %&gt;% 
+  tibble()
+```
+
+```
+## # A tibble: 328 × 2
+##    predicted survived
+##    &lt;fct&gt;     &lt;fct&gt;   
+##  1 survived  survived
+##  2 died      died    
+##  3 survived  survived
+##  4 survived  survived
+##  5 died      died    
+##  6 survived  survived
+##  7 survived  survived
+##  8 survived  survived
+##  9 died      died    
+## 10 survived  survived
+## # … with 318 more rows
+```
+
+
+---
+
+# Accuracy
+
+
+```r
+pred_df %&gt;% 
+  mutate(
+    accuracy = 
+      if_else(
+        predicted == survived, 
+        'accurate',
+        'inaccurate'
+      )
+  ) %&gt;% 
+  count(accuracy) %&gt;% 
+  mutate(percent = paste0(round(n/sum(n)*100), '%'))
+```
+
+```
+##     accuracy   n percent
+## 1   accurate 256     78%
+## 2 inaccurate  72     22%
+```
+
+---
+
+# In-Depth Accuracy
+
+
+
+
+
+Overall, the model accurately classified ~78%
+___
+
+To see this with more nuance, we can look at it as below: 
+
+&lt;table&gt;
+&lt;caption&gt;Performance of 2-variable DT&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; survived &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; predicted &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; type of prediction &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; percent &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 91 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 28% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 165 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 50% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+class: center, middle
+
+# Activity
+
+---
+
+## Now it's your turn: 
+
+* Open `activity_1.Rmd`.
+
+* Complete `sections 1.1 - 1.5`.
+
+* Work in small groups or alone.
+
+* We'll come back together &amp; discuss in ~20 minutes. 
+
+---
+
+class: center, middle
+
+# Review `activity_1_key.Rmd`
+
+---
+
+# Context: DTs vs. GLMs
+
+Let's fit the same model from the activity again. 
+
+Our training data differs slightly compared to the activity. 
+
+If we made sure to use `set.seed()` with the same seed value, they would be the same. 
+
+
+```r
+all_var_DT &lt;- 
+  rpart(
+    survived ~ ., 
+    data = training_data
+  )
+```
+
+---
+
+# Context: DTs vs. GLMs
+
+The generalized linear model (GLM) can also make predictions. 
+
+Essentially the same as linear regression, but for dichotomous outcomes (i.e., died vs. survived)
+
+Let's contextualize how well this model is doing by fitting a basic logistic regression.
+
+
+```r
+glm_comparison &lt;-
+  glm(
+    data = training_data,
+    formula = survived ~ ., 
+    family = binomial(link = "logit")
+  )
+```
+
+---
+
+# Logistic Regression Parameters
+
+The direction of effects do not conflict with the DT. 
+
+On day 3, we'll dive into model interpretation more and will interpret how these effects differ from the DT
+
+&lt;table&gt;
+&lt;caption&gt;Estimated Parameters&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; term &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estimate &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; std.error &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; statistic &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; p.value &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; odds_ratio &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.699 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.407 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.096 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 40.403 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; pclass2nd &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.229 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.264 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4.660 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.293 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; pclass3rd &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.349 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.262 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8.952 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.095 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; sexmale &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.616 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.206 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -12.681 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.073 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.033 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.008 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4.322 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.968 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; sibsp &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.357 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.119 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.988 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.003 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.700 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; parch &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.056 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.114 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.493 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.622 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.058 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# (extra slide if time)
+
+Exponentiate Parameters -&gt; Odds Ratios
+
+Intercept = Odds ratio for "full statistical reference" 
+
+Full statistical reference is:
+  * `pclass` = `1st`
+  * `sex` = `female`
+  * `age` = 0 (because not mean centered)
+  * `sibsp` = 0
+  * `parch` = 0
+  
+Interpreting coefficients:
+
+From [UCLA's Statistical Methods &amp; Data Analytics website](https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/): 
+
+*each estimated coefficient is the expected change in the log odds of [surviving] for a unit increase in the corresponding predictor variable holding the other predictor variables constant...Each exponentiated coefficient is the ratio of two odds, or the change in odds [...] for a unit increase in the corresponding predictor variable holding other variables at certain value [typically 0].*
+
+---
+
+
+
+# (extra slide if time)
+
+
+Effects:
+* Intercept group is ~40 times more likely to survive than die
+* the odds of 2nd class surviving are ~71% lower than the odds for 1st class 
+* the odds of 3rd class surviving are ~90% lower than the odds for 1st class 
+* the odds of males surviving are ~93% lower than the odds for females 
+* the odds of someone 1 year older surviving are ~3% lower than the odds for someone 1 year younger  
+* the odds of someone with 1 more sibling or spouse on board surviving are ~30% lower than the odds for someone with 1 fewer
+* the odds of someone with 1 more parent or child on board surviving are ~6% higher than the odds for someone with 1 fewer
+
+---
+
+# Comparing Performance
+
+We can predict on unseen data to make predictions.
+
+Here is how I made predictions (refer to `.Rmd` for formatting code)
+
+
+```r
+tmp_tbl &lt;- 
+  testing_data %&gt;% 
+  mutate(
+    predicted_DT = 
+      predict(two_var_DT, newdata = .)[,'survived'], 
+    predicted_glm = 
+      predict(
+        glm_comparison,
+        newdata = ., 
+        type = 'response'
+      ), 
+    survived = survived
+  )
+```
+
+---
+
+# Comparative Accuracy Plot
+
+
+
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-36-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# In-Depth Accuracy
+
+
+
+&lt;table&gt;
+&lt;caption&gt;Performance of DT vs. GLM&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; model &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; type_of_prediction &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; percent &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr grouplength="4"&gt;&lt;td colspan="4" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Decision Tree&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 165 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 50% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 91 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 28% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr grouplength="5"&gt;&lt;td colspan="4" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Logistic Regression&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 7% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 34 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 10% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 143 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 44% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 73 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 22% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 56 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 17% &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# Exploring Specific Cases
+
+Let's look at predicted probabilities for a small number of randomly sampled points
+
+
+```r
+library(ggrepel)
+set.seed(2) 
+sml_df &lt;-
+  tmp_tbl %&gt;%
+  mutate(id = 1:n()) %&gt;% 
+  drop_na() %&gt;% 
+  sample_n(4) %&gt;% 
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %&gt;% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    matched = 
+      if_else(
+        survived == predicted_class, 'Correct', 'Incorrect'
+      ),
+    survived = paste0('Reality: ', survived)
+  )
+```
+
+---
+
+
+```r
+plt_of_smple &lt;- 
+  sml_df %&gt;% 
+  ggplot(
+    aes(
+      x = predicted, 
+      y = predicted_class, 
+      color = model,
+      shape = matched,
+      label = 
+        paste0(
+          'ID ', id, ':\n',
+          'prob = ', round(predicted, 2)
+        )
+    )
+  ) +
+  geom_point(size = 5) +
+  geom_label_repel(
+    aes(fill = model),
+    color = 'black'
+  ) +
+  scale_x_continuous(
+    limits = c(-0.25, 1.25), 
+    labels = seq(0, 1, 0.25)
+  ) +
+  facet_wrap(vars(survived), nrow = 1) 
+```
+
+---
+
+# A Random Sampling
+
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-41-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Another random sampling
+
+
+
+
+
+```r
+plt_of_smple2
+```
+
+&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-43-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Cons
+
+Decision trees are great models for
+
+* quickly understanding broad strokes of data
+* interpretting complex interactions and nonlinear effects
+
+They have many issues, though:
+
+* Overfitting to the training data
+* Unstable tree structure  
+* Biased towards selecting variables with more potential split points (i.e., wide ranges)
+* Greedy algorithm 
+* it finds the best option at each step
+* branches are dependent on prior splits
+
+There are numerous ways to overcome these shortcomings, though.
+
+---
+
+# Improving Predictions
+
+Prediction relies on:
+
+1. a model
+2. user-specified settings
+  * Referred to as **hyperparameters**
+  * allows calibration of the model
+3. data
+
+Thus, prediction can be improved by improving any one of those.
+
+Throughout the week, we will explore each of these.
+
+---
+
+# Schedule
+
+Feb. 21 we will improve (1) and (2)
+
+* explore a more robust model (random forests) 
+* improve models through modifying hyperparameters
+
+Feb. 22 we will
+
+* discuss cross-validation data
+* conduct hyperparameter tuning
+* reinforce skills from days 1 and 2
+
+---
+
+class: center, middle
+
+# End of day 1
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -528,3 +528,168 @@ tmp_tbl <-
     actual = survived
   )
 ```
+
+
+
+```{r}
+
+cv_obj <- vfold_cv(sea_training, v = 5)
+
+max_entropy_grid <- 
+  grid_max_entropy(
+    # default = floor(sqrt(ncol(sea_training))) = 24
+    mtry(range = c(2, ncol(sea_training)-1)),
+    trees(range = c(400, 1000)), 
+    size = 100
+  )
+
+tuned_res <- 
+  cv_it_complex(
+    cv_obj = cv_obj, 
+    outcome_string = 'outcome_next_year',
+    seed = 333,
+    mod_formula = outcome_next_year ~ .,
+    tuning_grid = max_entropy_grid,
+    model_type = 'rf',
+    mode = 'regression'
+    ) 
+```
+
+```{r}
+manually_tuned_rmse <- 
+  rmse(
+  observed_y = sea_testing$outcome_next_year, 
+  predicted_y = predict(manually_tuned_rf, data = sea_testing)$prediction
+)
+```
+
+```{r}
+pos_d <- 
+  position_dodge(width = 1)
+
+plot_df <- 
+  tuned_res %>% 
+  pivot_longer(
+    cols = c(rmse_mean:mae_se),
+    names_to = c('metric', '.value'),
+    names_sep = '_'
+  ) 
+
+plot_df %>% 
+  ggplot(
+    aes(
+      y = factor(grid_index), 
+      x = mean, 
+      fill = metric,
+      group = metric, 
+      xmin = mean - 1.96*se, 
+      xmax = mean + 1.96*se
+    )
+  ) + 
+  geom_col(color = 'black') + 
+  geom_errorbar(width = 0.2, color = 'black') + 
+  geom_label(
+    aes(label = round(mean, 3)),
+    color = 'black'
+  ) +
+  theme_bw() + 
+  labs(
+    caption = 
+      '95% CIs drawn with t-distribution\nuse to conceptualize spread, not assess significance'
+  ) +
+  theme(
+    plot.caption.position = 'plot',
+    plot.title.position = 'plot'
+  ) +
+  facet_wrap(vars(metric), scales = 'free') + 
+  labs(
+    y = 'Grid index',
+    x = 'Average Fit'
+  )
+```
+
+```{r}
+final_mtry <- 
+  tuned_res %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
+  pull(mtry)
+
+final_trees <- 
+  tuned_res %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
+  pull(trees)
+```
+
+```{r}
+rf_tuned <- 
+  ranger(
+    data = sea_training, 
+    formula = outcome_next_year ~ .,
+    importance = 'permutation',
+    mtry = final_mtry,
+    num.trees = final_trees
+  )
+```
+
+```{r}
+preds <- 
+  sea_testing %>% 
+  mutate(
+    # predicted_DT = 
+    #   predict(dt_training, newdata = sea_training), 
+    predicted_RF.manual = 
+      predict(manually_tuned_rf, data = .)$predictions,
+    predicted_RF.tuned = 
+      predict(rf_tuned, data = .)$predictions,
+  ) 
+```
+
+
+```{r}
+preds %>% 
+  mutate(
+    which_closer = 
+      case_when(
+        abs(outcome_next_year - predicted_RF.manual) ==
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Same',
+        abs(outcome_next_year - predicted_RF.manual) >
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Grid Tune',
+        abs(outcome_next_year - predicted_RF.manual) <
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Manually',
+        )
+  ) %>% 
+  ggplot(
+    aes(
+      x = predicted_RF.tuned, 
+      y = predicted_RF.manual, 
+      color = which_closer,
+    )
+  ) +
+  geom_point(size = 4, alpha = 0.4)  + 
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw() +
+  labs(x = 'Grid Tuned', y = 'Manually Tuned')
+```
+
+
+```{r}
+preds %>% 
+  select(outcome_next_year, predicted_RF.manual, predicted_RF.tuned) %>% 
+  pivot_longer(
+    cols = -outcome_next_year,
+    #names_prefix = 'prediction', 
+    names_sep = '_',
+    names_to = c('.value', 'model')
+  ) %>% 
+  group_by(model) %>% 
+  summarize(
+    MAE = mae(
+      observed_y = outcome_next_year, 
+      predicted_y = predicted
+    ), 
+    RMSE = rmse(
+      observed_y = outcome_next_year, 
+      predicted_y = predicted
+    )
+  )
+```

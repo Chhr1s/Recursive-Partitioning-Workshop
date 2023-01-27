@@ -1,0 +1,106 @@
+---
+title: "slides day 3"
+author: "Christopher M. Loan, MS"
+date: 'February 22, 2022'
+output: xaringan::moon_reader
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Workshop Progress
+
+On Day 1, we discussed:
+  * what DTs are
+  * how to fit DTs
+  * how to interprate/visualize DTs
+  * how to evaluate DTs
+
+On Day 2, we discussed
+  
+  * what RFs are
+  * how to fit RFs
+  * how to evaluate RFs
+  * hyperparameters
+  * how hyperparameters are used to improve models
+  
+---
+
+# Looking Ahead
+
+Today, we will discuss:
+
+* Interpretation of Random Forests
+* More Advanced Visualizations (Partial Dependency Plots)
+* Cross validation
+* Tuning More than 1 Hyperparameter at a time
+
+
+
+---
+
+# DTs, GLMs, and PDPs (oh my)
+
+```{r include = TRUE, echo = FALSE}
+glm_pdp <- 
+  partial(
+    glm_comparison, 
+    pred.var = c('sex', 'age', 'pclass'),
+    type = 'classification'
+    #which.class = 'survived'
+    ) %>% 
+  mutate(
+    model = 'glm'
+  )
+```
+
+
+.left-column[
+
+These models predict survival differently
+
+refer to: 
+
+linear vs. piecewise age effect
+
+constant effects across passenger class vs. differential effects of (`sex` x `class` x `age`)
+
+]
+
+.right-column[
+```{r include = TRUE, echo = FALSE}
+three_variable_pdp %>% 
+  mutate(
+    model = 'DT'
+  ) %>% 
+  bind_rows(glm_pdp) %>% 
+  ggplot(
+    aes(
+      y = yhat, 
+      x = age,
+      shape = sex,
+      color = model
+    )
+  ) + 
+  theme_bw() +
+  geom_point(
+    size = 4, 
+    alpha = 0.4
+  ) +
+  theme_bw(base_size = 15) +
+  labs(
+    x = 'Passenger Age', 
+    y = 'Predicted Probability of Surviving', 
+    title = 'Women & younger men (>= 15) display a substantially\n higher probability of survival',
+    fill = 'Passenger\nSex'
+    ) +
+  theme(
+    plot.title.position = 'plot',
+    legend.position = 'bottom'
+    ) +
+  facet_wrap(vars(pclass), ncol = 1) 
+```
+]
+---

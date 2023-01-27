@@ -1,0 +1,208 @@
+---
+title: "slide scraps"
+author: "Christopher Loan"
+date: "2023-01-26"
+output: html_document
+---
+
+---
+
+# Comparative Accuracy Plot
+
+```{r echo = FALSE, include = TRUE}
+library(rpart)
+all_var_DT <- 
+  rpart(
+    survived ~ ., 
+    data = training_data
+    )
+
+glm_comparison <-
+  glm(
+    data = training_data,
+    formula = survived ~ ., 
+    family = binomial(link = "logit")
+  )
+
+tmp_tbl <- 
+  testing_data %>% 
+  drop_na(age) %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(all_var_DT, newdata = .)[, 'survived'], 
+    predicted_glm = 
+      predict(
+        glm_comparison,
+        newdata = ., 
+        type = 'response'
+        ), 
+    predicted_rf = 
+       predict(rf_1, data = .)$predictions[,'survived'],
+    actual = survived
+  )
+
+tmp_plt_df <- 
+  tmp_tbl %>%
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm, predicted_rf), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %>% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    accuracy = 
+      if_else(predicted_class == actual, 'correct', 'incorrect')
+        )
+
+
+plt_df <- 
+  tmp_plt_df %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  mutate(
+    proportion = 
+      paste0(
+        round(
+          (n / sum(n))* 100), 
+        '%'
+        )
+    )
+```
+
+```{r include=TRUE, echo=FALSE}
+pos_tmp <-
+  position_dodge(width = 1)
+
+comp_acc_plt <- 
+  plt_df %>% 
+  ggplot(
+    aes(
+      x = accuracy,
+      y = n, 
+      fill = model
+    )
+  ) + 
+  geom_col(
+    position = pos_tmp,
+    alpha = 0.6, 
+    color = 'black'
+  ) +
+  geom_label(
+    aes(label = proportion), 
+    position = pos_tmp
+  ) +
+  theme_bw() + 
+  labs(
+    x = 'Accuracy', 
+    y = 'Count',
+    title = 
+       'Performance of three models\nMissing Values Deleted from Testing'
+         
+  ) + 
+  theme(
+    plot.title.position = 'plot', 
+    plot.caption.position = 'plot'
+  )
+```
+
+```{r include=TRUE, echo=FALSE}
+comp_acc_plt
+```
+
+---
+
+# In-Depth Accuracy
+
+```{r echo = FALSE, include=TRUE}
+tmp_plt_df %>%
+  mutate(
+   type_of_prediction =
+     case_when(
+       actual == 'died' & predicted_class == 'died' ~ 
+         'true negative',
+       actual == 'died' & predicted_class == 'survived' ~ 
+         'false negative',
+       actual == 'survived' & predicted_class == 'died' ~ 
+         'false positive',
+       actual == 'survived' & predicted_class == 'survived' ~ 
+         'true positive'
+     )
+  ) %>%
+  group_by(model) %>% 
+  count(type_of_prediction) %>% 
+  mutate(
+    percent = paste0(round(100*n/sum(n)), '%')
+  ) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    id_cols = model,
+    names_from = type_of_prediction, 
+    values_from = percent
+    ) %>% 
+  kbl(caption = 'Model Performance (no imputation)')
+```
+
+
+---
+
+
+
+---
+class: center, middle 
+
+# What about those missing cases we just deleted?
+
+---
+
+# A quick robustness check
+
+Let's use `missRanger` and then calculate accuracy without deleting missing data (code in workshop folder).
+
+Results are very similar to non-imputed
+
+```{r include = TRUE, echo = FALSE}
+missRanger(testing_data, verbose = 0) %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(all_var_DT, newdata = .)[, 'survived'], 
+    predicted_glm = 
+      predict(
+        glm_comparison,
+        newdata = ., 
+        type = 'response'
+        ), 
+    predicted_rf = 
+       predict(rf_1, data = .)$predictions[,'survived'],
+    actual = survived
+  ) %>% 
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm, predicted_rf), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %>% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    accuracy = 
+      if_else(predicted_class == survived, 'correct', 'incorrect')
+        ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  mutate(
+    percent = paste0(round(100*n/sum(n)), '%')
+  ) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    id_cols = model,
+    names_from = accuracy, 
+    values_from = percent
+    ) %>% 
+  kbl(caption = 'Model Performance (with Imputation)') 
+```
+
+---

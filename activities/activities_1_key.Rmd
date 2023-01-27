@@ -132,47 +132,6 @@ vip(
   )
 ```
 
-#### Section 1.4.3
-
-Use `pdp` to visualize bivariate (i.e., with 2 variables) partial dependency plots (PDPs) with pairs (i.e., 2) of the top 3 variables. Bivariate pairs of V1, V2, and V3, for example, are:
-
-* V1 & V2
-* V1 & V3
-* V2 & V3
-
-**tip:** use `plot = TRUE` in your PDP, instead of using `ggplot2`, unless you feel comfortable with `ggplot2`.
-
-```{r}
-# this is the way to use `map` to do it
-# but you can just write the combinations individually
-
-combinations <- 
-  data.frame(
-    combn(
-      names(all_var_DT$variable.importance[1:3]), 
-      m = 2
-      )
-  )
-
-
-plt_list <- 
-  map(
-    .x = combinations,
-    .f = 
-      ~partial(
-        all_var_DT,
-        pred.var = unlist(.x),
-        type = 'classification',
-        which.class = 'survived',
-        plot = TRUE,
-        prob = TRUE
-      )
-      
-  )
-
-plt_list
-```
-
 ### Section 1.5: Evaluate Model Performance (unseen data)
 
 Use your withheld testing data to determine the percent of new predictions that are correct.

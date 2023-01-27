@@ -5,7 +5,9 @@ date: 'February 20, 2022'
 output: xaringan::moon_reader
 ---
 
-```{r}
+class: center, middle
+
+```{r include=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
@@ -21,12 +23,6 @@ htmltools::tagList(
 )
 ```
 
-
-class: center, middle
-
-# Let's get Started
-
----
 # A Recommended Reference
 
 .left[
@@ -39,7 +35,14 @@ class: center, middle
 
 ] 
 
-![](imgs/main_article.png)
+```{r include = TRUE, echo = FALSE}
+knitr::include_graphics(
+  here::here(
+    'imgs/main_article.png'
+  )
+)
+```
+
 
 ---
 class: center
@@ -47,24 +50,26 @@ class: center
 # An Essential Consideration in Applied Computational Research 
 
 .left[
-* Software packages come with default settings
 
-* Defaults are **rarely** the most robust method, the most flexible approach, etc. 
+Software packages come with default settings
 
-* In Machine Learning (ML) specifically, calibrating these settings is known as "hyper parameter tuning", "hyper parameter optimization", etc.
+Be aware that:
 
-* People spend entire careers using conceptual mathematics and computer science to master this tuning/optimization
+* Defaults are **rarely** the best approach (robustness, flexibility, speed)
 
-* Many non-ML pieces of programming have defaults, too
+* <u>**You ALWAYS need to read the software documentation when you use something**</u>
 
-<u>**You ALWAYS need to read the software documentation when you use something**</u>
+* This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**. 
 
-This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**. Due to time constraints, we are unable to provide more than an introduction to these methods.
+* This is very important when we "tune hyperparameters" later
 
 ]
 
 ---
-# Recursive Partitioning
+
+
+
+# Recursive Partitioning: The focus on this workshop
 
 ```{r include=FALSE}
 library(tidyverse)
@@ -82,13 +87,36 @@ ___
 
 * Binary splits are intuitive — can be interpreted as "yes/no" questions
 
-* Called "ML" because the algorithm "learns" from the data. 
+___ 
 
-* It is "supervised" the algorithm can only learn what is labeled in the data.
+**Decision Trees & Random Forests are**
 
-* Basis of decision trees, random forests, and other Machine Learning (ML) methods
+* 2 of the most prominent applications of recursive partitioning
+* the focus of the workshop
 
 ---
+class: center, middle
+
+# What fields subsume recursive partitioning? 
+.left[
+* "Machine Learning" (ML) because the algorithm "learns" from the data. 
+* "supervised" because the algorithm can only learn what is **labeled** in the data (i.e., humans who make the data are "supervising")
+]
+```{r include = TRUE, echo = FALSE}
+knitr::include_graphics(
+  here::here(
+    'imgs/AI_ML_RP.png'
+  )
+)
+# .left[
+# We will **not** cover (1) Unsupervised ML, e.g., k-means clustering, or (2) Other aspects of artificial intelligence, e.g., computer vision
+# ]
+```
+
+
+---
+
+# Decision Trees & Random Forests
 
 Many consider the automated interaction detection proposed in 1963 to be the seminal reference in this field.
 
@@ -98,18 +126,10 @@ This was (in some ways) superseded by
 
 `Breiman, L., Friedman, J. H., Olshen, R. A., & Stone, C. J. (1984). Classification and regression trees. New York: Chapman & Hall.`
 
-and later
+The same first author later released this
 
 `Breiman, L. (2001a). Random forests. Machine Learning, 45, 5–32.`
----
-class: center, middle
 
-# What fields subsume recursive partitioning? 
-
-![](imgs/AI_ML_RP.png)
-.left[
-We will **not** cover (1) Unsupervised ML, e.g., k-means clustering, or (2) Other aspects of artificial intelligence, e.g., computer vision
-]
 ---
 
 # Decision Trees
@@ -124,7 +144,7 @@ ___
 
 **Overarching concept (technical)**
 
-*Use training data to identify splitting rules which optimally divide features into non-overlapping regions, where the cases within each region are similar with respect to the outcome*
+*Use training data to identify splitting rules which optimally divide features into non-overlapping regions; as determined via optimization of an objective function, these regions should ensure cases within each region are maximally similar with respect to the outcome*
 
 ---
 
@@ -132,21 +152,21 @@ ___
 
 They have many benefits: 
 
+* Easy to interpret
 * Make no assumptions about distribution of data (non-parametric)
 
 * Can identify compounding effects from observed data, even if unspecified, e.g.,
   * non-linear effects (the variable compounding on itself)
   * interactions (the variable compounding on another)
 
-* Easy to interpret
-    * Are not an "ML Black Box", a complaint with more complex models
-    * Understanding DTs makes understanding complex extensions (e.g., bagging, boosting, random forests) easier
-    
-* Useful when number of variables > number of observations (especially in ensemble)
+* Understanding DTs makes understanding complex extensions (e.g., bagging, boosting, random forests) easier
+
+* Better handle large numbers of predictors, compared to parametric models:
+  * Do not need to do dimension reduction (e.g., PCA/SEM) with many variables
   * Do not "lose power" with more variables
-  * Can use observed varaibles without dimension reduction (e.g., PCA/SEM)
 
 ---
+
 class: middle, center
 
 # What is the **bare-minimum** process to fitting a decision tree?
@@ -154,28 +174,57 @@ class: middle, center
 (i.e., saying *"it's okay"* to use defaults for everything)
 
 ---
+
 # Fitting a Decision Tree
 
-![](imgs/training_tree.png)
 
-Need <u>"features" / predictor variables</u> & <u> *corresponding "response" / outcome* </u>
+```{r include = TRUE, echo = FALSE}
+knitr::include_graphics(
+  here::here(
+    'imgs/training_tree.png'
+  )
+)
+```
+
+Need <u>"features" / predictor variables</u> & <u> *corresponding "response" / outcome variables* </u>
 
 ---
+
 # Designed for Prediction 
 
-![](imgs/predicting_tree.png)
+```{r include = TRUE, echo = FALSE}
+knitr::include_graphics(
+  here::here(
+    'imgs/predicting_tree.png'
+  )
+)
+```
+
 ---
 # Understanding Predictions
 
 Visual structure makes understanding predictions intuitive
 
-![](imgs/inspecting_tree.png)
+```{r include = TRUE, echo = FALSE}
+knitr::include_graphics(
+  here::here(
+    'imgs/inspecting_tree.png'
+  )
+)
+```
+
 ---
 # Some Terminology
 
 In this software (`rpart`) "yes" to the splitting rule is on the left & "no" is right
 
-![](imgs/labeled_img.png)
+```{r include = TRUE, echo = FALSE}
+knitr::include_graphics(
+  here::here(
+    'imgs/labeled_img.png'
+  )
+)
+```
 
 ---
 
@@ -187,7 +236,14 @@ Outcome / response variable
 * dichotomous (survived vs. died) 
 * this DT is a **classification tree**
 
-![](imgs/titanic_help.png)
+```{r include = TRUE, echo = FALSE}
+knitr::include_graphics(
+  here::here(
+    'imgs/titanic_help.png'
+  )
+)
+```
+
 ---
 
 # Setting up
@@ -247,10 +303,10 @@ descriptives <- psych::describe(rpart.plot::ptitanic$age)
 In the whole sample, ~`r round(sum(ptitanic$survived == 'survived')/nrow(ptitanic)*100)`% survived the incident.
 
 Records show:
-  * `r sum(ptitanic$sex == 'male')` coded as male
-  * `r sum(ptitanic$sex == 'female')` coded as female:
-  * Age - Mean = `r round(descriptives$mean, 2)` years
-  * Age - Std. Dev. = `r round(descriptives$sd, 2)` years
+* `r sum(ptitanic$sex == 'male')` coded as male
+* `r sum(ptitanic$sex == 'female')` coded as female:
+* Age - Mean = `r round(descriptives$mean, 2)` years
+* Age - Std. Dev. = `r round(descriptives$sd, 2)` years
 
 ---
 
@@ -265,7 +321,7 @@ two_var_DT <-
   rpart(
     survived ~ sex + age, 
     data = training_data
-    )
+  )
 ```
 
 This asks the model to build a decision tree that could predict `survival` based on these two variables in the data (coded `sex` and `age`)
@@ -279,8 +335,8 @@ surv_by_sex <-
   select(sex, perc) %>% 
   split(., .$sex) %>% 
   map(
-     ~paste0('~', round(pull(.x, perc)), '%')
-    )
+    ~paste0('~', round(pull(.x, perc)), '%')
+  )
 ```
 
 ---
@@ -360,7 +416,9 @@ rpart.plot(
 * Depending on the modeling framework, they are created with slightly different approaches.
 * The name gives the underlying logic, though
 
-with the `vip` package, you can get a basic VIP easily: 
+with the `vip` package, you can get a basic VIP easily.
+
+You can add layers from `ggplot2` to the VIP
 
 ```{r, eval = FALSE, echo = T}
 library(vip)
@@ -376,7 +434,15 @@ vip(two_var_DT, include_type = TRUE) +
 
 # Variable Importance Plot
 
-.left-column[Be careful to not interpret the magnitude of differences without deep understandings of how this specific VIP is made.]
+.left-column[
+
+Many modeling frameworks have their own measures of variable importance (VI). 
+
+Interpretation of VI magnitudes depends on the measure.
+
+This is beyond the scope of this workshop.
+
+]
 .right-column[
 ```{r echo = FALSE}
 library(vip)
@@ -409,11 +475,11 @@ training_data %>%
     prediction = 
       if_else(
         round(predict(two_var_DT, newdata = .)[,'survived']) == 1, 'survived', 'died'
-        ), 
+      ), 
     accuracy = if_else(prediction == survived, 'accurate', 'inaccurate')
   ) %>% 
   ggplot() +
-   geom_jitter(
+  geom_jitter(
     aes(
       shape = prediction,
       x = age,
@@ -422,7 +488,7 @@ training_data %>%
     ),
     width = 0,
     height = 0.2
-      ) +
+  ) +
   geom_rect(
     inherit.aes = FALSE,
     data = 
@@ -440,7 +506,7 @@ training_data %>%
       ymin = y, 
       ymax = ymax
     ),
-      alpha = 0.4,
+    alpha = 0.4,
     color = 'black'
   )  +
   scale_alpha_discrete(range = c(0.9, 0.4)) +
@@ -457,32 +523,80 @@ knitr::include_graphics('imgs/rpart_mix.gif')
 ```
 
 ---
-# How well does it perform? 
 
-We can see how well the trained model performs with the withheld testing data. The model has not seen this. 
+# Evaluate Performance
 
-```{r include=FALSE}
-tmp_tbl <- 
+We can see how well the trained model performs with the withheld testing data:
+
+* pipe the data to mutate, and use `predict()`
+* specify where the piped information needs to go 
+  * `predict()` wants the model as the first argument
+  * `newdata = .`
+
+Remember, the model has not seen `testing_data`
+
+
+```{r}
+pred_df <- 
   testing_data %>% 
   mutate(
-    predicted = predict(two_var_DT, newdata = testing_data, type = 'class'), 
-    actual = survived
-  ) %>% 
-  count(actual, predicted) %>% 
+    predicted = predict(two_var_DT, newdata = ., type = 'class')
+    )
+```
+
+---
+
+# Predictions with Decision Trees
+
+Let's peak at the data we made:
+
+```{r}
+pred_df %>% 
+  select(predicted, survived) %>% 
+  tibble()
+```
+
+
+---
+
+# Accuracy
+
+```{r}
+pred_df %>% 
   mutate(
-   type_of_prediction = 
-     case_when(
-       actual == 'died' & predicted == 'died' ~ 'true negative', 
-       actual == 'died' & predicted == 'survived' ~ 'false negative', 
-       actual == 'survived' & predicted == 'died' ~ 'false positive',
-       actual == 'survived' & predicted == 'survived' ~ 'true positive'
-     ),
+    accuracy = 
+      if_else(
+        predicted == survived, 
+        'accurate',
+        'inaccurate'
+      )
+  ) %>% 
+  count(accuracy) %>% 
+  mutate(percent = paste0(round(n/sum(n)*100), '%'))
+```
+
+---
+
+# In-Depth Accuracy
+
+```{r include = FALSE}
+tmp_tbl <- 
+  pred_df %>% 
+  count(survived, predicted) %>% 
+  mutate(
+    type_of_prediction = 
+      case_when(
+        survived == 'died' & predicted == 'died' ~ 'true negative', 
+        survived == 'died' & predicted == 'survived' ~ 'false negative', 
+        survived == 'survived' & predicted == 'died' ~ 'false positive',
+        survived == 'survived' & predicted == 'survived' ~ 'true positive'
+      ),
     percent = 
       paste0(
         round(
           (n / sum(n))* 100), 
         '%'
-        )
+      )
   ) %>% 
   arrange(desc(type_of_prediction)) %>% 
   rename(
@@ -494,14 +608,13 @@ tmp_tbl <-
 tmp_describer <- 
   tmp_tbl %>% 
   mutate(sum_n = sum(n)) %>% 
-  filter(actual == predicted) %>% 
+  filter(survived == predicted) %>% 
   mutate(
     correct_prop = 
       paste0('~', round(sum(n)/sum_n*100), '%'), 
   ) %>% 
   distinct(correct_prop) %>% 
   pull(correct_prop)
-
 ```
 
 Overall, the model accurately classified `r tmp_describer`
@@ -515,7 +628,6 @@ kbl(tmp_tbl, caption = 'Performance of 2-variable DT')
 ```
 
 ---
-
 
 class: center, middle
 
@@ -541,7 +653,7 @@ class: center, middle
 
 ---
 
-# Diving (a little bit) Deeper 
+# Context: DTs vs. GLMs
 
 Let's fit the same model from the activity again. 
 
@@ -554,9 +666,10 @@ all_var_DT <-
   rpart(
     survived ~ ., 
     data = training_data
-    )
+  )
 ```
 
+---
 
 # Context: DTs vs. GLMs
 
@@ -579,98 +692,99 @@ glm_comparison <-
 
 # Logistic Regression Parameters
 
-```{r}
-summary(glm_comparison)
+The direction of effects do not conflict with the DT. 
+
+On day 3, we'll dive into model interpretation more and will interpret how these effects differ from the DT
+
+```{r include = TRUE, echo = FALSE}
+glm_comparison %>% 
+  broom::tidy() %>% 
+  mutate(
+   odds_ratio = exp(coef(glm_comparison)),
+   p.value = if_else(p.value < 0.001, '<0.001', paste0(round(p.value, 3)))
+  ) %>% 
+  kbl(caption = 'Estimated Parameters', digits = 3)
 ```
 
 ---
 
-# DTs, GLMs, and PDPs (oh my)
+# (extra slide if time)
 
-```{r include = TRUE, echo = FALSE}
-glm_pdp <- 
-  partial(
-    glm_comparison, 
-    pred.var = c('sex', 'age', 'pclass'),
-    type = 'classification'
-    #which.class = 'survived'
-    ) %>% 
-  mutate(
-    model = 'glm'
-  )
+Exponentiate Parameters -> Odds Ratios
+
+Intercept = Odds ratio for "full statistical reference" 
+
+Full statistical reference is:
+  * `pclass` = `1st`
+  * `sex` = `female`
+  * `age` = 0 (because not mean centered)
+  * `sibsp` = 0
+  * `parch` = 0
+  
+Interpreting coefficients:
+
+From [UCLA's Statistical Methods & Data Analytics website](https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/): 
+
+*each estimated coefficient is the expected change in the log odds of [surviving] for a unit increase in the corresponding predictor variable holding the other predictor variables constant...Each exponentiated coefficient is the ratio of two odds, or the change in odds [...] for a unit increase in the corresponding predictor variable holding other variables at certain value [typically 0].*
+
+---
+
+```{r include = FALSE}
+odds_ratios <- exp(coef(glm_comparison))
+f1 <- function(variable_name){paste0('~', round(odds_ratios[[variable_name]]), ' times more likely to survive than die')}
+
+f2 <- 
+  function(variable_name, print_name, reference){
+    
+    tmp <- round((odds_ratios[[variable_name]] - 1)*100) 
+    
+    paste0(
+      'the odds of ', 
+      print_name, 
+      ' surviving are ~', 
+      abs(tmp),
+      '%', 
+      if_else(sign(tmp) < 0, ' lower', ' higher'),
+      ' than the odds for ', 
+      reference
+      )
+    }
+
 ```
 
+# (extra slide if time)
 
-.left-column[
 
-These models predict survival differently
+Effects:
+* Intercept group is `r f1('(Intercept)')`
+* `r f2('pclass2nd', '2nd class', '1st class')` 
+* `r f2('pclass3rd', '3rd class', '1st class')` 
+* `r f2('sexmale', 'males', 'females')` 
+* `r f2('age', 'someone 1 year older', 'someone 1 year younger')`  
+* `r f2('sibsp', 'someone with 1 more sibling or spouse on board', 'someone with 1 fewer')`
+* `r f2('parch', 'someone with 1 more parent or child on board', 'someone with 1 fewer')`
 
-refer to: 
-
-linear vs. piecewise age effect
-
-constant effects across passenger class vs. differential effects of (`sex` x `class` x `age`)
-
-]
-
-.right-column[
-```{r include = TRUE, echo = FALSE}
-three_variable_pdp %>% 
-  mutate(
-    model = 'DT'
-  ) %>% 
-  bind_rows(glm_pdp) %>% 
-  ggplot(
-    aes(
-      y = yhat, 
-      x = age,
-      shape = sex,
-      color = model
-    )
-  ) + 
-  theme_bw() +
-  geom_point(
-    size = 4, 
-    alpha = 0.4
-  ) +
-  theme_bw(base_size = 15) +
-  labs(
-    x = 'Passenger Age', 
-    y = 'Predicted Probability of Surviving', 
-    title = 'Women & younger men (>= 15) display a substantially\n higher probability of survival',
-    fill = 'Passenger\nSex'
-    ) +
-  theme(
-    plot.title.position = 'plot',
-    legend.position = 'bottom'
-    ) +
-  facet_wrap(vars(pclass), ncol = 1) 
-```
-]
 ---
 
 # Comparing Performance
 
-PDPs cannot tell us which model predicts more accurately. 
+We can predict on unseen data to make predictions.
 
-We have to predict on unseen data for that.
-
-But here is how I made predictions (refer to `.Rmd` for formatting code)
+Here is how I made predictions (refer to `.Rmd` for formatting code)
 
 ```{r}
 tmp_tbl <- 
   testing_data %>% 
   mutate(
-    # in this context, the . means "what's carried from the pipe"
     predicted_DT = 
-      predict(two_var_DT, newdata = testing_data)[,'survived'], 
+      predict(two_var_DT, newdata = .)[,'survived'], 
     predicted_glm = 
       predict(
         glm_comparison,
-        newdata = testing_data, 
+        newdata = ., 
         type = 'response'
-        ), 
-    actual = survived
+      ), 
+    survived = survived
   )
 ```
 
@@ -678,7 +792,7 @@ tmp_tbl <-
 
 # Comparative Accuracy Plot
 
-```{r echo = FALSE, include = TRUE}
+```{r, include=TRUE,echo=FALSE}
 tmp_plt_df <- 
   tmp_tbl %>%
   pivot_longer(
@@ -694,7 +808,7 @@ tmp_plt_df <-
       if_else(predicted_class == survived, 'correct', 'incorrect'),
     stringent_accuracy = 
       if_else(is.na(accuracy), 'incorrect', accuracy)
-        )
+  )
 
 nas_in_glm <- 
   tmp_plt_df %>% 
@@ -706,35 +820,32 @@ nas_in_glm <-
         round(
           (n / sum(n))* 100), 
         '%'
-        )
-    ) %>% 
+      )
+  ) %>% 
   filter(is.na(accuracy)) %>% 
   pull(proportion)
-  
+
 plt_df <- 
   tmp_plt_df %>% 
   group_by(model) %>% 
-  count(stringent_accuracy) %>% 
+  count(accuracy) %>% 
   mutate(
     proportion = 
       paste0(
         round(
           (n / sum(n))* 100), 
         '%'
-        )
-    )
- 
-```
+      )
+  )
 
-```{r include=TRUE, echo=FALSE}
 pos_tmp <-
-  position_dodge(width = 1)
+  position_dodge2(preserve = 'single', width = 1)
 
 comp_acc_plt <- 
   plt_df %>% 
   ggplot(
     aes(
-      x = stringent_accuracy,
+      x = accuracy,
       y = n, 
       fill = model
     )
@@ -742,23 +853,24 @@ comp_acc_plt <-
   geom_col(
     position = pos_tmp,
     alpha = 0.6, 
-    color = 'black'
+    color = 'black',
   ) +
   geom_label(
     aes(label = proportion), 
     position = pos_tmp
   ) +
-  theme_bw() + 
+  theme_bw(base_size = 18) + 
   labs(
     x = 'Accuracy', 
     y = 'Count',
-    title = 
-       paste0(
-         'This decision tree outperforms the glm\nHowever, ~',
-         nas_in_glm, 
-        ' of the "incorrect" glm predictions were technically missing'
-        ),
-         
+    title = 'The DT accuracy is higher than the GLM',
+    subtitle = 
+      paste0(
+        'The GLM failed to make a prediction on ~',
+        nas_in_glm, 
+        ' of cases'
+      ),
+    
   ) + 
   theme(
     plot.title.position = 'plot', 
@@ -766,7 +878,7 @@ comp_acc_plt <-
   )
 ```
 
-```{r include=TRUE, echo=FALSE}
+```{r include=TRUE, echo=FALSE,fig.width=10,fig.height=6,fig.align='center'}
 comp_acc_plt
 ```
 
@@ -778,17 +890,17 @@ comp_acc_plt
 glm_dt_tbl <- 
   tmp_plt_df %>%
   mutate(
-   type_of_prediction =
-     case_when(
-       actual == 'died' & predicted_class == 'died' ~ 
-         'true negative',
-       actual == 'died' & predicted_class == 'survived' ~ 
-         'false negative',
-       actual == 'survived' & predicted_class == 'died' ~ 
-         'false positive',
-       actual == 'survived' & predicted_class == 'survived' ~ 
-         'true positive'
-     )
+    type_of_prediction =
+      case_when(
+        survived == 'died' & predicted_class == 'died' ~ 
+          'true negative',
+        survived == 'died' & predicted_class == 'survived' ~ 
+          'false negative',
+        survived == 'survived' & predicted_class == 'died' ~ 
+          'false positive',
+        survived == 'survived' & predicted_class == 'survived' ~ 
+          'true positive'
+      )
   ) %>% 
   group_by(model) %>% 
   count(type_of_prediction) %>% 
@@ -814,7 +926,6 @@ Let's look at predicted probabilities for a small number of randomly sampled poi
 ```{r}
 library(ggrepel)
 set.seed(2) 
-
 sml_df <-
   tmp_tbl %>%
   mutate(id = 1:n()) %>% 
@@ -831,9 +942,9 @@ sml_df <-
       if_else(round(predicted) == 1, 'survived', 'died'),
     matched = 
       if_else(
-        actual == predicted_class, 'Correct', 'Incorrect'
-        ),
-    actual = paste0('Reality: ', actual)
+        survived == predicted_class, 'Correct', 'Incorrect'
+      ),
+    survived = paste0('Reality: ', survived)
   )
 ```
 
@@ -853,8 +964,8 @@ plt_of_smple <-
           'ID ', id, ':\n',
           'prob = ', round(predicted, 2)
         )
-      )
-    ) +
+    )
+  ) +
   geom_point(size = 5) +
   geom_label_repel(
     aes(fill = model),
@@ -864,10 +975,12 @@ plt_of_smple <-
     limits = c(-0.25, 1.25), 
     labels = seq(0, 1, 0.25)
   ) +
-  facet_wrap(vars(actual), nrow = 1) 
+  facet_wrap(vars(survived), nrow = 1) 
 ```
 
 ---
+
+# A Random Sampling
 
 ```{r, include=TRUE,echo=FALSE,fig.width=8,fig.height=6,fig.align='center'}
 plt_of_smple +
@@ -898,8 +1011,8 @@ plt_of_smple2 <-
   mutate(
     predicted_class = 
       if_else(round(predicted) == 1, 'survived', 'died'),
-    matched = if_else(actual == predicted_class, 'Correct', 'Incorrect'),
-    actual = paste0('Reality: ', actual)
+    matched = if_else(survived == predicted_class, 'Correct', 'Incorrect'),
+    survived = paste0('Reality: ', survived)
   ) %>% 
   ggplot(
     aes(
@@ -912,8 +1025,8 @@ plt_of_smple2 <-
           'ID ', id, ':\n',
           'prob = ', round(predicted, 2)
         )
-      )
-    ) +
+    )
+  ) +
   geom_point(size = 5) +
   geom_label_repel(
     aes(fill = model),
@@ -923,7 +1036,7 @@ plt_of_smple2 <-
     limits = c(-0.25, 1.25), 
     labels = seq(0, 1, 0.25)
   ) +
-  facet_wrap(vars(actual), nrow = 1) + 
+  facet_wrap(vars(survived), nrow = 1) + 
   theme_bw() +
   labs(
     y = 'Prediction',
@@ -951,8 +1064,8 @@ They have many issues, though:
 * Unstable tree structure  
 * Biased towards selecting variables with more potential split points (i.e., wide ranges)
 * Greedy algorithm 
-    * it finds the best option at each step
-    * branches are dependent on prior splits
+* it finds the best option at each step
+* branches are dependent on prior splits
 
 There are numerous ways to overcome these shortcomings, though.
 
@@ -962,11 +1075,11 @@ There are numerous ways to overcome these shortcomings, though.
 
 Prediction relies on:
 
-  1. a model
-  2. user-specified settings
-      * Referred to as **hyperparameters**
-      * allows calibration of the model
-  3. data
+1. a model
+2. user-specified settings
+  * Referred to as **hyperparameters**
+  * allows calibration of the model
+3. data
 
 Thus, prediction can be improved by improving any one of those.
 
@@ -988,3 +1101,7 @@ Feb. 22 we will
 * reinforce skills from days 1 and 2
 
 ---
+
+class: center, middle
+
+# End of day 1
