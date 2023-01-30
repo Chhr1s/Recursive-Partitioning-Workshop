@@ -11,7 +11,8 @@ output: html_document
 ```
 
 ```{r}
-outcome_next_year <- 'se_prm_enrr'
+set.seed(022023)
+outcome_next_year <- 'se_xpd_totl_gd_zs'
 library(tidyverse)
 library(janitor)
 library(sjmisc)
@@ -31,10 +32,12 @@ names(raw_files) <-
 
 se_asia <- 
   c(
-    'Brunei Darussalam', 
-    'Myanmar', 
+# removed countries have too observations of 
+# outcome to have unbiased imputation
+    #'Brunei Darussalam', 
+    #'Myanmar', 
     'Cambodia', 
-    'Timor-Leste', 
+    #'Timor-Leste', 
     'Indonesia', 
     'Lao PDR', 
     'Malaysia', 
@@ -65,23 +68,9 @@ dat <-
       ),
     .id = 'import_file_source'
   ) %>% 
-  filter(country_name %in% se_asia)
-
-
-```
-
-
-
-```{r}
-# make a key so we have all variables easily searchable
-key <- 
-  dat %>% 
-  select(
-    indicator_name, 
-    indicator_code
-    ) %>% 
-  mutate(
-    janitor_version = janitor::make_clean_names(indicator_code)
+  filter(country_name %in% se_asia) %>% 
+  distinct(
+    indicator_code, country_name, .keep_all = TRUE
   )
 ```
 
@@ -96,7 +85,7 @@ cleaned <-
         .x = data, 
         .f =
         ~{.x %>% 
-            mutate(janitor_version = janitor::make_clean_names(indicator_code)) %>% 
+            mutate(janitor_version = make_clean_names(indicator_code)) %>% 
             select(-indicator_name, -indicator_code, -import_file_source) %>% 
             relocate(janitor_version, .before = everything()) %>% 
             rotate_df() %>%
@@ -114,15 +103,22 @@ cleaned <-
   ungroup()
 ```
 
-`sl_tlf_cact_zs` = Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate)
-
-`sl_uem_neet_zs` = Share of youth not in education, employment or training, total (% of youth population)
-
-`se_sec_durs` = Secondary education, duration (years)
 
 ```{r}
-key
+# make a key so we have all variables easily searchable
+key <- 
+  dat %>% 
+  distinct(
+    indicator_name, 
+    indicator_code,
+    import_file_source
+    ) %>% 
+  mutate(
+    janitor_version = make_clean_names(indicator_code)
+  ) %>% 
+  relocate(janitor_version, indicator_name, indicator_code, import_file_source) 
 ```
+
 
 ```{r}
 missingness_counter <-
@@ -143,12 +139,11 @@ missingness_counter <-
 missingness_counter %>% 
   arrange(desc(data)) 
 
-
+# that's a lot
 sum(is.na(cleaned)) / (ncol(cleaned) * nrow(cleaned))
 ```
 
 ```{r}
-library(janitor)
 clean_subset <- 
   cleaned %>% 
   filter(
@@ -160,24 +155,103 @@ clean_subset <-
 ```
 
 ```{r}
-variables_to_include <- 
-  key %>% 
+selecting_from_suffixes <-
+  key %>%
   mutate(
-    base_info = sub("\\s*\\(.*", "", indicator_name)
-  ) %>% 
-  distinct(base_info, .keep_all = TRUE) %>% 
-  pull(janitor_version) 
+    #janitor_version2 = janitor_version,
+    topic_2 = substr(janitor_version, 1, 2),
+    general_subject_3 = substr(janitor_version, 4, 6),
+    specific_subject_4 = substr(janitor_version, 8, 11),
+    extension_a_2 = substr(janitor_version, 13, 14),
+    extension_b_2 = substr(janitor_version, 16, 17),
+    extension_c_2 = substr(janitor_version, 19, 20),
+    across(
+      .cols = c(
+        topic_2, 
+        general_subject_3, 
+        specific_subject_4,
+        extension_a_2, 
+        extension_b_2, 
+        extension_c_2
+        ),
+      .fns = ~.x %>% na_if('')
+      )
+    )
 
+# definitely want these:
+
+# those which do not have subcategories
+
+variables_to_include_a <- 
+  selecting_from_suffixes %>% 
+  filter(
+    is.na(extension_a_2) & is.na(extension_b_2) & is.na(extension_c_2)
+  ) %>% 
+  pull(janitor_version)
+
+tmp_string <- paste0('^', variables_to_include_a)
+names(tmp_string) <- variables_to_include_a
+
+# these are ones with subcategories AND main reporting. 
+# we just want the main reporting b/c subcategories are colinear
+variables_to_include_b <- 
+  tmp_string %>% 
+  map_dfr(
+    .f = 
+      ~selecting_from_suffixes %>% 
+        filter(grepl(.x, janitor_version)),
+    .id = 'base_variable'
+  ) %>% 
+  filter(is.na(extension_a_2)) %>% 
+  pull(janitor_version)
+
+
+## this clear up some redundant information
+
+variables_to_include_c <- 
+  selecting_from_suffixes %>% 
+  filter(specific_subject_4 == 'totl') %>% 
+  group_by(topic_2, general_subject_3, specific_subject_4) %>% 
+  slice(1) %>% 
+  ungroup() %>% 
+  pull(janitor_version)
+
+
+```
+  
+
+```{r}
+# variables_to_include <- 
+#   key %>% 
+#   mutate(
+#     base_info = sub("\\s*\\(.*", "", indicator_name)
+#   ) %>% 
+#   distinct(base_info, .keep_all = TRUE) %>% 
+#   pull(janitor_version) 
+
+
+variables_to_include <- 
+  c(variables_to_include_a,
+    variables_to_include_b,
+    variables_to_include_c
+    )
 
 near_zero_variance <-
-  names(which(apply(select(clean_subset, -country_name), 2, var, na.rm = TRUE) < 0.2))
+  names(which(apply(select(clean_subset, -country_name), 2, var, na.rm = TRUE) < 0.1))
 
 df_to_impute <-
   clean_subset %>% 
   select(
+    country_name, 
+    year,
+    # all possible variables
+    all_of(variables_to_include)
+    ) %>% 
+  select(
+  # those without more than 25% missingness
     where(
       ~sum(is.na(.x))/nrow(clean_subset) < 0.25 
-      ) & -all_of(near_zero_variance)
+      )
   ) 
 
 # removing variables which are in different units but are otherwise equivalent
@@ -193,48 +267,40 @@ impute_key <-
       janitor_version %in% eligible_vars
   ) 
 
-
-  
-# only 9 % missing is good balance of lots of variables 
+# missingness to number of variable balance is good
 sum(is.na(df_to_impute))/(nrow(df_to_impute)*ncol(df_to_impute))
 # select an outcome with no missingness
 
-full_variables <- 
-  df_to_impute %>% 
-  # only retain rows with < 5% missingness:
-  select(where(~sum(is.na(.x)) < 0.05*nrow(df_to_impute))) %>% 
-  # no missingness:
-  #select(where(~sum(is.na(.x))==0)) %>% 
+mostly_full <- 
+  df_to_impute %>%
+  # only retain rows with < 15% missingness:
+  select(where(~sum(is.na(.x)) < 0.15*nrow(df_to_impute))) %>% 
   names()
 
 
 outcome_key <- 
   key %>% 
   filter(
-     janitor_version %in% full_variables #& 
-       #!janitor_version %in% near_zero_variance
+     janitor_version %in% mostly_full & 
+       !janitor_version %in% near_zero_variance
   )
-
 
 outcome_descriptor <-
   outcome_key %>% 
   filter(janitor_version == outcome_next_year) %>% 
   pull(indicator_name)
 
-# more information at:
-# https://ilostat.ilo.org/resources/concepts-and-definitions/ilo-modelled-estimates/
 
 ```
 
 
 ```{r}
 # because we're in the world of random forests
-# i'm going to use `missRanger` to impute the data. this works 
+# `missRanger` to impute the data
 library(missRanger)
-set.seed(123)
 imputed <- 
   df_to_impute %>% 
-  missRanger(pmm.k = 3, seed = 123)
+  missRanger(pmm.k = 3, seed = 022023)
   
 
 output_data <- 
@@ -260,11 +326,33 @@ output_data <-
   unnest(data) %>% 
   ungroup() %>% 
   # this keeps out covid issues and also 
-  filter(year <= 2018) 
-
-# output_data %>% 
-#   select(outcome_next_year, !!sym(outcome_next_year), year, country_name)
+  filter(year <= 2018)
 ```
+
+```{r}
+output_data %>%
+  select(outcome_next_year, !!sym(outcome_next_year), year, country_name)
+```
+
+```{r eval=FALSE, include=FALSE}
+cleaned %>% 
+  relocate(se_xpd_totl_gd_zs, .before = everything()) %>% 
+  select(
+    country_name, 
+    year,
+    any_of(
+      
+        key %>% 
+        filter(
+          import_file_source == 'education'
+          ) %>% 
+          pull(janitor_version)
+        
+      )
+    ) %>% 
+  summarize(across(.fns = ~sum(is.na(.x)))) %>% t()
+```
+
 
 ```{r}
 rio::export(output_data, here::here('data', 'se_asia_imputed_world_bank.csv'))

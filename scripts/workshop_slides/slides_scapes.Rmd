@@ -206,3 +206,135 @@ missRanger(testing_data, verbose = 0) %>%
 ```
 
 ---
+
+
+
+
+---
+
+# Exploring Specific Cases
+
+Let's look at predicted probabilities for a small number of randomly sampled points
+
+```{r}
+library(ggrepel)
+set.seed(15)
+sml_df <-
+  tmp_tbl %>% mutate(id = 1:n()) %>% 
+  drop_na() %>% sample_n(4) %>% 
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %>% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    matched = 
+      if_else(
+        survived == predicted_class, 'Correct', 'Incorrect'
+      ),
+    survived = paste0('Reality: ', survived))
+```
+
+---
+
+```{r}
+plt_of_smple <- 
+  sml_df %>% 
+  ggplot(
+    aes(
+      x = predicted, 
+      y = predicted_class, 
+      color = model,
+      shape = matched,
+      label = 
+        paste0(
+          'ID ', id, ':\n',
+          'prob = ', round(predicted, 2)
+        )
+    )
+  ) +
+  geom_point(size = 5) +
+  geom_label_repel(
+    aes(fill = model),
+    color = 'black'
+  ) +
+  scale_x_continuous(
+    limits = c(-0.25, 1.25), 
+    labels = seq(0, 1, 0.25)
+  ) +
+  facet_wrap(vars(survived), nrow = 1) 
+```
+
+---
+
+# A Random Sampling
+
+```{r, include=TRUE,echo=FALSE,fig.width=8,fig.height=6,fig.align='center'}
+plt_of_smple +
+  theme_bw() +
+  labs(
+    y = 'Prediction',
+    shape = 'Accuracy'
+  )
+```
+
+---
+
+# Another random sampling
+
+```{r include=FALSE}
+set.seed(6)
+plt_of_smple2 <- 
+  tmp_tbl %>%
+  mutate(id = 1:n()) %>% 
+  drop_na() %>% 
+  sample_n(4) %>% 
+  pivot_longer(
+    cols = c(predicted_DT, predicted_glm), 
+    names_to = 'model', 
+    values_to = 'predicted', 
+    names_prefix = 'predicted_', 
+  ) %>% 
+  mutate(
+    predicted_class = 
+      if_else(round(predicted) == 1, 'survived', 'died'),
+    matched = if_else(survived == predicted_class, 'Correct', 'Incorrect'),
+    survived = paste0('Reality: ', survived)
+  ) %>% 
+  ggplot(
+    aes(
+      x = predicted, 
+      y = predicted_class, 
+      color = model,
+      shape = matched,
+      label = 
+        paste0(
+          'ID ', id, ':\n',
+          'prob = ', round(predicted, 2)
+        )
+    )
+  ) +
+  geom_point(size = 5) +
+  geom_label_repel(
+    aes(fill = model),
+    color = 'black'
+  ) +
+  scale_x_continuous(
+    limits = c(-0.25, 1.25), 
+    labels = seq(0, 1, 0.25)
+  ) +
+  facet_wrap(vars(survived), nrow = 1) + 
+  theme_bw() +
+  labs(
+    y = 'Prediction',
+    shape = 'Accuracy'
+  )
+```
+
+
+```{r, fig.width=8,fig.height=6,fig.align='center'}
+plt_of_smple2
+```

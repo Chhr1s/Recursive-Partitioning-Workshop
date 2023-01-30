@@ -32,18 +32,541 @@ On Day 2, we discussed
 
 Today, we will discuss:
 
+* Grid Search for Tuning Hyperparameters
+* Cross validation
 * Interpretation of Random Forests
 * More Advanced Visualizations (Partial Dependency Plots)
-* Cross validation
-* Tuning More than 1 Hyperparameter at a time
-
-
 
 ---
 
-# DTs, GLMs, and PDPs (oh my)
+# set up
+
+```{r}
+outcome_next_year <- 'se_prm_enrr'
+library(tidyverse)
+library(ranger)
+library(rsample)
+library(dials)
+library(kableExtra)
+library(emojifont)
+source(here::here('scripts/functions.R'))
+```
+
+---
+
+# set up
+
+Let's go ahead and get things set up like yesterday:
+
+
+```{r}
+key <- 
+  read.csv(here::here('data/keys', 'key_impute.csv'))
+
+dat <- 
+  read.csv(
+    here::here(
+    'data', 
+    'se_asia_imputed_world_bank.csv'
+    ))
+
+
+set.seed(022023)
+sea_split <- initial_split(dat)
+sea_training <- training(sea_split) 
+sea_testing <- testing(sea_split) 
+```
+
+```{r include = FALSE, echo = FALSE}
+otcm <-  
+  key %>% 
+  filter(janitor_version == outcome_next_year) %>% 
+  pull(indicator_name)
+```
+
+Outcome =  <u>next year's</u> `r otcm`
+
+Units = `r str_extract(otcm, '\\([^\\)]+\\)')`
+
+---
+
+# let's establish two "benchmarks" to beat
+
+## Benchmark 1: guess the average
+
+Guessing the mean or median has common-sense validity.
+
+The most common-sense approach is to guess the average (mean or median) `se_prm_enrr` this year to be next year's value.
+
+If a model does not have a better RMSE than this, it is not worth using.
+
+```{r}
+naive_guess <- median(sea_training$se_prm_enrr)
+naive_guess
+```
+
+---
+
+```{r}
+dat %>% 
+  filter(country_name != 'Brunei Darussalam') %>% 
+  ggplot(
+    aes(
+      y = se_prm_enrl,
+      x = year,
+      fill = country_name
+    )
+  ) +
+  geom_point() +
+  facet_wrap(
+    vars(country_name)
+    )
+
+key %>% filter(janitor_version == outcome_next_year)
+
+```
+
+
+---
+# Benchmark 2: Defaults
+
+```{r}
+rf_default <- 
+  ranger(
+    outcome_next_year ~ ., 
+    data = sea_training,
+    importance = 'permutation'
+  )
+```
+
+---
+
+## A Note on RMSE
+
+The nice thing about RMSE is that it is in the units of the outcome. 
+
+RMSE is the average error in the units of the outcome. 
+
+$$
+
+RMSE = 
+\sqrt{
+
+\frac{\Sigma (y_{actual} - y_{predicted})^2}{N}
+
+}
+
+$$
+
+For us, this is `r str_extract(otcm, '\\([^\\)]+\\)')`
+
+```{r}
+key %>% filter(janitor_version == 'se_prm_enrr')
+```
+
+---
+
+# Benchmark RMSEs
+
+```{r}
+benchmark_rmse <- 
+  sea_testing %>% 
+  transmute(
+    outcome_next_year,
+    prediction_median = median(sea_training$se_prm_enrr),
+    prediction_default.rf = predict(rf_default, .)$prediction
+    ) %>% 
+  summarize(
+    rmse_guess = rmse(observed_y = outcome_next_year, predicted_y = prediction_median),
+    rmse_default.rf = rmse(observed_y = outcome_next_year, predicted_y = prediction_default.rf),
+  )
+kbl(benchmark_rmse)
+
+```
+
+A model worth anything will be better than RMSE = `r round(benchmark_rmse$rmse_guess, 2)`
+A decent model will be better than RMSE = `r round(benchmark_rmse$rmse_default.rf, 2)`
+
+---
+
+class: center, middle
+
+# Onward & Upward
+
+Now that we've established these benchmarks, let's talk hyperparameters again
+
+---
+
+# Selecting Hyperparameters
+
+Some have called tuning & hyperparameter selection as much of an art as a science.
+
+This is likely true when you're applying the basic methods we're going to cover today. 
+
+Some automated methods are much more systematic:
+
+* particle swarm optimization (PSO)
+* genetic algorithm (GA)
+
+Despite being more systematic:
+
+* such methods require deeper knowledge
+* most still require human decision-points
+* some have their own hyper-hyperparameters!
+
+**This is an entire field; we are only going to discuss grid search today**
+
+---
+
+# Grid Search
+
+Purpose:
+* (technical) Calibrate the underlying algorithms to your data
+* (practical) Have the most accurate predictions 
+
+Steps:
+* make a grid of possible hyperparameters
+* train models using those constraints
+* estimate accuracy - MSE / classification accuracy / etc. - in predicting the outcome with unseen data for each model 
+
+___
+
+## Wait ... does this sound familiar?
+
+---
+
+# Refresher
+
+When I demonstrated what hyperparameters are, I actually conducted 2 grid searches:
+  * `num.trees`
+  * `mtry`
+
+This did not include a grid search of all possible values
+
+---
+
+# Let's make a grid
+
+```{r}
+tree_sizes <- 
+  seq(from = 500, to = 4000, by = 150)
+
+mtry_values <- 
+  seq(from = 1, to = ncol(sea_testing)-1, 2)
+
+all_params <- 
+  expand_grid(num.tree = tree_sizes, mtry = mtry_values)
+
+dim(all_params)
+```
+
+---
+
+# loop through
+
+```{r echo = FALSE, include = TRUE, eval = FALSE}
+rf_list <- vector('list', nrow(all_params))
+
+for (i in 1:length(rf_list)){
+  rf_list[[i]] <- 
+    ranger(
+      outcome_next_year ~ ., 
+      data = sea_training,
+      mtry = all_params$mtry[i],
+      num.trees = all_params$num.tree[i],
+      num.threads = 8L
+    )
+  #print(paste0('iteration #', i, ' complete'))
+}
+```
+
+
+```{r echo = FALSE, include = TRUE, eval = FALSE}
+OOB_heatmap <- 
+  all_params %>% 
+  mutate(
+    prediction_error = map_dbl(rf_list, ~.x$prediction.error),
+    min = if_else(prediction_error == min(prediction_error), 'minimum', ''), 
+    pe_label = rbinom(nrow(.), 1, 0.1),
+    pe_label = if_else(pe_label == 1 | min == 'minimum', round(prediction_error, 3), NA_real_)
+  ) %>% 
+  ggplot(
+    aes(
+      x = mtry,
+      y = num.tree,
+      fill = prediction_error
+      )
+  ) + 
+  geom_tile() + 
+  geom_label(
+    aes(
+      color = min, 
+      label = pe_label
+      ), 
+    show.legend = FALSE
+    ) +
+  coord_cartesian() + 
+  scale_color_grey(start = 0.6, end = 1) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = 'OOB Prediction Error by mtry and num.trees', 
+    x = 'mtry',
+    y = 'num.tree',
+    fill = 'Mean Square Error (MSE)',
+    caption = 'OOB Error (MSE) printed in each cell\nRandom sampling of OOB printed'
+  ) +
+  theme(legend.position = 'bottom')
+
+ggsave(
+  filename = here::here('imgs', 'day_3_OOB_heatmap.png'),
+  plot = OOB_heatmap,
+  )
+```
+
+
+```{r echo = FALSE, include = TRUE}
+knitr::include_graphics(
+  here::here('imgs', 'day_3_OOB_heatmap.png')
+)
+```
+
+---
+
+# Predictions are pretty flat... 
+
+As you can see, the best value isn't that much better than the worst.
+
+
+On day 1, what did I say were the 3 ways to improve a model?
+
+1. a model
+2. user-specified settings (**hyperparameters**)
+3. data
+
+Because hyperparameters are evaluated on data, we actually can only find optimal settings **with respect to the training and testing data**.
+
+By random chance, what if the training and testing sets were biased towards different settings?
+
+This could lead to an algorithm to perform poorly, even though we conducted hyperparameter tuning.
+
+---
+
+# other issues with tuning via grid search
+
+Before turning our intention to improving the data used to train, we should talk about two other issues with grid search: 
+
+* local minimums, unless
+  * you cover the **entire** space 
+  * you get lucky `r emoji('four_leaf_clover')`
+
+* computation time increases with number of
+  * hyperparameters
+  * possible hyperparameter values
+
+**Spoiler:** we're not going to cover local minimums in this workshop. Consider independent research at a later date.
+
+---
+
+# Increasing the variation in predictions
+
+k-fold (a.k.a v-fold) cross-validation CV:
+
+* improves the issues with flat predictions.
+* makes of our training data to both train and test the model.
+* allows variance around fit to be assessed (e.g., standard error of OOB error)
+* is done **after we withhold final testing data**
+
+The logic is a mixture of resampling and withholding for training and testing (done before):
+
+* the data withheld here is called the "fold testing data" or "assessment data"
+* the data used to train the model is called "fold training" or "analysis data"
+
+---
+
+# k-fold Cross Validation
+
+Process: 
+* split the training data into "k" pieces.
+* train a model with a proportion of the data ($n_{train} = \frac{k-1}{k}*N_{total}$)
+* assess prediction accuracy with withheld ($n_{assess} = \frac{1}{k}*N_{total}$)
+
+For example:`n` = 1000 *observations* & `k` = 10 k-fold CV
+* Each fold has `n`/10 = 1000/10 = 100 observations
+* Model fit for a given hyperparameter is determined
+
+---
+
+# Diagram
+
 
 ```{r include = TRUE, echo = FALSE}
+diagram_dat <- data.frame(matrix(rep('analysis', 100), nrow = 10, ncol = 10))
+
+for (i in 1:10){
+  diagram_dat[i, i] <- 'assessment'
+}
+
+diagram_dat %>% 
+  mutate(
+    row_id = 1:n()
+  ) %>% 
+  pivot_longer(cols = -row_id) %>% 
+  mutate(
+    name = as.numeric(gsub('X', '', name)),
+    unseen = if_else(value == 'FOLD\nTESTING', 'UNSEEN', '')
+    ) %>% 
+  ggplot(
+    aes(x = name, y = row_id, fill = value, label = unseen)
+  ) +
+  geom_tile(alpha = 0.5, color = 'black') + 
+  geom_text(color = 'black') + 
+  coord_cartesian() +
+  scale_y_reverse(breaks = 1:10) +
+  scale_x_continuous(breaks = 1:10, position = 'top') +
+  labs(
+    x = 'Fold ID Number',
+    y = 'Fold ID Number',
+    title = '10-fold Cross Validation Example',
+    caption = 'table represents all TRAINING data',
+    fill = element_blank()
+  ) +
+  theme_minimal(base_size = 15) +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = 'bottom',
+    plot.title.position = 'plot'
+    ) 
+```
+
+
+```{r, eval = FALSE}
+library(dials)
+```
+
+```{r, eval = FALSE}
+cv_obj <- vfold_cv(sea_training, v = 10)
+```
+
+```{r, eval = FALSE}
+max_entropy_grid <-
+  grid_max_entropy(
+    # default = floor(sqrt(ncol(training_data))) = 24
+    mtry(range = c(min(mtry_values), max(mtry_values))),
+    trees(range = c(min(tree_sizes), max(tree_sizes))),
+    size = 25
+  )
+
+tuned_res <-
+  cv_it_complex(
+    cv_obj = cv_obj,
+    outcome_string = 'outcome_next_year',
+    seed = 333,
+    mod_formula = outcome_next_year ~ .,
+    tuning_grid = max_entropy_grid,
+    model_type = 'rf',
+    mode = 'regression'
+    ) %>% 
+   arrange(rmse_mean)
+
+```
+
+```{r}
+tuned_rf <- 
+  ranger(
+    formula = outcome_next_year ~ ., 
+    data = sea_training, 
+    mtry = tuned_res$mtry[[1]],
+    num.trees = tuned_res$trees[[1]],
+    importance = 'permutation'
+  )
+```
+
+
+
+```{r}
+library(vip)
+vip(tuned_rf)
+```
+
+
+
+
+```{r include=TRUE, echo=FALSE}
+important_variables <- 
+  vi(tuned_rf) %>% 
+  arrange(desc(Importance)) %>% 
+  slice(1:8) %>% 
+  mutate(order = 1:n()) %>% 
+  select(janitor_version = Variable, order)
+
+pstr <- 
+  key %>% 
+  filter(janitor_version == outcome_next_year) %>% 
+  pull(indicator_name)
+
+key %>% 
+  inner_join(important_variables) %>% 
+  arrange(order) %>% 
+  select(order, indicator_name) %>% 
+  kbl() %>% 
+  add_footnote(
+    paste0('Outcome is ', pstr, ' in the upcoming year')
+  )
+```
+
+---
+
+```{r}
+library(vip)
+vip(tuned_rf)
+```
+
+
+```{r}
+library(pdp)
+pdp_12 <- 
+  partial(
+    tuned_rf, 
+    pred.var = important_variables$janitor_version[1:2]
+  )
+
+pdp %>% 
+  ggplot(
+    aes(
+      x = !!sym(important_variables$janitor_version[1]),
+      y = yhat,
+      #color = sqrt(!!sym(important_variables$janitor_version[2])),
+      size = sqrt(!!sym(important_variables$janitor_version[2])),
+      #color = !!sym(important_variables[3]),
+      #fill = !!sym(important_variables[3])
+    )
+  ) +
+  geom_point(alpha = 0.5) +
+  coord_cartesian()
+```
+
+```{r}
+
+pdp %>% 
+  ggplot(
+    aes(
+      color = factor(round(!!sym(important_variables$janitor_version[1]))),
+      y = yhat,
+      #color = sqrt(!!sym(important_variables$janitor_version[2])),
+      x = !!sym(important_variables$janitor_version[2]),
+      #color = !!sym(important_variables[3]),
+      #fill = !!sym(important_variables[3])
+    )
+  ) +
+  geom_point(alpha = 0.5) +
+  coord_cartesian()
+```
+
+
+
+# DTs, GLMs, and PDPs (oh my)
+
+```{r include = TRUE, echo = FALSE, eval = FALSE}
 glm_pdp <- 
   partial(
     glm_comparison, 
@@ -70,7 +593,7 @@ constant effects across passenger class vs. differential effects of (`sex` x `cl
 ]
 
 .right-column[
-```{r include = TRUE, echo = FALSE}
+```{r include = TRUE, echo = FALSE, eval = FALSE}
 three_variable_pdp %>% 
   mutate(
     model = 'DT'

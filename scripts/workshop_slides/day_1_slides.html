@@ -258,6 +258,7 @@ ptitanic &lt;-
   mutate(
     survived = relevel(survived, ref = 'died')
   )
+set.seed(022023)
 # this is how we'll keep training and testing data apart
 split_data &lt;- initial_split(ptitanic)
 training_data &lt;- training(split_data)
@@ -333,7 +334,7 @@ Split order, Predicted probabilities, &amp; node size give sense of the observed
 
 * more men than women
 
-* Men (~12%) survived at a lower rate than women (~26%)
+* Men (~11%) survived at a lower rate than women (~26%)
 
 ]
 
@@ -401,6 +402,7 @@ Higher dimensional models do the same thing, but harder to conceptualize.
 ]
 
 .right-column[
+
 &lt;img src="day_1_slides_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
 ]
 ---
@@ -451,12 +453,12 @@ pred_df %&gt;%
 ##    &lt;fct&gt;     &lt;fct&gt;   
 ##  1 survived  survived
 ##  2 died      died    
-##  3 survived  survived
+##  3 died      died    
 ##  4 survived  survived
-##  5 died      died    
-##  6 survived  survived
+##  5 survived  survived
+##  6 died      died    
 ##  7 survived  survived
-##  8 survived  survived
+##  8 died      survived
 ##  9 died      died    
 ## 10 survived  survived
 ## # … with 318 more rows
@@ -484,8 +486,8 @@ pred_df %&gt;%
 
 ```
 ##     accuracy   n percent
-## 1   accurate 256     78%
-## 2 inaccurate  72     22%
+## 1   accurate 236     72%
+## 2 inaccurate  92     28%
 ```
 
 ---
@@ -496,7 +498,7 @@ pred_df %&gt;%
 
 
 
-Overall, the model accurately classified ~78%
+Overall, the model accurately classified ~72%
 ___
 
 To see this with more nuance, we can look at it as below: 
@@ -516,30 +518,30 @@ To see this with more nuance, we can look at it as below:
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 91 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 89 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 28% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 27% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 165 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 147 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 50% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 45% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 43 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 13% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; died &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; survived &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 49 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 15% &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -630,59 +632,59 @@ On day 3, we'll dive into model interpretation more and will interpret how these
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; (Intercept) &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 3.699 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.407 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 9.096 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.943 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.423 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9.326 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 40.403 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 51.584 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; pclass2nd &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -1.229 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.264 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -4.660 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.423 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.269 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -5.298 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.293 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.241 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; pclass3rd &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -2.349 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.262 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -8.952 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.348 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.269 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8.731 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.095 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.096 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; sexmale &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -2.616 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.206 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -12.681 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.789 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.207 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -13.467 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.073 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.061 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; age &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -0.033 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.037 &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 0.008 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -4.322 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -4.808 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; &amp;lt;0.001 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.968 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.963 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; sibsp &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -0.357 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.119 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; -2.988 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.003 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.700 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.296 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.133 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.221 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.026 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.744 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; parch &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.056 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.114 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.493 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.622 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 1.058 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.009 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.123 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.075 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.94 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.009 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -716,13 +718,13 @@ From [UCLA's Statistical Methods &amp; Data Analytics website](https://stats.oar
 
 
 Effects:
-* Intercept group is ~40 times more likely to survive than die
-* the odds of 2nd class surviving are ~71% lower than the odds for 1st class 
+* Intercept group is ~52 times more likely to survive than die
+* the odds of 2nd class surviving are ~76% lower than the odds for 1st class 
 * the odds of 3rd class surviving are ~90% lower than the odds for 1st class 
-* the odds of males surviving are ~93% lower than the odds for females 
-* the odds of someone 1 year older surviving are ~3% lower than the odds for someone 1 year younger  
-* the odds of someone with 1 more sibling or spouse on board surviving are ~30% lower than the odds for someone with 1 fewer
-* the odds of someone with 1 more parent or child on board surviving are ~6% higher than the odds for someone with 1 fewer
+* the odds of males surviving are ~94% lower than the odds for females 
+* the odds of someone 1 year older surviving are ~4% lower than the odds for someone 1 year younger  
+* the odds of someone with 1 more sibling or spouse on board surviving are ~26% lower than the odds for someone with 1 fewer
+* the odds of someone with 1 more parent or child on board surviving are ~1% higher than the odds for someone with 1 fewer
 
 ---
 
@@ -778,45 +780,45 @@ tmp_tbl &lt;-
 &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 35 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 49 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 15% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 37 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 11% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 43 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 13% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 165 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 50% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 147 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 45% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; DT &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 91 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 28% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 89 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 27% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr grouplength="5"&gt;&lt;td colspan="4" style="border-bottom: 1px solid;"&gt;&lt;strong&gt;Logistic Regression&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 22 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 7% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 9% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 34 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 10% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 12% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 143 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 44% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 122 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 37% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
@@ -827,94 +829,11 @@ tmp_tbl &lt;-
   &lt;tr&gt;
    &lt;td style="text-align:left;padding-left: 2em;" indentlevel="1"&gt; glm &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 56 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 17% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 63 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 19% &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-
----
-
-# Exploring Specific Cases
-
-Let's look at predicted probabilities for a small number of randomly sampled points
-
-
-```r
-library(ggrepel)
-set.seed(2) 
-sml_df &lt;-
-  tmp_tbl %&gt;%
-  mutate(id = 1:n()) %&gt;% 
-  drop_na() %&gt;% 
-  sample_n(4) %&gt;% 
-  pivot_longer(
-    cols = c(predicted_DT, predicted_glm), 
-    names_to = 'model', 
-    values_to = 'predicted', 
-    names_prefix = 'predicted_', 
-  ) %&gt;% 
-  mutate(
-    predicted_class = 
-      if_else(round(predicted) == 1, 'survived', 'died'),
-    matched = 
-      if_else(
-        survived == predicted_class, 'Correct', 'Incorrect'
-      ),
-    survived = paste0('Reality: ', survived)
-  )
-```
-
----
-
-
-```r
-plt_of_smple &lt;- 
-  sml_df %&gt;% 
-  ggplot(
-    aes(
-      x = predicted, 
-      y = predicted_class, 
-      color = model,
-      shape = matched,
-      label = 
-        paste0(
-          'ID ', id, ':\n',
-          'prob = ', round(predicted, 2)
-        )
-    )
-  ) +
-  geom_point(size = 5) +
-  geom_label_repel(
-    aes(fill = model),
-    color = 'black'
-  ) +
-  scale_x_continuous(
-    limits = c(-0.25, 1.25), 
-    labels = seq(0, 1, 0.25)
-  ) +
-  facet_wrap(vars(survived), nrow = 1) 
-```
-
----
-
-# A Random Sampling
-
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-41-1.png" style="display: block; margin: auto;" /&gt;
-
----
-
-# Another random sampling
-
-
-
-
-
-```r
-plt_of_smple2
-```
-
-&lt;img src="day_1_slides_files/figure-html/unnamed-chunk-43-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 

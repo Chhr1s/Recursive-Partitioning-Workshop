@@ -34,6 +34,7 @@ class: center, middle, inverse, title-slide
 
 
 ```r
+set.seed(022023)
 library(tidyverse)
 library(ranger)
 library(rsample)
@@ -64,9 +65,9 @@ ptitanic &lt;-
   mutate(
     survived = relevel(survived, ref = 'died')
   ) %&gt;% 
-  drop_na()
+  drop_na() %&gt;% 
+  missRanger(pmm.k=1, verbose = FALSE)
 
-set.seed(8675309)
 split_data &lt;- initial_split(ptitanic)
 training_data &lt;- training(split_data) 
 testing_data &lt;- testing(split_data)
@@ -155,7 +156,7 @@ RFs achieve this by
 
 🌲 = 🙂 
 
-`\(\Sigma\)` 🌲, 🌳, 🎋, 🎋, 🌴, 🌳, 🌳, 🎄, 🌴, 🎄... (500th tree) = 😃
+`\(\Sigma\)` 🌳, 🌲, 🌳, 🌲, 🌴, 🌲, 🌲, 🌳, 🎋, 🎋... (500th tree) = 😃
 
 ]
 ---
@@ -218,13 +219,13 @@ The VIP from the RF is very similar to the VIP from the DT
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; correct &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 213 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 81% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 205 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 78% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; incorrect &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 49 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 19% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 57 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 22% &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -243,8 +244,8 @@ The VIP from the RF is very similar to the VIP from the DT
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 4% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 7% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
@@ -253,12 +254,12 @@ The VIP from the RF is very similar to the VIP from the DT
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 143 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 55% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 134 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 51% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 70 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 71 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; 27% &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -382,7 +383,7 @@ Let's load the WB South East Asia Data.
 
 ```r
 key &lt;- 
-  read.csv(here::here('data/keys', 'key_imputed.csv'))
+  read.csv(here::here('data/keys', 'key_impute.csv'))
 
 dat &lt;- 
   read.csv(
@@ -391,8 +392,6 @@ dat &lt;-
     'se_asia_imputed_world_bank.csv'
     ))
 
-
-set.seed(007)
 sea_split &lt;- initial_split(dat)
 sea_training &lt;- training(sea_split) 
 sea_testing &lt;- testing(sea_split) 
@@ -460,7 +459,7 @@ best_num.trees
 ```
 
 ```
-## [1] 800
+## [1] 500
 ```
 
 ```r
@@ -469,7 +468,7 @@ best_mtry
 ```
 
 ```
-## [1] 65
+## [1] 8
 ```
 
 
@@ -497,6 +496,21 @@ manually_tuned_rf &lt;-
 
 ![](day_2_slides_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
 
+---
+
+# 😫 😠 We spent all that time &amp; the manually tuned model is not the best?! 
+
+Well... yes
+
+We found the best hyperparameter value, **assuming the other hyperparameters were constant**.
+
+In other words, if we wanted to tune 2 hyper parameters, we'd have to do that simultaneously. 
+
+If you're familiar with interactions in multiple regression, this concept is familiar: 
+
+the influence of one hyperparameter on the model may differ based on values of another hyperparameter.
+
+Tomorrow we'll tune both hyperparameters together 😄
 
 ---
 
@@ -510,48 +524,58 @@ A deeper interpretation will have to wait until tomorrow!
 
 # Extract names from key
 
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; importance &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; indicator_name &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Primary education, pupils &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Imports of goods, services and primary income (BoP, current US$) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Government expenditure on education, total (% of GDP) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Probability of dying among children ages 5-9 years (per 1,000) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; International tourism, number of arrivals &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Industry (including construction), value added (% of GDP) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; School enrollment, preprimary (% gross) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Fixed telephone subscriptions &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;
+&lt;tr&gt;
+&lt;td style = 'padding: 0; border:0;' colspan='100%'&gt;&lt;sup&gt;a&lt;/sup&gt; Outcome is Government expenditure on education, total (% of GDP) in the upcoming year&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tfoot&gt;
+&lt;/table&gt;
 
-```r
-important_variables &lt;- 
-  vi(manually_tuned_rf) %&gt;% 
-  arrange(desc(Importance)) %&gt;% 
-  slice(1:10) %&gt;% 
-  pull(Variable)
 
-key %&gt;% 
-  filter(
-    janitor_version %in% important_variables
-  ) %&gt;% 
-  mutate(
-    janitor_version = fct_reorder(janitor_version, important_variables),
-    order = as.numeric(janitor_version)
-  ) %&gt;% 
-  arrange(janitor_version)
+
 ```
-
-```
-##                                                    indicator_name
-## 1                          Primary education, teachers (% female)
-## 2                            School enrollment, primary (% gross)
-## 3                    School enrollment, primary, female (% gross)
-## 4               Exports of goods and services (constant 2015 US$)
-## 5  General government final consumption expenditure (current US$)
-## 6                      School enrollment, primary, male (% gross)
-## 7                            Gross domestic savings (current US$)
-## 8               Exports of goods and services (constant 2015 US$)
-## 9                                     Gross savings (current US$)
-## 10          Adjusted savings: education expenditure (current US$)
-##       indicator_code   janitor_version order
-## 1  SE.PRM.TCHR.FE.ZS se_prm_tchr_fe_zs     1
-## 2        SE.PRM.ENRR       se_prm_enrr     2
-## 3     SE.PRM.ENRR.FE    se_prm_enrr_fe     3
-## 4     NE.EXP.GNFS.KD  ne_exp_gnfs_kd_2     4
-## 5     NE.CON.GOVT.CD    ne_con_govt_cd     5
-## 6     SE.PRM.ENRR.MA    se_prm_enrr_ma     6
-## 7     NY.GDS.TOTL.CD    ny_gds_totl_cd     7
-## 8     NE.EXP.GNFS.KD    ne_exp_gnfs_kd     8
-## 9     NY.GNS.ICTR.CD    ny_gns_ictr_cd     9
-## 10    NY.ADJ.AEDU.CD    ny_adj_aedu_cd    10
+## [1] 0.1938694
 ```
 
 
@@ -608,8 +632,6 @@ Tomorrow, we will discuss:
 * More Advanced Visualizations (Partial Dependency Plots)
 * Cross validation
 * Tuning More than 1 Hyperparameter at a time
-
-
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

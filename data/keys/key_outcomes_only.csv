@@ -1,127 +1,43 @@
-indicator_name,indicator_code,janitor_version
-"PPP conversion factor, private consumption (LCU per international $)",PA.NUS.PRVT.PP,pa_nus_prvt_pp
-"PPP conversion factor, GDP (LCU per international $)",PA.NUS.PPP,pa_nus_ppp
-DEC alternative conversion factor (LCU per US$),PA.NUS.ATLS,pa_nus_atls
-Net primary income (Net income from abroad) (current LCU),NY.GSR.NFCY.CN,ny_gsr_nfcy_cn
-Net primary income (Net income from abroad) (current US$),NY.GSR.NFCY.CD,ny_gsr_nfcy_cd
-"GNI per capita, PPP (current international $)",NY.GNP.PCAP.PP.CD,ny_gnp_pcap_pp_cd
-GNI per capita (current LCU),NY.GNP.PCAP.CN,ny_gnp_pcap_cn
-"GNI per capita, Atlas method (current US$)",NY.GNP.PCAP.CD,ny_gnp_pcap_cd
-"GNI, PPP (current international $)",NY.GNP.MKTP.PP.CD,ny_gnp_mktp_pp_cd
-GNI: linked series (current LCU),NY.GNP.MKTP.CN.AD,ny_gnp_mktp_cn_ad
-GNI (current LCU),NY.GNP.MKTP.CN,ny_gnp_mktp_cn
-GNI (current US$),NY.GNP.MKTP.CD,ny_gnp_mktp_cd
-"GNI, Atlas method (current US$)",NY.GNP.ATLS.CD,ny_gnp_atls_cd
-"GDP per capita, PPP (constant 2017 international $)",NY.GDP.PCAP.PP.KD,ny_gdp_pcap_pp_kd
-"GDP per capita, PPP (current international $)",NY.GDP.PCAP.PP.CD,ny_gdp_pcap_pp_cd
-GDP per capita (constant LCU),NY.GDP.PCAP.KN,ny_gdp_pcap_kn
-GDP per capita growth (annual %),NY.GDP.PCAP.KD.ZG,ny_gdp_pcap_kd_zg
-GDP per capita (constant 2015 US$),NY.GDP.PCAP.KD,ny_gdp_pcap_kd
-GDP per capita (current LCU),NY.GDP.PCAP.CN,ny_gdp_pcap_cn
-GDP per capita (current US$),NY.GDP.PCAP.CD,ny_gdp_pcap_cd
-"GDP, PPP (constant 2017 international $)",NY.GDP.MKTP.PP.KD,ny_gdp_mktp_pp_kd
-"GDP, PPP (current international $)",NY.GDP.MKTP.PP.CD,ny_gdp_mktp_pp_cd
-GDP (constant LCU),NY.GDP.MKTP.KN,ny_gdp_mktp_kn
-GDP growth (annual %),NY.GDP.MKTP.KD.ZG,ny_gdp_mktp_kd_zg
-GDP (constant 2015 US$),NY.GDP.MKTP.KD,ny_gdp_mktp_kd
-GDP: linked series (current LCU),NY.GDP.MKTP.CN.AD,ny_gdp_mktp_cn_ad
-GDP (current LCU),NY.GDP.MKTP.CN,ny_gdp_mktp_cn
-GDP (current US$),NY.GDP.MKTP.CD,ny_gdp_mktp_cd
-GDP deflator (base year varies by country),NY.GDP.DEFL.ZS,ny_gdp_defl_zs
-"Inflation, GDP deflator (annual %)",NY.GDP.DEFL.KD.ZG,ny_gdp_defl_kd_zg
-Adjusted savings: particulate emission damage (% of GNI),NY.ADJ.DPEM.GN.ZS,ny_adj_dpem_gn_zs
-Adjusted savings: particulate emission damage (current US$),NY.ADJ.DPEM.CD,ny_adj_dpem_cd
-Adjusted savings: mineral depletion (% of GNI),NY.ADJ.DMIN.GN.ZS,ny_adj_dmin_gn_zs
-Adjusted savings: mineral depletion (current US$),NY.ADJ.DMIN.CD,ny_adj_dmin_cd
-Adjusted savings: consumption of fixed capital (% of GNI),NY.ADJ.DKAP.GN.ZS,ny_adj_dkap_gn_zs
-Adjusted savings: consumption of fixed capital (current US$),NY.ADJ.DKAP.CD,ny_adj_dkap_cd
-Adjusted savings: net forest depletion (% of GNI),NY.ADJ.DFOR.GN.ZS,ny_adj_dfor_gn_zs
-Adjusted savings: net forest depletion (current US$),NY.ADJ.DFOR.CD,ny_adj_dfor_cd
-Adjusted savings: education expenditure (% of GNI),NY.ADJ.AEDU.GN.ZS,ny_adj_aedu_gn_zs
-Adjusted savings: education expenditure (current US$),NY.ADJ.AEDU.CD,ny_adj_aedu_cd
-"Services, value added (% of GDP)",NV.SRV.TOTL.ZS,nv_srv_totl_zs
-"Services, value added (current LCU)",NV.SRV.TOTL.CN,nv_srv_totl_cn
-"Services, value added (current US$)",NV.SRV.TOTL.CD,nv_srv_totl_cd
-"Industry (including construction), value added (% of GDP)",NV.IND.TOTL.ZS,nv_ind_totl_zs
-"Industry (including construction), value added (constant LCU)",NV.IND.TOTL.KN,nv_ind_totl_kn
-"Industry (including construction), value added (annual % growth)",NV.IND.TOTL.KD.ZG,nv_ind_totl_kd_zg
-"Industry (including construction), value added (constant 2015 US$)",NV.IND.TOTL.KD,nv_ind_totl_kd
-"Industry (including construction), value added (current LCU)",NV.IND.TOTL.CN,nv_ind_totl_cn
-"Industry (including construction), value added (current US$)",NV.IND.TOTL.CD,nv_ind_totl_cd
-"Manufacturing, value added (% of GDP)",NV.IND.MANF.ZS,nv_ind_manf_zs
-"Manufacturing, value added (constant LCU)",NV.IND.MANF.KN,nv_ind_manf_kn
-"Manufacturing, value added (annual % growth)",NV.IND.MANF.KD.ZG,nv_ind_manf_kd_zg
-"Manufacturing, value added (constant 2015 US$)",NV.IND.MANF.KD,nv_ind_manf_kd
-"Manufacturing, value added (current LCU)",NV.IND.MANF.CN,nv_ind_manf_cn
-"Manufacturing, value added (current US$)",NV.IND.MANF.CD,nv_ind_manf_cd
-"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,nv_agr_totl_zs
-"Agriculture, forestry, and fishing, value added (constant LCU)",NV.AGR.TOTL.KN,nv_agr_totl_kn
-"Agriculture, forestry, and fishing, value added (annual % growth)",NV.AGR.TOTL.KD.ZG,nv_agr_totl_kd_zg
-"Agriculture, forestry, and fishing, value added (constant 2015 US$)",NV.AGR.TOTL.KD,nv_agr_totl_kd
-"Agriculture, forestry, and fishing, value added (current LCU)",NV.AGR.TOTL.CN,nv_agr_totl_cn
-"Agriculture, forestry, and fishing, value added (current US$)",NV.AGR.TOTL.CD,nv_agr_totl_cd
-"Inflation, consumer prices (annual %)",FP.CPI.TOTL.ZG,fp_cpi_totl_zg
-Total reserves minus gold (current US$),FI.RES.XGLD.CD,fi_res_xgld_cd
-"Total reserves (includes gold, current US$)",FI.RES.TOTL.CD,fi_res_totl_cd
-"Foreign direct investment, net inflows (% of GDP)",BX.KLT.DINV.WD.GD.ZS,bx_klt_dinv_wd_gd_zs
-"Foreign direct investment, net inflows (BoP, current US$)",BX.KLT.DINV.CD.WD,bx_klt_dinv_cd_wd
-"Exports of goods, services and primary income (BoP, current US$)",BX.GSR.TOTL.CD,bx_gsr_totl_cd
-"Service exports (BoP, current US$)",BX.GSR.NFSV.CD,bx_gsr_nfsv_cd
-"Goods exports (BoP, current US$)",BX.GSR.MRCH.CD,bx_gsr_mrch_cd
-"Exports of goods and services (BoP, current US$)",BX.GSR.GNFS.CD,bx_gsr_gnfs_cd
-"Primary income receipts (BoP, current US$)",BX.GSR.FCTY.CD,bx_gsr_fcty_cd
-"Net secondary income (BoP, current US$)",BN.TRF.CURR.CD,bn_trf_curr_cd
-"Reserves and related items (BoP, current US$)",BN.RES.INCL.CD,bn_res_incl_cd
-"Foreign direct investment, net (BoP, current US$)",BN.KLT.DINV.CD,bn_klt_dinv_cd
-"Net errors and omissions (BoP, current US$)",BN.KAC.EOMS.CD,bn_kac_eoms_cd
-"Net trade in goods (BoP, current US$)",BN.GSR.MRCH.CD,bn_gsr_mrch_cd
-"Net trade in goods and services (BoP, current US$)",BN.GSR.GNFS.CD,bn_gsr_gnfs_cd
-"Net primary income (BoP, current US$)",BN.GSR.FCTY.CD,bn_gsr_fcty_cd
-"Net financial account (BoP, current US$)",BN.FIN.TOTL.CD,bn_fin_totl_cd
-Current account balance (% of GDP),BN.CAB.XOKA.GD.ZS,bn_cab_xoka_gd_zs
-"Current account balance (BoP, current US$)",BN.CAB.XOKA.CD,bn_cab_xoka_cd
-"Imports of goods, services and primary income (BoP, current US$)",BM.GSR.TOTL.CD,bm_gsr_totl_cd
-"Service imports (BoP, current US$)",BM.GSR.NFSV.CD,bm_gsr_nfsv_cd
-"Goods imports (BoP, current US$)",BM.GSR.MRCH.CD,bm_gsr_mrch_cd
-"Imports of goods and services (BoP, current US$)",BM.GSR.GNFS.CD,bm_gsr_gnfs_cd
-"Primary income payments (BoP, current US$)",BM.GSR.FCTY.CD,bm_gsr_fcty_cd
-Trade in services (% of GDP),BG.GSR.NFSV.GD.ZS,bg_gsr_nfsv_gd_zs
-"Exports of goods, services and primary income (BoP, current US$)",BX.GSR.TOTL.CD,bx_gsr_totl_cd_2
-"Service exports (BoP, current US$)",BX.GSR.NFSV.CD,bx_gsr_nfsv_cd_2
-"Goods exports (BoP, current US$)",BX.GSR.MRCH.CD,bx_gsr_mrch_cd_2
-"Exports of goods and services (BoP, current US$)",BX.GSR.GNFS.CD,bx_gsr_gnfs_cd_2
-"Net trade in goods (BoP, current US$)",BN.GSR.MRCH.CD,bn_gsr_mrch_cd_2
-"Net trade in goods and services (BoP, current US$)",BN.GSR.GNFS.CD,bn_gsr_gnfs_cd_2
-"Imports of goods, services and primary income (BoP, current US$)",BM.GSR.TOTL.CD,bm_gsr_totl_cd_2
-"Service imports (BoP, current US$)",BM.GSR.NFSV.CD,bm_gsr_nfsv_cd_2
-"Goods imports (BoP, current US$)",BM.GSR.MRCH.CD,bm_gsr_mrch_cd_2
-"Imports of goods and services (BoP, current US$)",BM.GSR.GNFS.CD,bm_gsr_gnfs_cd_2
-Trade in services (% of GDP),BG.GSR.NFSV.GD.ZS,bg_gsr_nfsv_gd_zs_2
-Population ages 15-64 (% of total population),SP.POP.1564.TO.ZS,sp_pop_1564_to_zs
-Population ages 0-14 (% of total population),SP.POP.0014.TO.ZS,sp_pop_0014_to_zs
-"Unemployment, total (% of total labor force) (modeled ILO estimate)",SL.UEM.TOTL.ZS,sl_uem_totl_zs
-"Unemployment, male (% of male labor force) (modeled ILO estimate)",SL.UEM.TOTL.MA.ZS,sl_uem_totl_ma_zs
-"Unemployment, female (% of female labor force) (modeled ILO estimate)",SL.UEM.TOTL.FE.ZS,sl_uem_totl_fe_zs
-"Labor force, total",SL.TLF.TOTL.IN,sl_tlf_totl_in
-"Labor force, female (% of total labor force)",SL.TLF.TOTL.FE.ZS,sl_tlf_totl_fe_zs
-"Probability of dying among youth ages 20-24 years (per 1,000)",SH.DYN.2024,sh_dyn_2024
-"Probability of dying among adolescents ages 15-19 years (per 1,000)",SH.DYN.1519,sh_dyn_1519
-"Probability of dying among adolescents ages 10-14 years (per 1,000)",SH.DYN.1014,sh_dyn_1014
-"Probability of dying among children ages 5-9 years (per 1,000)",SH.DYN.0509,sh_dyn_0509
-Number of deaths ages 20-24 years,SH.DTH.2024,sh_dth_2024
-Number of deaths ages 15-19 years,SH.DTH.1519,sh_dth_1519
-Number of deaths ages 10-14 years,SH.DTH.1014,sh_dth_1014
-Number of deaths ages 5-9 years,SH.DTH.0509,sh_dth_0509
-"Secondary education, duration (years)",SE.SEC.DURS,se_sec_durs
-Lower secondary school starting age (years),SE.SEC.AGES,se_sec_ages
-"Preprimary education, duration (years)",SE.PRE.DURS,se_pre_durs
-Commercial service exports (current US$),TX.VAL.SERV.CD.WT,tx_val_serv_cd_wt
-Merchandise exports (current US$),TX.VAL.MRCH.CD.WT,tx_val_mrch_cd_wt
-Commercial service imports (current US$),TM.VAL.SERV.CD.WT,tm_val_serv_cd_wt
-Merchandise imports (current US$),TM.VAL.MRCH.CD.WT,tm_val_mrch_cd_wt
-Merchandise trade (% of GDP),TG.VAL.TOTL.GD.ZS,tg_val_totl_gd_zs
-Individuals using the Internet (% of population),IT.NET.USER.ZS,it_net_user_zs
-Fixed telephone subscriptions (per 100 people),IT.MLT.MAIN.P2,it_mlt_main_p2
-Fixed telephone subscriptions,IT.MLT.MAIN,it_mlt_main
-Mobile cellular subscriptions (per 100 people),IT.CEL.SETS.P2,it_cel_sets_p2
-Mobile cellular subscriptions,IT.CEL.SETS,it_cel_sets
+janitor_version,indicator_name,indicator_code,import_file_source
+pa_nus_ppp,"PPP conversion factor, GDP (LCU per international $)",PA.NUS.PPP,economic_growth
+pa_nus_atls,DEC alternative conversion factor (LCU per US$),PA.NUS.ATLS,economic_growth
+ny_gdy_totl_kn,Gross domestic income (constant LCU),NY.GDY.TOTL.KN,economic_growth
+ny_gds_totl_zs,Gross domestic savings (% of GDP),NY.GDS.TOTL.ZS,economic_growth
+nv_srv_totl_zs,"Services, value added (% of GDP)",NV.SRV.TOTL.ZS,economic_growth
+nv_ind_totl_zs,"Industry (including construction), value added (% of GDP)",NV.IND.TOTL.ZS,economic_growth
+nv_agr_totl_zs,"Agriculture, forestry, and fishing, value added (% of GDP)",NV.AGR.TOTL.ZS,economic_growth
+ne_gdi_totl_zs,Gross capital formation (% of GDP),NE.GDI.TOTL.ZS,economic_growth
+ne_dab_totl_zs,Gross national expenditure (% of GDP),NE.DAB.TOTL.ZS,economic_growth
+ne_con_totl_zs,Final consumption expenditure (% of GDP),NE.CON.TOTL.ZS,economic_growth
+fp_cpi_totl_zg,"Inflation, consumer prices (annual %)",FP.CPI.TOTL.ZG,economic_growth
+fi_res_totl_cd,"Total reserves (includes gold, current US$)",FI.RES.TOTL.CD,economic_growth
+bx_pef_totl_cd_wd,"Portfolio equity, net inflows (BoP, current US$)",BX.PEF.TOTL.CD.WD,economic_growth
+bx_gsr_totl_cd,"Exports of goods, services and primary income (BoP, current US$)",BX.GSR.TOTL.CD,economic_growth
+bn_fin_totl_cd,"Net financial account (BoP, current US$)",BN.FIN.TOTL.CD,economic_growth
+bm_gsr_totl_cd,"Imports of goods, services and primary income (BoP, current US$)",BM.GSR.TOTL.CD,economic_growth
+sl_uem_totl_zs,"Unemployment, total (% of total labor force) (modeled ILO estimate)",SL.UEM.TOTL.ZS,education
+sl_tlf_totl_in,"Labor force, total",SL.TLF.TOTL.IN,education
+sh_dyn_2024,"Probability of dying among youth ages 20-24 years (per 1,000)",SH.DYN.2024,education
+sh_dyn_1519,"Probability of dying among adolescents ages 15-19 years (per 1,000)",SH.DYN.1519,education
+sh_dyn_1014,"Probability of dying among adolescents ages 10-14 years (per 1,000)",SH.DYN.1014,education
+sh_dyn_0509,"Probability of dying among children ages 5-9 years (per 1,000)",SH.DYN.0509,education
+sh_dth_2024,Number of deaths ages 20-24 years,SH.DTH.2024,education
+sh_dth_1519,Number of deaths ages 15-19 years,SH.DTH.1519,education
+sh_dth_1014,Number of deaths ages 10-14 years,SH.DTH.1014,education
+sh_dth_0509,Number of deaths ages 5-9 years,SH.DTH.0509,education
+se_xpd_totl_gd_zs,"Government expenditure on education, total (% of GDP)",SE.XPD.TOTL.GD.ZS,education
+se_sec_durs,"Secondary education, duration (years)",SE.SEC.DURS,education
+se_sec_ages,Lower secondary school starting age (years),SE.SEC.AGES,education
+se_prm_tchr,"Primary education, teachers",SE.PRM.TCHR,education
+se_prm_enrr,"School enrollment, primary (% gross)",SE.PRM.ENRR,education
+se_prm_enrl,"Primary education, pupils",SE.PRM.ENRL,education
+se_prm_durs,"Primary education, duration (years)",SE.PRM.DURS,education
+se_prm_ages,Primary school starting age (years),SE.PRM.AGES,education
+se_pre_durs,"Preprimary education, duration (years)",SE.PRE.DURS,education
+tg_val_totl_gd_zs,Merchandise trade (% of GDP),TG.VAL.TOTL.GD.ZS,infrastructure
+st_int_arvl,"International tourism, number of arrivals",ST.INT.ARVL,infrastructure
+it_net_bbnd,Fixed broadband subscriptions,IT.NET.BBND,trade
+it_mlt_main,Fixed telephone subscriptions,IT.MLT.MAIN,trade
+it_cel_sets,Mobile cellular subscriptions,IT.CEL.SETS,trade
+is_air_psgr,"Air transport, passengers carried",IS.AIR.PSGR,trade
+is_air_dprt,"Air transport, registered carrier departures worldwide",IS.AIR.DPRT,trade

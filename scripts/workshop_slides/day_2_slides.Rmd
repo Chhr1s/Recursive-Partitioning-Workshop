@@ -7,11 +7,13 @@ output: xaringan::moon_reader
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+outcome_next_year <- 'se_xpd_totl_gd_zs'
 ```
 
 # Set up 
 
 ```{r}
+set.seed(022023)
 library(tidyverse)
 library(ranger)
 library(rsample)
@@ -41,9 +43,9 @@ ptitanic <-
   mutate(
     survived = relevel(survived, ref = 'died')
   ) %>% 
-  drop_na()
+  drop_na() %>% 
+  missRanger(pmm.k=1, verbose = FALSE)
 
-set.seed(8675309)
 split_data <- initial_split(ptitanic)
 training_data <- training(split_data) 
 testing_data <- testing(split_data)
@@ -186,7 +188,10 @@ The VIP from the RF is very similar to the VIP from the DT
 
 .right-column[
 ```{r echo = FALSE, include = TRUE}
-vip(rf_1) + theme_bw(base_size = 18) + labs(y = 'Importance (Gini Impurity Index)')
+vip(rf_1) + theme_bw(base_size = 18) + 
+  labs(y = 'Importance (Gini Impurity Index)') +
+  aes(fill = 1, alpha = 0.7) +
+  theme(legend.position = 'none')
 ```
 ]
 
@@ -368,7 +373,7 @@ Let's load the WB South East Asia Data.
 
 ```{r}
 key <- 
-  read.csv(here::here('data/keys', 'key_imputed.csv'))
+  read.csv(here::here('data/keys', 'key_impute.csv'))
 
 dat <- 
   read.csv(
@@ -377,8 +382,6 @@ dat <-
     'se_asia_imputed_world_bank.csv'
     ))
 
-
-set.seed(007)
 sea_split <- initial_split(dat)
 sea_training <- training(sea_split) 
 sea_testing <- testing(sea_split) 
@@ -467,9 +470,8 @@ num_trees_plt
 # Varying `mtry`
 
 ```{r echo = FALSE, include = TRUE}
-
 mtry_values <- 
-  seq(5, ncol(sea_testing)-1, 20)
+  seq(1, ncol(sea_testing)-1, 1)
 
 rfs_mtry <- vector('list', length(mtry_values))
 
@@ -602,6 +604,21 @@ mtry_plt +
     )
 ```
 
+---
+
+# `r emoji('tired_face')` `r emoji('angry')` We spent all that time & the manually tuned model is not the best?! 
+
+Well... yes
+
+We found the best hyperparameter value, **assuming the other hyperparameters were constant**.
+
+In other words, if we wanted to tune 2 hyper parameters, we'd have to do that simultaneously. 
+
+If you're familiar with interactions in multiple regression, this concept is familiar: 
+
+the influence of one hyperparameter on the model may differ based on values of another hyperparameter.
+
+Tomorrow we'll tune both hyperparameters together `r emoji('smile')`
 
 ---
 
@@ -618,21 +635,60 @@ vip(manually_tuned_rf)
 # Extract names from key
 
 ```{r include=TRUE, echo=FALSE}
+
+
 important_variables <- 
-  vi(manually_tuned_rf) %>% 
+  vi(tuned_rf) %>% 
   arrange(desc(Importance)) %>% 
-  slice(1:10) %>% 
-  pull(Variable)
+  slice(1:8) %>% 
+  mutate(order = 1:n()) %>% 
+  select(janitor_version = Variable, order)
+
+pstr <- 
+  key %>% 
+  filter(janitor_version == outcome_next_year) %>% 
+  pull(indicator_name)
 
 key %>% 
-  filter(
-    janitor_version %in% important_variables
-  ) %>% 
-  mutate(
-    janitor_version = fct_reorder(janitor_version, important_variables),
-    importance = as.numeric(janitor_version)
-  ) %>% 
-  arrange(janitor_version)
+  inner_join(important_variables) %>% 
+  arrange(order) %>% 
+  select(order, indicator_name) %>% 
+  kbl() %>% 
+  add_footnote(
+    paste0('Outcome is ', pstr, ' in the upcoming year')
+  )
+# 
+# 
+# important_variables <- 
+#   vi(manually_tuned_rf) %>% 
+#   arrange(desc(Importance)) %>% 
+#   slice(1:8) %>% 
+#   pull(Variable)
+# 
+# pstr <- 
+#   key %>% 
+#   filter(janitor_version == outcome_next_year) %>% 
+#   pull(indicator_name)
+# 
+# key %>% 
+#   filter(
+#     janitor_version %in% important_variables
+#   ) %>% 
+#   mutate(
+#     janitor_version = fct_reorder(janitor_version, important_variables),
+#     importance = as.numeric(janitor_version)
+#   ) %>% 
+#   arrange(janitor_version) %>% 
+#   select(importance, indicator_name) %>% 
+#   kbl() %>% 
+#   add_footnote(
+#     paste0('Outcome is ', pstr, ' in the upcoming year')
+#   )
+```
+
+
+```{r include=TRUE, echo=FALSE}
+manually_tuned_rf$prediction.error
 ```
 
 
@@ -701,6 +757,4 @@ Tomorrow, we will discuss:
 * More Advanced Visualizations (Partial Dependency Plots)
 * Cross validation
 * Tuning More than 1 Hyperparameter at a time
-
-
 

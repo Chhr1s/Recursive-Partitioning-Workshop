@@ -282,6 +282,7 @@ ptitanic <-
   mutate(
     survived = relevel(survived, ref = 'died')
   )
+set.seed(022023)
 # this is how we'll keep training and testing data apart
 split_data <- initial_split(ptitanic)
 training_data <- training(split_data)
@@ -468,6 +469,7 @@ Higher dimensional models do the same thing, but harder to conceptualize.
 ]
 
 .right-column[
+
 ```{r echo=FALSE, fig.align='center'}
 training_data %>% 
   drop_na() %>% 
@@ -495,8 +497,8 @@ training_data %>%
       tibble(
         y = c(1.5, 0, 1.5),
         ymax = c(3, 1.5, 3),
-        x = c(0, 0, 13), 
-        xmax = c(13, 80, 80),
+        x = c(0, 0, 8.5), 
+        xmax = c(8.5, 80, 80),
         prediction = c('survived', 'survived', 'died')
       ),
     aes(
@@ -657,9 +659,8 @@ class: center, middle
 
 Let's fit the same model from the activity again. 
 
-Our training data differs slightly compared to the activity. 
+If training data differs from time to time, be sure you use `set.seed()`
 
-If we made sure to use `set.seed()` with the same seed value, they would be the same. 
 
 ```{r}
 all_var_DT <- 
@@ -915,138 +916,6 @@ glm_dt_tbl %>%
   kbl(caption = 'Performance of DT vs. GLM') %>% 
   pack_rows('Decision Tree', 1, 4) %>% 
   pack_rows('Logistic Regression', 5, 9)
-```
-
----
-
-# Exploring Specific Cases
-
-Let's look at predicted probabilities for a small number of randomly sampled points
-
-```{r}
-library(ggrepel)
-set.seed(2) 
-sml_df <-
-  tmp_tbl %>%
-  mutate(id = 1:n()) %>% 
-  drop_na() %>% 
-  sample_n(4) %>% 
-  pivot_longer(
-    cols = c(predicted_DT, predicted_glm), 
-    names_to = 'model', 
-    values_to = 'predicted', 
-    names_prefix = 'predicted_', 
-  ) %>% 
-  mutate(
-    predicted_class = 
-      if_else(round(predicted) == 1, 'survived', 'died'),
-    matched = 
-      if_else(
-        survived == predicted_class, 'Correct', 'Incorrect'
-      ),
-    survived = paste0('Reality: ', survived)
-  )
-```
-
----
-
-```{r}
-plt_of_smple <- 
-  sml_df %>% 
-  ggplot(
-    aes(
-      x = predicted, 
-      y = predicted_class, 
-      color = model,
-      shape = matched,
-      label = 
-        paste0(
-          'ID ', id, ':\n',
-          'prob = ', round(predicted, 2)
-        )
-    )
-  ) +
-  geom_point(size = 5) +
-  geom_label_repel(
-    aes(fill = model),
-    color = 'black'
-  ) +
-  scale_x_continuous(
-    limits = c(-0.25, 1.25), 
-    labels = seq(0, 1, 0.25)
-  ) +
-  facet_wrap(vars(survived), nrow = 1) 
-```
-
----
-
-# A Random Sampling
-
-```{r, include=TRUE,echo=FALSE,fig.width=8,fig.height=6,fig.align='center'}
-plt_of_smple +
-  theme_bw() +
-  labs(
-    y = 'Prediction',
-    shape = 'Accuracy'
-  )
-```
-
----
-
-# Another random sampling
-
-```{r include=FALSE}
-set.seed(6)
-plt_of_smple2 <- 
-  tmp_tbl %>%
-  mutate(id = 1:n()) %>% 
-  drop_na() %>% 
-  sample_n(4) %>% 
-  pivot_longer(
-    cols = c(predicted_DT, predicted_glm), 
-    names_to = 'model', 
-    values_to = 'predicted', 
-    names_prefix = 'predicted_', 
-  ) %>% 
-  mutate(
-    predicted_class = 
-      if_else(round(predicted) == 1, 'survived', 'died'),
-    matched = if_else(survived == predicted_class, 'Correct', 'Incorrect'),
-    survived = paste0('Reality: ', survived)
-  ) %>% 
-  ggplot(
-    aes(
-      x = predicted, 
-      y = predicted_class, 
-      color = model,
-      shape = matched,
-      label = 
-        paste0(
-          'ID ', id, ':\n',
-          'prob = ', round(predicted, 2)
-        )
-    )
-  ) +
-  geom_point(size = 5) +
-  geom_label_repel(
-    aes(fill = model),
-    color = 'black'
-  ) +
-  scale_x_continuous(
-    limits = c(-0.25, 1.25), 
-    labels = seq(0, 1, 0.25)
-  ) +
-  facet_wrap(vars(survived), nrow = 1) + 
-  theme_bw() +
-  labs(
-    y = 'Prediction',
-    shape = 'Accuracy'
-  )
-```
-
-
-```{r, fig.width=8,fig.height=6,fig.align='center'}
-plt_of_smple2
 ```
 
 ---
