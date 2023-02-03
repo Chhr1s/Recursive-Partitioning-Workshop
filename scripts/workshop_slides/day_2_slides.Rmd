@@ -635,10 +635,8 @@ vip(manually_tuned_rf)
 # Extract names from key
 
 ```{r include=TRUE, echo=FALSE}
-
-
 important_variables <- 
-  vi(tuned_rf) %>% 
+  vi(manually_tuned_rf) %>% 
   arrange(desc(Importance)) %>% 
   slice(1:8) %>% 
   mutate(order = 1:n()) %>% 
@@ -657,8 +655,7 @@ key %>%
   add_footnote(
     paste0('Outcome is ', pstr, ' in the upcoming year')
   )
-# 
-# 
+
 # important_variables <- 
 #   vi(manually_tuned_rf) %>% 
 #   arrange(desc(Importance)) %>% 

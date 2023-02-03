@@ -42,7 +42,7 @@ Today, we will discuss:
 # set up
 
 ```{r}
-outcome_next_year <- 'se_prm_enrr'
+outcome_next_year <- 'se_xpd_totl_gd_zs'
 library(tidyverse)
 library(ranger)
 library(rsample)
@@ -96,39 +96,33 @@ Units = `r str_extract(otcm, '\\([^\\)]+\\)')`
 
 Guessing the mean or median has common-sense validity.
 
-The most common-sense approach is to guess the average (mean or median) `se_prm_enrr` this year to be next year's value.
+The most common-sense approach is to guess the average (mean or median) `r paste0(outcome_next_year)` this year to be next year's value.
 
 If a model does not have a better RMSE than this, it is not worth using.
 
-```{r}
-naive_guess <- median(sea_training$se_prm_enrr)
-naive_guess
+```{r include=FALSE}
+naive_guess.median <- median(sea_training[,outcome_next_year])
+naive_guess.mean <- mean(sea_training[,outcome_next_year])
 ```
 
 ---
 
+# Benchmark 2: Group-Averages
+
 ```{r}
-dat %>% 
-  filter(country_name != 'Brunei Darussalam') %>% 
-  ggplot(
-    aes(
-      y = se_prm_enrl,
-      x = year,
-      fill = country_name
-    )
-  ) +
-  geom_point() +
-  facet_wrap(
-    vars(country_name)
-    )
-
-key %>% filter(janitor_version == outcome_next_year)
-
+group_averages <- 
+  sea_training %>% 
+  group_by(country_name) %>% 
+  summarize(
+    predictions_group.median = median(outcome_next_year),
+    predictions_group.mean = mean(outcome_next_year)
+  ) %>% 
+  ungroup()
 ```
 
 
 ---
-# Benchmark 2: Defaults
+# Benchmark 3: Default RF
 
 ```{r}
 rf_default <- 
@@ -147,22 +141,9 @@ The nice thing about RMSE is that it is in the units of the outcome.
 
 RMSE is the average error in the units of the outcome. 
 
-$$
-
-RMSE = 
-\sqrt{
-
-\frac{\Sigma (y_{actual} - y_{predicted})^2}{N}
-
-}
-
-$$
+$RMSE = \sqrt{\frac{\Sigma (y_{actual} - y_{predicted})^2}{N}}$
 
 For us, this is `r str_extract(otcm, '\\([^\\)]+\\)')`
-
-```{r}
-key %>% filter(janitor_version == 'se_prm_enrr')
-```
 
 ---
 
@@ -171,21 +152,156 @@ key %>% filter(janitor_version == 'se_prm_enrr')
 ```{r}
 benchmark_rmse <- 
   sea_testing %>% 
+  full_join(group_averages) %>% 
   transmute(
-    outcome_next_year,
-    prediction_median = median(sea_training$se_prm_enrr),
+    !!sym(outcome_next_year),
+    predictions_group.median,
+    predictions_group.mean,
     prediction_default.rf = predict(rf_default, .)$prediction
     ) %>% 
   summarize(
-    rmse_guess = rmse(observed_y = outcome_next_year, predicted_y = prediction_median),
-    rmse_default.rf = rmse(observed_y = outcome_next_year, predicted_y = prediction_default.rf),
+    rmse_guess.median = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = naive_guess.median),
+    rmse_guess.mean = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = naive_guess.mean),
+    rmse_guess.group.median = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = predictions_group.median),
+    rmse_guess.group.mean = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = predictions_group.mean),
+    rmse_default.rf = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_default.rf)
   )
-kbl(benchmark_rmse)
-
 ```
 
-A model worth anything will be better than RMSE = `r round(benchmark_rmse$rmse_guess, 2)`
-A decent model will be better than RMSE = `r round(benchmark_rmse$rmse_default.rf, 2)`
+---
+
+# Benchmarks
+
+Well, it actually looks like our group means are outperforming out default random forest. 
+
+```{r include = TRUE, echo = FALSE}
+benchmark_rmse %>% 
+  pivot_longer(
+    cols = everything(),
+    names_prefix = 'rmse_', 
+    names_to = 'rmse'
+    ) %>% 
+  kbl(caption = 'Fit of various benchmarks', digits = 2)
+```
+
+The training mean by country better predicts the outcome than a default random forest. 
+
+In this case, we either need to tune the model to outperform this, or else there is no reason to not take the group mean (unless you want to see VIPs, PDPs, etc)
+
+To put this in standard "research jargon", the between-country variance is higher than within
+
+---
+
+# Performance of Averages
+
+Let's actually look how bad the average guess would be for each country
+
+```{r echo=FALSE, include=TRUE}
+sea_testing %>% 
+  ggplot(
+    aes(
+      y = !!sym(outcome_next_year),
+      x = year,
+      color = country_name
+    )
+  ) +
+  geom_segment(
+    position = pos_tmp, 
+    aes(xend = year),
+    yend = naive_guess.mean,
+    ) +
+  geom_point(
+    alpha = 0.4,
+    position = pos_tmp, 
+    aes(size = abs(!!sym(outcome_next_year) - naive_guess.mean)),
+  ) +
+  geom_hline(
+    yintercept = naive_guess.mean,
+    linetype = 2,
+    size = 1.2, 
+    alpha = 0.4
+  ) +
+  theme_bw() +
+  facet_wrap(
+    vars(
+      country_name
+    )
+  ) +
+  labs(
+    y = pstr,
+    size = 'Absolute\nDifference\nMean',
+    fill = element_blank(),
+    title = '(In)Adequecy of mean across Group'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    legend.position = c(0.8, 0.14)
+  ) +
+  guides(color = 'none')
+```
+
+---
+
+
+# Performance of Averages
+
+We can get a decent estimate for a mean by group, actually.
+
+```{r echo=FALSE, include=TRUE}
+sea_testing %>% 
+  full_join(group_averages) %>% 
+  ggplot(
+    aes(
+      y = !!sym(outcome_next_year),
+      x = year,
+      color = country_name
+    )
+  ) +
+  geom_segment(
+    position = pos_tmp, 
+    aes(
+      xend = year,
+      yend = predictions_group.mean
+      )
+    ) +
+  geom_point(
+    alpha = 0.4,
+    position = pos_tmp, 
+    aes(
+      size = abs(!!sym(outcome_next_year) - predictions_group.mean),
+      ),
+  ) +
+  geom_hline(
+    aes(yintercept = predictions_group.mean),
+    linetype = 2,
+    size = 1.2, 
+    alpha = 0.4
+  ) +
+  theme_bw() +
+  facet_wrap(
+    vars(
+      country_name
+    )
+  ) +
+  labs(
+    y = pstr,
+    size = 'Absolute\nDifference\nMean',
+    fill = element_blank(),
+    title = 'Adequecy of Mean within Group'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    legend.position = c(0.8, 0.14)
+  ) +
+  guides(color = 'none')
+```
+
+
 
 ---
 
@@ -276,7 +392,7 @@ for (i in 1:length(rf_list)){
       num.trees = all_params$num.tree[i],
       num.threads = 8L
     )
-  #print(paste0('iteration #', i, ' complete'))
+  print(paste0('iteration #', i, ' complete'))
 }
 ```
 
@@ -307,7 +423,7 @@ OOB_heatmap <-
     ) +
   coord_cartesian() + 
   scale_color_grey(start = 0.6, end = 1) +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 30) +
   labs(
     title = 'OOB Prediction Error by mtry and num.trees', 
     x = 'mtry',
@@ -447,15 +563,51 @@ library(dials)
 cv_obj <- vfold_cv(sea_training, v = 10)
 ```
 
-```{r, eval = FALSE}
+```{r}
 max_entropy_grid <-
   grid_max_entropy(
-    # default = floor(sqrt(ncol(training_data))) = 24
     mtry(range = c(min(mtry_values), max(mtry_values))),
     trees(range = c(min(tree_sizes), max(tree_sizes))),
-    size = 25
+    size = 150
   )
+```
 
+
+```{r}
+max_entropy_grid %>% 
+  mutate(
+    Approach = 'Maximum Entropy Grid'
+  ) %>% 
+  bind_rows(
+    all_params %>% 
+      mutate(Approach = 'Full Grid') %>% 
+      rename(trees = num.tree)
+  ) %>% 
+  ggplot(
+    aes(
+      x = mtry, 
+      y = trees, 
+      fill = Approach,
+      color = Approach,
+      shape = Approach
+    )
+  ) +
+  geom_point(size = 5, alpha = 0.5) +
+  labs(
+    y = 'Number of Trees',
+    title = 'Coverage of Hyperparmater Space by Approach',
+    subtitle = 
+      'Maximum entropy grid can cover similar amount of space\nwith fewer models'
+  ) +
+  theme_bw(base_size = 18) +
+  theme(
+    legend.position = 'bottom',
+    plot.title.position = 'plot'
+    )
+```
+
+
+```{r, eval = FALSE}
 tuned_res <-
   cv_it_complex(
     cv_obj = cv_obj,
@@ -467,10 +619,12 @@ tuned_res <-
     mode = 'regression'
     ) %>% 
    arrange(rmse_mean)
-
+#dir.create(here::here('data/long_runtime_objects')
+write_rds(tuned_res, here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
 ```
 
 ```{r}
+tuned_res <- read_rds(here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
 tuned_rf <- 
   ranger(
     formula = outcome_next_year ~ ., 
@@ -522,47 +676,211 @@ vip(tuned_rf)
 ```
 
 
-```{r}
+```{r eval=FALSE, include=FALSE, echo=FALSE}
 library(pdp)
-pdp_12 <- 
-  partial(
-    tuned_rf, 
-    pred.var = important_variables$janitor_version[1:2]
+
+combos  <- 
+  list(
+    first_second = important_variables$janitor_version[c(1, 2)],
+    first_third = important_variables$janitor_version[c(1, 3)],
+    second_third = important_variables$janitor_version[c(2, 3)]
+    )
+
+
+pds <- 
+  map(
+    .x = combos, 
+    .f = 
+      ~partial(
+        tuned_rf, 
+        pred.var = .x,
+        progress = TRUE
+      ) 
+  )
+  
+
+
+pdps <-
+  map2(
+    .x = pds, 
+    .y = combos,
+    .f = ~.x %>% 
+      ggplot(
+        aes(
+          x = !!sym(.y[1]),
+          y = yhat,
+          size = !!sym(.y[2]),
+        )
+      ) +
+      labs(
+        y = paste0('Predicted: ', pstr, ' next year'), 
+        title = paste0('PDP of important variables in predicting\n', pstr, ' next year')
+      ) +
+      geom_point(alpha = 0.5) +
+      coord_cartesian() +
+      theme_bw()
   )
 
-pdp %>% 
-  ggplot(
-    aes(
-      x = !!sym(important_variables$janitor_version[1]),
-      y = yhat,
-      #color = sqrt(!!sym(important_variables$janitor_version[2])),
-      size = sqrt(!!sym(important_variables$janitor_version[2])),
-      #color = !!sym(important_variables[3]),
-      #fill = !!sym(important_variables[3])
-    )
-  ) +
-  geom_point(alpha = 0.5) +
-  coord_cartesian()
-```
 
-```{r}
-
-pdp %>% 
-  ggplot(
-    aes(
-      color = factor(round(!!sym(important_variables$janitor_version[1]))),
-      y = yhat,
-      #color = sqrt(!!sym(important_variables$janitor_version[2])),
-      x = !!sym(important_variables$janitor_version[2]),
-      #color = !!sym(important_variables[3]),
-      #fill = !!sym(important_variables[3])
-    )
-  ) +
-  geom_point(alpha = 0.5) +
-  coord_cartesian()
+map2(
+  .x = pdps, 
+  .y = names(pdps),
+  ~ggsave(
+    filename = 
+      here::here('imgs', paste0('day_3_pdp_', .y,'_important_vars.png')),
+    plot = .x,
+  )
+)
 ```
 
 
+```{r eval=FALSE, include=FALSE, echo=FALSE}
+name_and_year <- 
+  partial(
+    tuned_rf, 
+    pred.var = c('country_name', 'year'),
+    progress = TRUE
+  ) 
+
+name_and_year_plt <- 
+  name_and_year %>% 
+  ggplot(
+    aes(
+      x = year, 
+      y = yhat,
+      fill = country_name,
+      color = country_name
+    )
+  ) +
+  geom_jitter(alpha = 0.5, height = 0.0002, width = 0.2) +
+  coord_cartesian() +
+  geom_smooth(se = FALSE) +
+  theme_bw() + 
+  labs(
+    fill = 'Country' ,
+    color = 'Country',
+    y = paste0('Predicted: ', pstr, ' next year'),
+    title = paste0('Predicted: ', pstr, ' over time'),
+    caption = 'Points jittered minimally & made transparent to show overlaps'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot'
+  )
+
+ggsave(
+  filename = here::here('imgs', 'day_3_pdp_name_year.png'),
+  plot = name_and_year_plt,
+  )
+```
+
+---
+
+# PDP: First and Second VI Scores
+
+```{r echo = FALSE, include = TRUE}
+knitr::include_graphics(
+  here::here('imgs', 'day_3_pdp_first_second_important_vars.png'),
+)
+```
+
+---
+
+# PDP: First and Third VI Scores
+
+```{r echo = FALSE, include = TRUE}
+knitr::include_graphics(
+  here::here('imgs', 'day_3_pdp_first_third_important_vars.png'),
+)
+```
+
+---
+
+# PDP: Second Third VI Scores
+
+```{r echo = FALSE, include = TRUE}
+knitr::include_graphics(
+  here::here('imgs', 'day_3_pdp_second_third_important_vars.png'),
+)
+```
+
+---
+
+# PDP: All VI scores
+
+```{r eval=FALSE, include=FALSE, echo=FALSE}
+top3 <- 
+  partial(
+    tuned_rf, 
+    pred.var = important_variables$janitor_version[1:3],
+    progress = TRUE
+  )
+```
+
+```{r eval=FALSE, include=FALSE, echo=FALSE}
+top3_plt <- 
+  top3 %>% 
+  ggplot(
+    aes(
+      x = !!sym(important_variables$janitor_version[1]), 
+      y = yhat,
+      fill = !!sym(important_variables$janitor_version[2]),
+      color = !!sym(important_variables$janitor_version[2]),
+      size = !!sym(important_variables$janitor_version[3])
+    )
+  ) +
+  geom_point(alpha = 0.1) +
+  coord_cartesian() +
+ # geom_smooth(se = FALSE, alpha = 0.5 ) +
+  theme_bw() + 
+  labs(
+    # fill = 'Country' ,
+    # color = 'Country',
+    #y = paste0('Predicted: ', pstr, ' next year'),
+    title = paste0('Predicted: ', pstr, ' over time'),
+    #caption = 'Points jittered minimally & made transparent to show overlaps'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot'
+  )
+
+ggsave(
+  filename = here::here('imgs', 'day_3_pdp_top3_important_vars.png'),
+  plot = top3_plt,
+  )
+```
+
+
+```{r echo = FALSE, include = TRUE}
+knitr::include_graphics(
+  here::here('imgs', 'day_3_pdp_top3_important_vars.png'),
+)
+```
+
+
+---
+
+# PDP: By country & year
+
+We see here that our fitted RF does not actually have different predictions by country. If we had a deeper tree, or if it were more important, it would
+
+```{r echo = FALSE, include = TRUE}
+knitr::include_graphics(
+ here::here('imgs', 'day_3_pdp_name_year.png')
+)
+```
+
+
+---
+
+# So, what do we know about the outcome?
+
+Well, `r pstr` appears to increase along with each of the variables we investigated. 
+
+
+
+---
 
 # DTs, GLMs, and PDPs (oh my)
 

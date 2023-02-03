@@ -185,7 +185,7 @@ Let's load some data from the World Bank (WB):
 # dat / df are short for "data frame"
 # they are commonly used names in programming
 # I will inevitably slip these in
-dat <- read.csv('data/se_asia_imputed_world_bank.csv')
+dat <- read.csv(here::here('data', 'se_asia_imputed_world_bank.csv'))
 ```
 
 ---
@@ -258,7 +258,7 @@ levels(dat$country_name)[1]
 Often, factor level is printed as a suffix to the variable name in output
 
 ```{r}
-coef(lm(data = dat, formula = sp_pop_0014_to_zs ~ country_name))
+coef(lm(data = dat, formula = se_xpd_totl_gd_zs ~ country_name))
 ```
 
 ---
@@ -397,7 +397,7 @@ This, though, will give an error
 
 ```{r eval=FALSE, include=TRUE}
 dat %>% 
-  lm(sp_pop_1564_to_zs ~ year + country_name)
+  lm(se_xpd_totl_gd_zs ~ year + country_name)
 ```
     Error in as.data.frame.default(data) : 
       cannot coerce class ‘"formula"’ to a data.frame
@@ -414,7 +414,7 @@ We can get around this, though:
 dat %>% 
   lm(
     data = .,
-    formula = sp_pop_1564_to_zs ~ year + country_name
+    formula = se_xpd_totl_gd_zs ~ year + country_name
     )
 ```
 
@@ -428,9 +428,9 @@ We can use the period `.` to tell where we want to put the piped object.
 * Allows me to show pipes with less confusion
 * In some later cases, it is *substantially* easier to read code with pipes
 
-**Example: get the mean and standard deviation of `sp_pop_1564_to_zs` for each year**
+**Example: get the mean and standard deviation of `se_xpd_totl_gd_zs` for each year**
 
-`sp_pop_1564_to_zs` is the percent of the population between 15-64.
+`se_xpd_totl_gd_zs` is the percent of the population between 15-64.
 
 In `tidyverse` framework:
 
@@ -438,8 +438,8 @@ In `tidyverse` framework:
 dat %>% 
   group_by(year) %>% 
   summarize(
-    means = mean(sp_pop_1564_to_zs),
-    sds = sd(sp_pop_1564_to_zs)
+    means = mean(se_xpd_totl_gd_zs),
+    sds = sd(se_xpd_totl_gd_zs)
     ) 
 ```
 
@@ -454,12 +454,12 @@ year_list <- split(dat, dat$year)
 means <- 
   vapply(
     X = year_list, 
-    FUN = function(x) mean(x$sp_pop_1564_to_zs), 
+    FUN = function(x) mean(x$se_xpd_totl_gd_zs), 
     FUN.VALUE = double(1)
   ) 
 sds <- vapply(
   X = year_list, 
-  FUN = function(x) sd(x$sp_pop_1564_to_zs),
+  FUN = function(x) sd(x$se_xpd_totl_gd_zs),
   FUN.VALUE = double(1)
   ) 
 data.frame(
@@ -494,7 +494,7 @@ The basic concept is:
 
 Let's map:
 
-* y-axis = `sp_pop_1564_to_zs` (percent of country population between 15-64)  
+* y-axis = `se_xpd_totl_gd_zs` (Government expenditure on education as percent of GDP)  
 * x-axis = `year`
 
 `ggplot2` will use observed values to choose limits to these, but no data will appear
@@ -505,7 +505,7 @@ plot_mapping <-
   ggplot(
     mapping = 
       aes(
-        y = sp_pop_1564_to_zs, 
+        y = se_xpd_totl_gd_zs, 
         x = year
       )
   )
@@ -543,7 +543,7 @@ plot_mapping + geom_point() + geom_smooth()
 
 ```{r}
 plot_mapping + geom_point() + geom_smooth() + 
-  aes(color = country_name) 
+  aes(color = country_name, fill = country_name) 
 ```
 
 ---
@@ -553,13 +553,13 @@ plot_mapping + geom_point() + geom_smooth() +
 ```{r}
 cleaner_plot <- 
   plot_mapping + 
-  aes(color = country_name) +
+  aes(color = country_name, fill = country_name) +
   geom_point() + 
   geom_smooth() +
   theme_bw(base_size = 15) + 
   scale_y_continuous(
-    breaks = seq(0, 100, 10), 
-    limits = c(0, 100)
+    breaks = seq(0, 15, 3), 
+    limits = c(0, 15)
   ) +
   scale_x_continuous(
     breaks = seq(2000, 2018, 3)
@@ -567,7 +567,7 @@ cleaner_plot <-
   theme(
     plot.title.position = 'plot',
     plot.caption.position = 'plot',
-    legend.position = c(0.5, 0.2),
+    legend.position = c(0.5, 0.8),
     legend.direction = 'horizontal'
     )
 ```
@@ -580,9 +580,11 @@ cleaner_plot <-
 plt_labled <- 
   cleaner_plot + 
   labs(
-    y = 'Percent (%) of Population between ages 15-64',
+    y = 'Government Expendature on Education (% of GDP)',
     caption = 'World Bank Education Data: 2000:2018',
-    title = 'Percent of Population between ages 15-64 in SE Asia'
+    title = 'Trajectories of Government Expendature on Education (% of GDP) by Country',
+    color = 'Country',
+    fill = 'Country'
     ) 
 ```
 

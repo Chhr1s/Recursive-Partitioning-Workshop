@@ -64,55 +64,12 @@ Today, we will discuss:
 
 
 ```r
-outcome_next_year &lt;- 'se_prm_enrr'
+outcome_next_year &lt;- 'se_xpd_totl_gd_zs'
 library(tidyverse)
-```
-
-```
-## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
-## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-## ✔ tidyr   1.2.0      ✔ stringr 1.4.1 
-## ✔ readr   2.1.1      ✔ forcats 0.5.1 
-## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-```
-
-```r
 library(ranger)
 library(rsample)
 library(dials)
-```
-
-```
-## Loading required package: scales
-## 
-## Attaching package: 'scales'
-## 
-## The following object is masked from 'package:purrr':
-## 
-##     discard
-## 
-## The following object is masked from 'package:readr':
-## 
-##     col_factor
-```
-
-```r
 library(kableExtra)
-```
-
-```
-## 
-## Attaching package: 'kableExtra'
-## 
-## The following object is masked from 'package:dplyr':
-## 
-##     group_rows
-```
-
-```r
 library(emojifont)
 source(here::here('scripts/functions.R'))
 ```
@@ -145,9 +102,9 @@ sea_testing &lt;- testing(sea_split)
 
 
 
-Outcome =  &lt;u&gt;next year's&lt;/u&gt; School enrollment, primary (% gross)
+Outcome =  &lt;u&gt;next year's&lt;/u&gt; Government expenditure on education, total (% of GDP)
 
-Units = (% gross)
+Units = (% of GDP)
 
 ---
 
@@ -157,57 +114,31 @@ Units = (% gross)
 
 Guessing the mean or median has common-sense validity.
 
-The most common-sense approach is to guess the average (mean or median) `se_prm_enrr` this year to be next year's value.
+The most common-sense approach is to guess the average (mean or median) se_xpd_totl_gd_zs this year to be next year's value.
 
 If a model does not have a better RMSE than this, it is not worth using.
 
 
-```r
-naive_guess &lt;- median(sea_training$se_prm_enrr)
-naive_guess
-```
-
-```
-## [1] 105.7089
-```
-
-```r
-View(key)
-```
 
 ---
 
+# Benchmark 2: Group-Averages
+
 
 ```r
-dat %&gt;% 
-  filter(country_name != 'Brunei Darussalam') %&gt;% 
-  ggplot(
-    aes(
-      y = se_prm_enrl,
-      x = year,
-      fill = country_name
-    )
-  ) +
-  geom_point() +
-  facet_wrap(
-    vars(country_name)
-    )
-```
-
-![](day_3_slides_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
-
-```r
-key %&gt;% filter(janitor_version == outcome_next_year)
-```
-
-```
-##   janitor_version                       indicator_name indicator_code import_file_source
-## 1     se_prm_enrr School enrollment, primary (% gross)    SE.PRM.ENRR          education
+group_averages &lt;- 
+  sea_training %&gt;% 
+  group_by(country_name) %&gt;% 
+  summarize(
+    predictions_group.median = median(outcome_next_year),
+    predictions_group.mean = mean(outcome_next_year)
+  ) %&gt;% 
+  ungroup()
 ```
 
 
 ---
-# Benchmark 2: Defaults
+# Benchmark 3: Default RF
 
 
 ```r
@@ -227,28 +158,9 @@ The nice thing about RMSE is that it is in the units of the outcome.
 
 RMSE is the average error in the units of the outcome. 
 
-$$
+`\(RMSE = \sqrt{\frac{\Sigma (y_{actual} - y_{predicted})^2}{N}}\)`
 
-RMSE = 
-\sqrt{
-
-\frac{\Sigma (y_{actual} - y_{predicted})^2}{N}
-
-}
-
-$$
-
-For us, this is (% gross)
-
-
-```r
-key %&gt;% filter(janitor_version == 'se_prm_enrr')
-```
-
-```
-##   janitor_version                       indicator_name indicator_code import_file_source
-## 1     se_prm_enrr School enrollment, primary (% gross)    SE.PRM.ENRR          education
-```
+For us, this is (% of GDP)
 
 ---
 
@@ -258,35 +170,98 @@ key %&gt;% filter(janitor_version == 'se_prm_enrr')
 ```r
 benchmark_rmse &lt;- 
   sea_testing %&gt;% 
+  full_join(group_averages) %&gt;% 
   transmute(
-    outcome_next_year,
-    prediction_median = median(sea_training$se_prm_enrr),
+    !!sym(outcome_next_year),
+    predictions_group.median,
+    predictions_group.mean,
     prediction_default.rf = predict(rf_default, .)$prediction
     ) %&gt;% 
   summarize(
-    rmse_guess = rmse(observed_y = outcome_next_year, predicted_y = prediction_median),
-    rmse_default.rf = rmse(observed_y = outcome_next_year, predicted_y = prediction_default.rf),
+    rmse_guess.median = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = naive_guess.median),
+    rmse_guess.mean = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = naive_guess.mean),
+    rmse_guess.group.median = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = predictions_group.median),
+    rmse_guess.group.mean = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = predictions_group.mean),
+    rmse_default.rf = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_default.rf)
   )
-kbl(benchmark_rmse)
 ```
 
+```
+## Joining, by = "country_name"
+```
+
+---
+
+# Benchmarks
+
+Well, it actually looks like our group means are outperforming out default random forest. 
+
 &lt;table&gt;
+&lt;caption&gt;Fit of various benchmarks&lt;/caption&gt;
  &lt;thead&gt;
   &lt;tr&gt;
-   &lt;th style="text-align:right;"&gt; rmse_guess &lt;/th&gt;
-   &lt;th style="text-align:right;"&gt; rmse_default.rf &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; rmse &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; value &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
   &lt;tr&gt;
-   &lt;td style="text-align:right;"&gt; 630.8253 &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 0.5047169 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; guess.median &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.34 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; guess.mean &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.52 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; guess.group.median &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.55 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; guess.group.mean &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.20 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; default.rf &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.32 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-A model worth anything will be better than RMSE = 630.83
-A decent model will be better than RMSE = 0.5
+The training mean by country better predicts the outcome than a default random forest. 
+
+In this case, we either need to tune the model to outperform this, or else there is no reason to not take the group mean (unless you want to see VIPs, PDPs, etc)
+
+To put this in standard "research jargon", the between-country variance is higher than within
+
+---
+
+# Performance of Averages
+
+Let's actually look how bad the average guess would be for each country
+
+![](day_3_slides_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+
+# Performance of Averages
+
+We can get a decent estimate for a mean by group, actually.
+
+
+```
+## Joining, by = "country_name"
+```
+
+![](day_3_slides_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+
 
 ---
 
@@ -351,10 +326,10 @@ This did not include a grid search of all possible values
 
 ```r
 tree_sizes &lt;- 
-  seq(from = 500, to = 4000, by = 300)
+  seq(from = 500, to = 4000, by = 150)
 
 mtry_values &lt;- 
-  seq(from = 5, to = ncol(sea_testing)-1, 30)
+  seq(from = 1, to = ncol(sea_testing)-1, 2)
 
 all_params &lt;- 
   expand_grid(num.tree = tree_sizes, mtry = mtry_values)
@@ -363,7 +338,7 @@ dim(all_params)
 ```
 
 ```
-## [1] 24  2
+## [1] 576   2
 ```
 
 ---
@@ -376,7 +351,7 @@ dim(all_params)
 
 
 
-&lt;img src="../imgs/day_3_OOB_heatmap.png" width="4872" /&gt;
+&lt;img src="../imgs/day_3_OOB_heatmap.png" width="5232" /&gt;
 
 ---
 
@@ -447,7 +422,7 @@ For example:`n` = 1000 *observations* &amp; `k` = 10 k-fold CV
 # Diagram
 
 
-![](day_3_slides_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](day_3_slides_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
 
 
 
@@ -464,12 +439,52 @@ cv_obj &lt;- vfold_cv(sea_training, v = 10)
 ```r
 max_entropy_grid &lt;-
   grid_max_entropy(
-    # default = floor(sqrt(ncol(training_data))) = 24
-    mtry(range = c(5, 25)),
-    trees(range = c(400, 1000)),
-    size = 10
+    mtry(range = c(min(mtry_values), max(mtry_values))),
+    trees(range = c(min(tree_sizes), max(tree_sizes))),
+    size = 150
   )
+```
 
+
+
+```r
+max_entropy_grid %&gt;% 
+  mutate(
+    Approach = 'Maximum Entropy Grid'
+  ) %&gt;% 
+  bind_rows(
+    all_params %&gt;% 
+      mutate(Approach = 'Full Grid') %&gt;% 
+      rename(trees = num.tree)
+  ) %&gt;% 
+  ggplot(
+    aes(
+      x = mtry, 
+      y = trees, 
+      fill = Approach,
+      color = Approach,
+      shape = Approach
+    )
+  ) +
+  geom_point(size = 5, alpha = 0.5) +
+  labs(
+    y = 'Number of Trees',
+    title = 'Coverage of Hyperparmater Space by Approach',
+    subtitle = 
+      'Maximum entropy grid can cover similar amount of space\nwith fewer models'
+  ) +
+  theme_bw(base_size = 18) +
+  theme(
+    legend.position = 'bottom',
+    plot.title.position = 'plot'
+    )
+```
+
+![](day_3_slides_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+
+
+
+```r
 tuned_res &lt;-
   cv_it_complex(
     cv_obj = cv_obj,
@@ -479,12 +494,155 @@ tuned_res &lt;-
     tuning_grid = max_entropy_grid,
     model_type = 'rf',
     mode = 'regression'
-    )
+    ) %&gt;% 
+   arrange(rmse_mean)
+#dir.create(here::here('data/long_runtime_objects')
+write_rds(tuned_res, here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
 ```
+
+
+```r
+tuned_res &lt;- read_rds(here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
+tuned_rf &lt;- 
+  ranger(
+    formula = outcome_next_year ~ ., 
+    data = sea_training, 
+    mtry = tuned_res$mtry[[1]],
+    num.trees = tuned_res$trees[[1]],
+    importance = 'permutation'
+  )
+```
+
+
+
+
+```r
+library(vip)
+vip(tuned_rf)
+```
+
+![](day_3_slides_files/figure-html/unnamed-chunk-22-1.png)&lt;!-- --&gt;
+
+
+
+
+
+```
+## Joining, by = "janitor_version"
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; order &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; indicator_name &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Government expenditure on education, total (% of GDP) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Fixed telephone subscriptions &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Industry (including construction), value added (% of GDP) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; School enrollment, preprimary (% gross) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Labor force, total &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Probability of dying among adolescents ages 10-14 years (per 1,000) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Primary education, pupils &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Primary education, teachers &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;
+&lt;tr&gt;
+&lt;td style = 'padding: 0; border:0;' colspan='100%'&gt;&lt;sup&gt;a&lt;/sup&gt; Outcome is Government expenditure on education, total (% of GDP) in the upcoming year&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
+
+
+```r
+library(vip)
+vip(tuned_rf)
+```
+
+![](day_3_slides_files/figure-html/unnamed-chunk-24-1.png)&lt;!-- --&gt;
+
+
+
+
+
 
 
 ---
 
+# PDP: First and Second VI Scores
+
+&lt;img src="../imgs/day_3_pdp_first_second_important_vars.png" width="3472" /&gt;
+
+---
+
+# PDP: First and Third VI Scores
+
+&lt;img src="../imgs/day_3_pdp_first_third_important_vars.png" width="3472" /&gt;
+
+---
+
+# PDP: Second Third VI Scores
+
+&lt;img src="../imgs/day_3_pdp_second_third_important_vars.png" width="3472" /&gt;
+
+---
+
+# PDP: All VI scores
+
+
+
+
+
+
+&lt;img src="../imgs/day_3_pdp_top3_important_vars.png" width="4421" /&gt;
+
+
+---
+
+# PDP: By country &amp; year
+
+We see here that our fitted RF does not actually have different predictions by country. If we had a deeper tree, or if it were more important, it would
+
+&lt;img src="../imgs/day_3_pdp_name_year.png" width="4072" /&gt;
+
+
+---
+
+# So, what do we know about the outcome?
+
+Well, Government expenditure on education, total (% of GDP) appears to increase along with each of the variables we investigated. 
+
+
+
+---
 
 # DTs, GLMs, and PDPs (oh my)
 

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Day 1 Introductions &amp; (abbreviated) Foundations in R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Christopher M. Loan, MS" />
+    <meta name="date" content="2022-02-20" />
+    <script src="setting_up_files/header-attrs-2.16/header-attrs.js"></script>
+    <link href="setting_up_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="setting_up_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <script src="setting_up_files/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="setting_up_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="setting_up_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"<i class=\"fa fa-times-circle\" style=\"color: #F94144\"><\/i>"})</script>
+    <link href="setting_up_files/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+    <link href="setting_up_files/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Day 1
+Introductions &amp; (abbreviated) Foundations in R
+]
+.author[
+### Christopher M. Loan, MS
+]
+.date[
+### February 20, 2022
+]
+
+---
+
+
+
+
+
+
+
+# Day 1 Agenda 
+
+* Introduction and Overview **(9:00 am - 11:59 am)**
+    * ✅ Introductions &amp; KZ Lecture 
+    * ✅ coffee break
+    * `R` refresher (**up next**)
+    * `dplyr`, ` %&gt;% `, &amp; `ggplot2` refresher
+    * Lab activity
+  
+* Lunch **(12:00 pm - 12:59 pm)**
+
+* Describing and Fitting Decision Tree Models **(1:00 pm - 4:00 pm)**
+    * Lecture / worked examples: Decision Trees
+    * Lab activity
+    * Lecture / worked examples: diving deeper
+    * Summary, cons, and avenues for model improvement
+    
+
+---
+
+# A Quick Note about the Workshop
+
+I want this to be a comfortable environment for all attendees.
+
+I'm from another University and don't know your curricula or norms, so I want to establish that.
+
+* I am a former high school teacher (high school students are rambunctious!)
+* Oregon &amp; the University of Oregon are also relatively "laid back" 
+* As long as you raise your hand, feel free to interrupt me if you have questions - no need to wait until the end!
+* the only exception will be technical issues which concern just 1 person and not the group
+* for technical issues, I'm happy to help individuals during coffee breaks and/or lunch
+
+As long as it's polite, I'm a big fan of informal 🙃 
+
+---
+
+class: middle, center
+
+# Now, let's get started! 
+
+---
+# Packages 📦 in `R`
+
+In `R`, objects, functions, data, and anything besides the coding language itself need to be loaded.
+
+These are bundled together as "packages" 📦 and placed on CRAN* for download with the built-in `install.packages()` function.
+
+(*CRAN = the Comprehensive R Archive Network )
+
+_____
+
+By default, `R` has many functions loaded when you boot up.
+
+Without default packages (or your loaded ones)
+
+  * only `R`'s language structure would remain. 
+  * even simple functions - e.g., `max()` - would be re-written every project
+
+
+---
+
+class: center, middle
+
+# Refresher: Coding in `R` 💻
+
+---
+
+# Reading in Data
+
+* Reading in data is really easy as long as you know the file path.
+* `R` will search for your file path within the project folder. 
+* File paths can get complicated in R, but using projects makes it easier.
+* Running `getwd()` will tell you the working directory
+
+
+```r
+getwd()
+```
+
+```
+## [1] "/Users/cloan/Documents/Workshop/Recursive-Partitioning-Workshop/scripts/workshop_slides"
+```
+
+
+---
+
+# Reading in Data
+
+For this workshop, all data will be pre-loaded or formatted as `.csv` files.
+
+___
+
+**Packaged Data**
+
+Data loaded from a package can be loaded with `data()`:
+
+
+```r
+library(rpart.plot)
+ptitantic &lt;- data(ptitanic)
+```
+
+___
+
+**Import from `.csv`**
+
+Data loaded from a `.csv` can be loaded with `read.csv()`.
+
+I typically make a `data` folder within my `R` projects. 
+
+
+```r
+ex_dat &lt;- read.csv('data/example_filename.csv')
+```
+
+The `data/` in the file name tells it that `example_file.csv` is in the `data` folder.
+
+---
+
+# Importing Data
+
+Let's load some data from the World Bank (WB):
+
+* The WB describes these as their "educational" data
+* I classify them as Prevention Science data, but I'm biased 🙃
+* In a folder called `data`
+* called `se_asia_imputed_world_bank.csv`
+
+
+**Don't forget to store the data as an object with `&lt;-`**
+
+```r
+# dat / df are short for "data frame"
+# they are commonly used names in programming
+# I will inevitably slip these in
+dat &lt;- read.csv(here::here('data', 'se_asia_imputed_world_bank.csv'))
+```
+
+---
+
+# Inspecting data
+
+* Inspecting data is as easy as running the object name.
+* Before doing so, I am going to use `tibble()` to format the data frame slightly
+* I'll overwrite the prior object `dat` with itself as a tibble. 
+
+
+```r
+dat &lt;- tibble(dat)
+```
+
+`tibbles`
+
+* are part of the `tidyverse` framework 
+* differ very slightly from data frame (mostly beyond our scope)
+* default to only printing 10 rows, which is nice for our purposes
+
+---
+
+Now I'll inspect the object:
+
+It is 152 observations (rows) of data on some Southeast Asian countries.
+
+Each observation (row) has many variables (columns). 
+
+There are dozens of equivalent ways to refer to the dimensions (rows and columns). 
+
+**Now and Later: If I slip into using an unfamiliar term, please ask!!**
+
+
+```r
+head(dat)
+```
+
+```
+## # A tibble: 6 × 48
+##   countr…¹  year pa_nu…² pa_nu…³ sh_dy…⁴ sh_dy…⁵ sh_dy…⁶ sh_dy…⁷ sh_dt…⁸ sh_dt…⁹
+##   &lt;chr&gt;    &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;
+## 1 Indones…  2000   1387.   8422.     5.7     6.2     3.7     6     24050   27828
+## 2 Indones…  2001   1550.  10261.     5.7     6.2     3.6     5.7   24341   27698
+## 3 Indones…  2002   1616.   9311.     5.7     6.3     3.5     5.5   24476   27545
+## 4 Indones…  2003   1672.   8577.     5.7     6.2     3.4     5.3   24443   27417
+## 5 Indones…  2004   1767.   8939.     8.1     8.7     6.1     9     34325   38237
+## 6 Indones…  2005   1959.   9705.     5.7     6.2     3.3     4.8   23995   27415
+## # … with 38 more variables: sh_dth_1014 &lt;int&gt;, sh_dth_0509 &lt;int&gt;,
+## #   se_ter_enrr &lt;dbl&gt;, se_sec_durs &lt;int&gt;, se_sec_ages &lt;int&gt;, se_prm_tchr &lt;int&gt;,
+## #   se_prm_enrr &lt;dbl&gt;, se_prm_enrl &lt;int&gt;, se_prm_durs &lt;int&gt;, se_prm_ages &lt;int&gt;,
+## #   se_pre_enrr &lt;dbl&gt;, se_pre_durs &lt;int&gt;, se_com_durs &lt;int&gt;, st_int_arvl &lt;int&gt;,
+## #   it_net_bbnd &lt;int&gt;, it_mlt_main &lt;int&gt;, it_cel_sets &lt;int&gt;, is_air_psgr &lt;dbl&gt;,
+## #   is_air_dprt &lt;dbl&gt;, bm_gsr_totl_cd &lt;dbl&gt;, bn_fin_totl_cd &lt;dbl&gt;,
+## #   bx_gsr_totl_cd &lt;dbl&gt;, bx_pef_totl_cd_wd &lt;dbl&gt;, fi_res_totl_cd &lt;dbl&gt;, …
+```
+
+---
+
+# Factors
+
+I'm assuming this is a familiar term to `R` users, but wanted to address it
+
+* How `R` organizes categorical data
+* With many models, how we handle categorical data is important
+    * distributional assumptions with GLM (e.g., logistic &amp; probit regression)
+    * splitting rules with decision trees (we'll cover this later!)
+* In well-written packages, factors cue the function to properly handle categorical data
+
+Setting variables as factors is easy:
+
+
+```r
+class(dat$country_name)
+```
+
+```
+## [1] "character"
+```
+
+```r
+dat$country_name &lt;- factor(dat$country_name)
+class(dat$country_name)
+```
+
+```
+## [1] "factor"
+```
+
+---
+
+# Quick Dummy-Coding
+
+* Reference category is omitted from the model
+* Dummy-codes are made with all other factor levels (i.e., 0/1 value for each level)
+* By default R uses the alpha-numerically first category (i.e., "a" or "1" etc.)
+
+
+
+```r
+levels(dat$country_name)[1]
+```
+
+```
+## [1] "Cambodia"
+```
+
+Often, factor level is printed as a suffix to the variable name in output
+
+
+```r
+coef(lm(data = dat, formula = se_xpd_totl_gd_zs ~ country_name))
+```
+
+```
+##             (Intercept)   country_nameIndonesia     country_nameLao PDR 
+##               1.7628562               1.2791007               0.6238508 
+##    country_nameMalaysia country_namePhilippines   country_nameSingapore 
+##               3.7245775               1.1010791               1.3674875 
+##    country_nameThailand     country_nameVietnam 
+##               2.1637391               2.3757025
+```
+
+---
+
+# Useful Warnings
+
+Here is a nonsensical model, to show what some warnings might look like
+
+
+```r
+useless_model &lt;- lm(data = dat, formula = country_name ~ year)
+```
+
+```
+## Warning in model.response(mf, "numeric"): using type = "numeric" with a factor
+## response will be ignored
+```
+
+```
+## Warning in Ops.factor(y, z$residuals): '-' not meaningful for factors
+```
+
+If these sorts of warnings ever come out of your model, something (probably) didn't got as planned
+
+The model actually runs, but it doesn't mean anything. 
+
+
+---
+
+# Under the Hood 🚗
+
+Internally, `R` is converting the factor to the levels of the factor, i.e., 1, 2, 3, 4, 5, 6, 7, 8
+
+
+```r
+# factor levels
+unique(dat$country_name)
+```
+
+```
+## [1] Indonesia   Cambodia    Lao PDR     Malaysia    Philippines Singapore  
+## [7] Thailand    Vietnam    
+## 8 Levels: Cambodia Indonesia Lao PDR Malaysia Philippines ... Vietnam
+```
+
+
+
+```r
+# numeric equivalent
+unique(as.numeric(dat$country_name))
+```
+
+```
+## [1] 2 1 3 4 5 6 7 8
+```
+
+Even though the prior model ran, `R` suspected you did something wrong and is letting you know
+
+---
+
+# The pipe `%&gt;%` or `|&gt;`
+
+* A very useful feature of the `tidyverse` framework is the pipe
+* The pipe takes an object and passes it along as the first argument of a function
+* It's use with `dplyr` - a `tidyverse` package - is one of my favorite use cases.
+* (examples coming next slide)
+___
+* `%&gt;%` longstanding piece of `tidyverse` framework
+* Base `R` incorporated a "base pipe" `|&gt;` recently
+* They are functionally almost identical
+* I load the tidyverse in 100% of my projects, so I use `%&gt;%` out of habit
+
+---
+
+# Examples
+
+Make a pipe by typing 
+
+* the pieces out (`%` &amp; `&gt;` / `|` &amp; `&gt;` )
+* `cmd`/`cntrl` + `shift` + `m`  (mac/PC, respectively)
+
+____
+
+* `dplyr` is perhaps the easiest way to use the pipe effectively
+* `dplyr` function names are written to make code sound like a sentence
+* with this logic, you read the pipe as "then" or "and then"
+
+**Example 1: Let's print all distinct countries present in our data.**
+
+
+```r
+# [using] the data [then] 
+#      find distinct `country_name`
+cntries &lt;- 
+  dat %&gt;% 
+  distinct(country_name) 
+```
+
+---
+
+
+```r
+cntries
+```
+
+```
+## # A tibble: 8 × 1
+##   country_name
+##   &lt;fct&gt;       
+## 1 Indonesia   
+## 2 Cambodia    
+## 3 Lao PDR     
+## 4 Malaysia    
+## 5 Philippines 
+## 6 Singapore   
+## 7 Thailand    
+## 8 Vietnam
+```
+
+---
+
+# Examples
+
+**Example 2: Let's count the number of countries with data per year.**
+
+
+```r
+# [using] the data [then] 
+#      count `year`
+cnts &lt;- 
+  dat %&gt;% 
+  count(year) 
+
+ex_plt &lt;- cnts %&gt;% 
+  ggplot(
+    aes(x = year, y = n, label = n)
+  ) + 
+  geom_col(alpha = 0.7, fill = 'cornflowerblue') + 
+  geom_label(nudge_y = 0.2) + 
+  scale_y_continuous(breaks = seq(0, 10, 2)) +
+  theme_bw(base_size = 18) +
+  labs(
+    y = 'count',
+    title = 'Observations by Year',
+    caption = 'World Bank Data on SE Asian Countries'
+  )
+```
+
+---
+
+# Plot it
+
+
+```r
+ex_plt
+```
+
+&lt;img src="setting_up_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+# Considerations with the Pipe
+
+To print the first 3 rows of data, you can call: 
+
+
+```r
+head(dat, 3)
+# or
+dat %&gt;% head(3) 
+```
+
+* These are the same because
+  * The object on the left of the pipe is given the the function on the right as the first argument
+  * The first argument of `head()` is data (the second is the number of rows)
+
+This, though, will give an error
+
+
+```r
+dat %&gt;% 
+  lm(se_xpd_totl_gd_zs ~ year + country_name)
+```
+    Error in as.data.frame.default(data) : 
+      cannot coerce class ‘"formula"’ to a data.frame
+      
+---
+# Considerations with the Pipe
+
+The issue was that the first argument of `lm()` is `formula` 
+    
+    (see `?lm()` for documentation)
+We can get around this, though:
+
+
+```r
+dat %&gt;% 
+  lm(
+    data = .,
+    formula = se_xpd_totl_gd_zs ~ year + country_name
+    )
+```
+
+We can use the period `.` to tell where we want to put the piped object.
+
+---
+
+# Why do we care about `dplyr` &amp;  %&gt;%?
+
+* Gave a framework to review a few things about `R`
+* Allows me to show pipes with less confusion
+* In some later cases, it is *substantially* easier to read code with pipes
+
+**Example: get the mean and standard deviation of `se_xpd_totl_gd_zs` for each year**
+
+`se_xpd_totl_gd_zs` is the percent of the population between 15-64.
+
+In `tidyverse` framework:
+
+
+```r
+dat %&gt;% 
+  group_by(year) %&gt;% 
+  summarize(
+    means = mean(se_xpd_totl_gd_zs),
+    sds = sd(se_xpd_totl_gd_zs)
+    ) 
+```
+
+---
+
+# Why do we care about `dplyr` &amp;  %&gt;%?
+
+Example continued (in base)
+
+
+```r
+year_list &lt;- split(dat, dat$year)
+means &lt;- 
+  vapply(
+    X = year_list, 
+    FUN = function(x) mean(x$se_xpd_totl_gd_zs), 
+    FUN.VALUE = double(1)
+  ) 
+sds &lt;- vapply(
+  X = year_list, 
+  FUN = function(x) sd(x$se_xpd_totl_gd_zs),
+  FUN.VALUE = double(1)
+  ) 
+data.frame(
+  years = names(year_list),
+  means = means,
+  sds = sds
+)
+```
+
+
+---
+
+# ggplot2
+
+GG stands for "grammar of graphics"
+
+The basic concept is:
+
+* observed data is mapped to several "aesthetics" 
+    * `x`, `y`, `color`, `fill`, `size`, etc.
+    * this concept is easiest to understand with an x and y axis
+* Layers which represent those aesthetics are layered on top
+    * `geom_point` = scatter plot
+    * `geom_smooth` = line of best fit between `y` and `x` aesthetics
+    * `geom_col` = column plot
+* `ggplot2` objects are considered stacked in layers for that reason, 
+* we use `+` instead of pipes to add layers
+* let's look at an example
+---
+
+# Mapping Aesthetics
+
+Let's map:
+
+* y-axis = `se_xpd_totl_gd_zs` (Government expenditure on education as percent of GDP)  
+* x-axis = `year`
+
+`ggplot2` will use observed values to choose limits to these, but no data will appear
+
+
+```r
+plot_mapping &lt;- 
+  dat %&gt;% 
+  ggplot(
+    mapping = 
+      aes(
+        y = se_xpd_totl_gd_zs, 
+        x = year
+      )
+  )
+```
+
+
+---
+
+
+```r
+plot_mapping
+```
+
+![](setting_up_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+
+
+---
+
+# `geom_point()`
+
+
+
+```r
+plot_mapping + geom_point()
+```
+
+![](setting_up_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+
+---
+
+# `geom_smooth()`
+
+
+```r
+plot_mapping + geom_point() + geom_smooth()
+```
+
+![](setting_up_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+
+
+---
+
+### `geom_smooth()` by `country_name`
+
+
+```r
+plot_mapping + geom_point() + geom_smooth() + 
+  aes(color = country_name, fill = country_name) 
+```
+
+![](setting_up_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+
+---
+
+# Format the plot
+
+
+```r
+cleaner_plot &lt;- 
+  plot_mapping + 
+  aes(color = country_name, fill = country_name) +
+  geom_point() + 
+  geom_smooth() +
+  theme_bw(base_size = 15) + 
+  scale_y_continuous(
+    breaks = seq(0, 15, 3), 
+    limits = c(0, 15)
+  ) +
+  scale_x_continuous(
+    breaks = seq(2000, 2018, 3)
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot',
+    legend.position = c(0.5, 0.8),
+    legend.direction = 'horizontal'
+    )
+```
+
+---
+
+# Add labels
+
+
+```r
+plt_labled &lt;- 
+  cleaner_plot + 
+  labs(
+    y = 'Government Expendature on Education (% of GDP)',
+    caption = 'World Bank Education Data: 2000:2018',
+    title = 'Trajectories of Government Expendature on Education (% of GDP) by Country',
+    color = 'Country',
+    fill = 'Country'
+    ) 
+```
+
+---
+
+&lt;img src="setting_up_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: center, middle
+
+# [Exit Slides &amp; Give `?`/Documentation Tutorial]
+
+---
+class: center, middle
+
+# Activity
+
+Now, it's your turn. Open `refresher_activies.Rmd` and work section 3
+
+There are more activities after, please review the answer key after class today.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create();
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
