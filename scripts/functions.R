@@ -18,7 +18,8 @@ fit_model_ <-
     mod_formula,
     analysis_data, 
     tuning_param1, 
-    tuning_param2
+    tuning_param2,
+    tuning_param3 = NULL
     ){
   if (model_type == 'dt'){
     
@@ -34,6 +35,7 @@ fit_model_ <-
   
   if (model_type == 'rf'){
     
+    if(is.null(tuning_param3)){
     
       ranger(
         data = analysis_data, 
@@ -41,6 +43,17 @@ fit_model_ <-
         mtry = tuning_param1,
         num.trees = tuning_param2
       )
+      
+    }
+    
+    ranger(
+      data = analysis_data, 
+      formula = mod_formula, 
+      mtry = tuning_param1,
+      num.trees = tuning_param2,
+      min.node.size = tuning_param3
+      
+    )
     
 
   }
@@ -77,6 +90,11 @@ cv_it_complex <-
       if (model_type == 'rf'){
         tp1 <- tuning_grid$mtry[[j]]
         tp2 <- tuning_grid$trees[[j]]
+        
+        if (!is.null(tuning_grid$min_n)){
+          tp3 <- tuning_grid$min_n[[j]]
+        }
+          
       }
       
       if (model_type == 'dt'){
@@ -103,8 +121,11 @@ cv_it_complex <-
             mod_formula = mod_formula,
             analysis_data = temp_analysis,
             tuning_param1 = tp1,
-            tuning_param2 = tp2
+            tuning_param2 = tp2,
+            tuning_param3 = tp3
           )
+        
+        
         
         # get predictions
         temp_assessment <- assessment(cv_obj$splits[[i]])

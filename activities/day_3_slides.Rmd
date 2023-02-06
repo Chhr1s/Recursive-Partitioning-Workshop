@@ -72,12 +72,17 @@ dat <-
 
 
 set.seed(022023)
-sea_split <- initial_split(dat)
+sea_split <- initial_split(dat, strata = country_name)
 sea_training <- training(sea_split) 
 sea_testing <- testing(sea_split) 
 ```
 
 ```{r include = FALSE, echo = FALSE}
+pstr <- 
+  key %>% 
+  filter(janitor_version == outcome_next_year) %>% 
+  pull(indicator_name)
+
 otcm <-  
   key %>% 
   filter(janitor_version == outcome_next_year) %>% 
@@ -211,13 +216,13 @@ sea_testing %>%
     )
   ) +
   geom_segment(
-    position = pos_tmp, 
+    #position = pos_tmp, 
     aes(xend = year),
     yend = naive_guess.mean,
     ) +
   geom_point(
     alpha = 0.4,
-    position = pos_tmp, 
+    #position = pos_tmp, 
     aes(size = abs(!!sym(outcome_next_year) - naive_guess.mean)),
   ) +
   geom_hline(
@@ -263,7 +268,7 @@ sea_testing %>%
     )
   ) +
   geom_segment(
-    position = pos_tmp, 
+    #position = pos_tmp, 
     aes(
       xend = year,
       yend = predictions_group.mean
@@ -271,7 +276,7 @@ sea_testing %>%
     ) +
   geom_point(
     alpha = 0.4,
-    position = pos_tmp, 
+    #position = pos_tmp, 
     aes(
       size = abs(!!sym(outcome_next_year) - predictions_group.mean),
       ),
@@ -365,13 +370,22 @@ This did not include a grid search of all possible values
 
 ```{r}
 tree_sizes <- 
-  seq(from = 500, to = 4000, by = 150)
+  seq(from = 400, to = 3000, by = 200)
 
 mtry_values <- 
-  seq(from = 1, to = ncol(sea_testing)-1, 2)
+  seq(from = 2, to = ncol(sea_testing)-1, 3)
+
+node_sizes <- 
+  seq(from = 1, to = 10, by = 3)
+
+# expand this
 
 all_params <- 
-  expand_grid(num.tree = tree_sizes, mtry = mtry_values)
+  expand_grid(
+    num.tree = tree_sizes, 
+    mtry = mtry_values, 
+    node_sizes = node_sizes
+    )
 
 dim(all_params)
 ```
@@ -560,7 +574,7 @@ library(dials)
 ```
 
 ```{r, eval = FALSE}
-cv_obj <- vfold_cv(sea_training, v = 10)
+cv_obj <- vfold_cv(sea_training, v = 5, repeats = 2, strata = country_name)
 ```
 
 ```{r}
@@ -568,8 +582,10 @@ max_entropy_grid <-
   grid_max_entropy(
     mtry(range = c(min(mtry_values), max(mtry_values))),
     trees(range = c(min(tree_sizes), max(tree_sizes))),
+    dials::min_n(range = c(min(node_sizes), max(node_sizes))),
     size = 150
   )
+
 ```
 
 
@@ -612,16 +628,70 @@ tuned_res <-
   cv_it_complex(
     cv_obj = cv_obj,
     outcome_string = 'outcome_next_year',
-    seed = 333,
+    seed = 022023,
     mod_formula = outcome_next_year ~ .,
     tuning_grid = max_entropy_grid,
     model_type = 'rf',
     mode = 'regression'
-    ) %>% 
-   arrange(rmse_mean)
+    ) 
 #dir.create(here::here('data/long_runtime_objects')
+
+
 write_rds(tuned_res, here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
 ```
+
+```{r}
+tuned_res <- 
+  tuned_res %>% 
+  # mae or rmse
+   arrange(mae_mean)
+
+tuned_res %>% 
+  select(trees, mtry, min_n, mae_mean) %>% 
+  #mutate(minimum = factor(if_else(mae_mean == min(mae_mean), 5, 1))) %>% 
+  ggplot(
+    aes(
+      y = trees,
+      x = min_n,
+      color = mae_mean
+      )
+  ) + 
+  geom_point(
+    data = 
+      filter(tuned_res, mae_mean == min(mae_mean)), 
+    size = 15,
+    shape = 1, 
+    color = 'darkred'
+    ) + 
+  geom_hline(
+    data = 
+      filter(tuned_res, mae_mean == min(mae_mean)), 
+    linetype = 2, 
+    aes(yintercept = trees)
+  ) + 
+    geom_vline(
+    data = 
+      filter(tuned_res, mae_mean == min(mae_mean)), 
+    linetype = 2, 
+    aes(xintercept = min_n)
+  ) +
+  geom_point() +
+  scale_color_continuous(
+    high = "#132B43", 
+    low = "#56B1F7"
+      )
+  theme_minimal(base_size = 30) +
+  labs(
+    title = 'OOB Prediction Error by mtry and num.trees', 
+    x = 'mtry',
+    y = 'num.tree',
+    fill = 'Mean Square Error (MSE)',
+    caption = 'OOB Error (MSE) printed in each cell\nRandom sampling of OOB printed'
+  ) +
+  theme(legend.position = 'bottom')
+
+```
+
 
 ```{r}
 tuned_res <- read_rds(here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
@@ -640,6 +710,9 @@ tuned_rf <-
 ```{r}
 library(vip)
 vip(tuned_rf)
+
+tuned_rf
+rf_default
 ```
 
 
@@ -667,6 +740,26 @@ key %>%
     paste0('Outcome is ', pstr, ' in the upcoming year')
   )
 ```
+
+
+
+---
+
+```{r}
+
+sea_testing %>% 
+  transmute(
+    !!sym(outcome_next_year),
+    prediction_tuned.rf = predict(tuned_rf, .)$prediction
+  ) %>% 
+  summarize(
+    rmse_rf.tuned = 
+      rmse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_tuned.rf)
+  ) 
+
+benchmark_rmse
+```
+
 
 ---
 
