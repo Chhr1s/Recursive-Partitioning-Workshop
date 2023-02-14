@@ -43,7 +43,7 @@ ptitanic <-
   mutate(
     survived = relevel(survived, ref = 'died')
   ) %>% 
-  drop_na() %>% 
+  #drop_na() %>% 
   missRanger(pmm.k=1, verbose = FALSE)
 
 split_data <- initial_split(ptitanic)
@@ -382,7 +382,7 @@ dat <-
     'se_asia_imputed_world_bank.csv'
     ))
 
-sea_split <- initial_split(dat)
+sea_split <- initial_split(dat, strata = country_name, prop = 0.9)
 sea_training <- training(sea_split) 
 sea_testing <- testing(sea_split) 
 ```

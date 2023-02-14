@@ -1,7 +1,13 @@
 
+mse <- function(observed_y, predicted_y){
+  
+    (sum(observed_y - predicted_y)^2)/length(observed_y)
+  
+}
+
 rmse <- function(observed_y, predicted_y){
   sqrt(
-    (sum(observed_y - predicted_y)^2)/length(observed_y)
+    mse(observed_y, predicted_y)
     )
 }
 
@@ -104,8 +110,8 @@ cv_it_complex <-
       }
       
       # make vectors for the fit metrics
-      fit_1 <- vector(mode = 'numeric', length = length(number_cv_sets))
-      fit_2 <- vector(mode = 'numeric', length = length(number_cv_sets))
+      fit_1 <- vector(mode = 'numeric', length = number_cv_sets)
+      fit_2 <- vector(mode = 'numeric', length = number_cv_sets)
       
       # loop through cv object at this tuning value
       for (i in 1:number_cv_sets) {
@@ -144,13 +150,13 @@ cv_it_complex <-
         
         if (mode == 'regression')
         {
-          fit_type1 <- 'rmse_mean'
+          fit_type1 <- 'mse_mean'
           fit_type2 <- 'mae_mean'
-          fit_type1se <- 'rmse_se'
+          fit_type1se <- 'mse_se'
           fit_type2se <- 'mae_se'
         
           
-          fit_1[i] <- rmse(observed_y = temp_new_Y, predicted_y = temp_predictions)
+          fit_1[i] <- mse(observed_y = temp_new_Y, predicted_y = temp_predictions)
           fit_2[i] <- mae(observed_y = temp_new_Y, predicted_y = temp_predictions)
           
         }

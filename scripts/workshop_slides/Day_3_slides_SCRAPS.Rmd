@@ -1,0 +1,1086 @@
+---
+title: "DAY 3 SCRAPS"
+author: "Christopher M. Loan, MS"
+date: 'February 20, 2022'
+output: xaringan::moon_reader
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+---
+
+# Benchmark 2: Group-Averages
+
+A more nuanced approach would be to calculate the average by country.
+
+Each country can then be assigned its group average, rather than the overall average. 
+
+```{r}
+group_averages <- 
+  sea_training %>% 
+  group_by(country_name) %>% 
+  summarize(
+    predictions_group.mean = mean(outcome_next_year)
+  ) %>% 
+  ungroup()
+```
+
+---
+
+
+class: center, middle
+
+# Adequecy of <u>Country-Specific</u> Average
+
+```{r echo=FALSE, include=TRUE}
+sea_testing %>% 
+  full_join(group_averages, by = 'country_name') %>% 
+  ggplot(
+    aes(
+      y = !!sym(outcome_next_year),
+      x = year,
+      color = country_name
+    )
+  ) +
+  geom_segment(
+    aes(
+      xend = year,
+      yend = predictions_group.mean
+      )
+    ) +
+  geom_point(
+    alpha = 0.4,
+    aes(
+      size = abs(!!sym(outcome_next_year) - predictions_group.mean),
+      ),
+  ) +
+  geom_hline(
+    aes(yintercept = predictions_group.mean, 
+        color = country_name),
+    linetype = 2,
+    size = 1.2, 
+    alpha = 0.4
+  ) +
+  theme_bw(base_size = 16) +
+  facet_wrap(
+    vars(
+      country_name
+    )
+  ) +
+  labs(
+    y = pstr(),
+    size = 'Absolute\nDifference\nMean',
+    fill = element_blank(),
+    title = 'Adequecy of Mean within Group',
+    subtitle = 'Dotted line indicates group mean %GDP on education'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    legend.position = c(0.8, 0.14)
+  ) +
+  guides(color = 'none')
+```
+
+---
+
+
+---
+
+# A Quick Tangent: Nested Data
+
+Education and social sciences often work with nested data. 
+
+Nested data is hierarchically clustered.
+
+* Observations nested into a "cluster" are more similar than observations across clusters.
+
+* Repeated observations of countries over time is a form of nesting. 
+
+* The observation is considered nested "within" the country. 
+
+* The difference in performance of the group and overall average would cue me to use a mixed-effects random forest
+
+* Historically, clustered methods have been underappreciated in machine learning. 
+
+This is beyond the scope of our course; refer to Capitaine et al. (2021)
+
+
+
+
+
+
+---
+
+class: center, middle
+
+# Cross-Validation
+
+(To make the most of all available data)
+
+---
+
+# Cross-Validation: Benefits
+
+k-fold (a.k.a v-fold) cross-validation CV:
+
+* prevents "accidental" preference of a given hyperparameter state (based on which observations in testing vs. training)
+* makes of our training data to both train and test the model.
+* allows variance around fit to be assessed (e.g., standard error of OOB error)
+* is done **after we withhold final testing data**
+
+---
+
+# Cross-Validation: Logic
+
+
+For each hyperparameter state:
+
+* withhold some data (to evaluate model with unseen data)
+* train the model with the rest of the data
+* predict the outcome
+* evaluate the model with withheld data (e.g., calculate MSE)
+
+We can then take the mean of the model fit for each hyperparameter state
+
+This increases our confidence that the best hyperparameter state is not simply a byproduct of sampling variation.
+
+In other words, it's better to have many testing data sets than one.
+
+---
+
+# Cross-Validation: Approach
+
+Process: 
+* split the training data into "k" pieces.
+* train a model with a proportion of the data 
+
+$$n_{analysis} = \frac{k-1}{k}*N_{total}$$
+
+* assess prediction accuracy (e.g., MSE) with withheld data
+
+$$n_{assess} = \frac{1}{k}*N_{total}$$
+* assess average MSE for each hyperparameter state
+
+For example:`n` = 1000 *observations* & `k` = 10 k-fold CV
+* Each fold has `n`/10 = 1000/10 = 100 observations
+* Model fit for a given hyperparameter is determined
+
+---
+
+# Cross-Validation: Diagram
+
+
+```{r include = TRUE, echo = FALSE}
+diagram_dat <- data.frame(matrix(rep('analysis', 100), nrow = 10, ncol = 10))
+
+for (i in 1:10){
+  diagram_dat[i, i] <- 'assessment'
+}
+
+diagram_dat %>% 
+  mutate(
+    row_id = 1:n()
+  ) %>% 
+  pivot_longer(cols = -row_id) %>% 
+  mutate(
+    name = as.numeric(gsub('X', '', name)),
+    unseen = if_else(value == 'FOLD\nTESTING', 'UNSEEN', '')
+    ) %>% 
+  ggplot(
+    aes(x = name, y = row_id, fill = value, label = unseen)
+  ) +
+  geom_tile(alpha = 0.5, color = 'black') + 
+  geom_text(color = 'black') + 
+  coord_cartesian() +
+  scale_y_reverse(breaks = 1:10) +
+  scale_x_continuous(breaks = 1:10, position = 'top') +
+  labs(
+    x = 'Fold ID Number',
+    y = 'Fold ID Number',
+    title = '10-fold Cross Validation Example',
+    caption = 'table represents all TRAINING data',
+    fill = element_blank()
+  ) +
+  theme_minimal(base_size = 15) +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = 'bottom',
+    plot.title.position = 'plot'
+    ) 
+```
+
+---
+
+```{r}
+cv_obj <- vfold_cv(sea_training, strata = country_name, v = 10)
+set.seed(022023)
+number_cv_sets <- length(cv_obj$splits) # 10
+results <- tibble()
+```
+
+---
+
+
+```{r}
+# loop through the tuning grid
+for (j in 1:nrow(max_entropy_grid)){
+  # make vectors for the fit metrics
+  mses <- vector(mode = 'numeric', length = number_cv_sets)
+  # loop through cv object at this tuning value
+  
+  tp1 <- max_entropy_grid$mtry[[j]] 
+  tp2 <- max_entropy_grid$trees[[j]]
+  tp3 <- max_entropy_grid$min_n[[j]]
+  
+  for (i in 1:number_cv_sets) {
+    # use analysis set for training
+    current_analysis <- analysis(cv_obj$splits[[i]])
+    current_assessment <- assessment(cv_obj$splits[[i]])
+    # fit model
+    fitted_result <- 
+      ranger(
+        data = current_analysis, 
+        formula = outcome_next_year ~ ., 
+        mtry = tp1,
+        num.trees = tp2,
+        min.node.size = tp3
+      )
+    # store fit metrics
+    mses[i] <- 
+      mse(
+        observed_y = current_assessment[,'outcome_next_year'], 
+        predicted_y = predict(fitted_result, data = current_assessment)$predictions
+      )
+  }
+ 
+  # put it together
+  temp_results <- 
+    max_entropy_grid[j, ] %>% 
+    mutate(
+      grid_index = j, 
+      mse_mean = mean(mses), 
+      mse_se = sd(mses)/sqrt(length(mses))
+    ) %>% 
+    select(grid_index, everything())
+  
+  results <- bind_rows(results, temp_results)
+  message(paste0("hyperparameter index ", j, " complete"))
+}
+
+results %>% 
+  arrange(mse_mean) %>% 
+  slice(1)
+tuned_res %>% 
+  arrange(mse_mean) %>% 
+  slice(1)
+```
+
+---
+
+```{r eval = FALSE, include = TRUE, echo=TRUE}
+cv_obj <- vfold_cv(sea_training, strata = country_name, v = 10)
+tuned_res <- 
+  cv_it_complex(
+    cv_obj = cv_obj, 
+    outcome_string = 'outcome_next_year',
+    seed = 022023,
+    mod_formula = outcome_next_year ~ .,
+    tuning_grid = max_entropy_grid,
+    model_type = 'rf',
+    mode = 'regression'
+  )
+```
+
+---
+
+```{r eval = FALSE, include = FALSE, echo=FALSE}
+rio::export(
+  tuned_res,
+  here::here('data', 'tuning_grid.csv')
+  )
+```
+
+```{r eval = TRUE, include = FALSE, echo=FALSE}
+tuned_res <- 
+  rio::import(
+    here::here('data', 'tuning_grid.csv')
+  )
+```
+
+---
+
+# Select Best Hyperparams
+
+```{r}
+best_hyperparams.cv <- 
+  tuned_res %>% 
+  arrange(mse_mean) %>% 
+  slice(1)
+
+best_hyperparams.cv
+```
+
+---
+
+# Fit with Training Data
+
+```{r}
+rf_tuned.cv <- 
+  ranger(
+  data = sea_training, 
+  formula = outcome_next_year ~ .,
+  importance = 'permutation',
+  mtry = best_hyperparams.cv$mtry,
+  num.trees = best_hyperparams.cv$trees,
+  min.node.size = best_hyperparams.cv$min_n
+)
+```
+
+---
+
+```{r echo = FALSE, include = TRUE}
+important_variables_cv <- 
+  vi(rf_tuned.cv) %>% 
+  arrange(desc(Importance)) %>% 
+  slice(1:8) %>% 
+  mutate(order = 1:n()) %>% 
+  select(janitor_version = Variable, order)
+
+key %>% 
+  inner_join(important_variables_cv, by = 'janitor_version') %>% 
+  arrange(order) %>% 
+  select(order, indicator_name) %>% 
+  kbl() %>% 
+  add_footnote(
+    paste0('Outcome is ', pstr(), ' in the upcoming year')
+  )
+```
+
+
+---
+
+# Evaluate Performance
+
+This model outperformed all benchmarks, including the RF with defaults
+
+```{r echo=FALSE, include=TRUE}
+sea_testing %>% 
+  transmute(
+# equivalent to: se_xpd_totl_gd_zs
+    !!sym(outcome_next_year),
+    prediction_tuned.rf.cv = predict(rf_tuned.cv, .)$prediction,
+    prediction_tuned.rf = predict(rf_tuned, .)$prediction
+  ) %>% 
+  summarize(
+    mse_rf.tuned = 
+      mse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_tuned.rf),
+    mse_rf.tuned.cv = 
+      mse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_tuned.rf.cv)
+  ) %>% 
+  bind_cols(
+    benchmark_mse
+  ) %>% 
+  pivot_longer(
+    cols = everything(), 
+    names_to = 'Model / Benchmark', 
+    values_to = 'Mean Squared Error', 
+    names_prefix = 'mse_'
+  ) %>% 
+  arrange(`Mean Squared Error`) %>% 
+  kbl(caption = 'Fit of Models & Benchmarks', digits = 4) %>% 
+  footnote('Lower is better')
+```
+
+---
+
+
+
+
+####### OLDER BELOW
+
+# Feature Extraction & Interpretation
+.pull-left[
+
+```{r}
+library(pdp)
+## two `partial` loaded:
+## `pdp::partial` 
+## `purrr::partial`
+## make sure we use former
+partial <- pdp::partial
+```
+]
+
+.pull-right[
+
+```{r}
+univariate_pdp_sex <- 
+  partial(
+    two_var_DT, 
+    pred.var = 'sex',
+    type = 'classification',
+    which.class = 'survived',
+    # return predicted probability 
+    prob = TRUE
+    )
+```
+]
+.center[
+```{r echo=FALSE, fig.width=10, fig.height=3}
+univariate_pdp_sex %>% 
+  ggplot(
+    aes(y = sex, x = yhat, fill = sex)
+  ) +
+  geom_col(show.legend = F, alpha = 0.4, color = 'black') +
+  theme_bw(base_size = 15) +
+  labs(
+    y = 'Passenger Sex', 
+    x = 'Predicted Probability of Surviving', 
+    title = 'Males Display a substantially lower probability of survival'
+    ) +
+  geom_label(
+    aes(
+      label = round(yhat, 2)
+    )
+  ) + 
+  theme(plot.title.position = 'plot')
+```
+]
+
+---
+```{r}
+univariate_pdp_age <- 
+  partial(
+    two_var_DT, 
+    pred.var = 'age',
+    type = 'classification',
+    which.class = 'survived',
+    prob = TRUE
+    )
+```
+
+```{r}
+age_plt1 <- 
+  univariate_pdp_age %>% 
+  ggplot(
+    aes(x = age, y = yhat)
+  ) +
+  geom_point() +
+  theme_bw(base_size = 15) +
+  labs(
+    x = 'Passenger Age', 
+    y = 'Predicted Probability of Surviving', 
+    title = 'Younger individuals display a \nsubstantially higher probability of survival'
+    ) +
+  theme(plot.title.position = 'plot') +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1, 0.25)
+    )
+```
+
+---
+
+```{r}
+age_plt1
+```
+
+---
+
+```{r}
+bivariate_pdp <- 
+  partial(
+    two_var_DT, 
+    pred.var = c('age', 'sex'),
+    type = 'classification',
+    which.class = 'survived',
+    prob = TRUE,
+    )
+```
+
+---
+
+```{r}
+bi_pdp_plt <- 
+  bivariate_pdp %>% 
+  ggplot(
+    aes(
+      y = yhat, 
+      x = age,
+      color = sex
+    )
+  ) + 
+  theme_bw() +
+  geom_point() +
+  theme_bw(base_size = 15) +
+  labs(
+    x = 'Passenger Age', 
+    y = 'Predicted Probability of Surviving', 
+    title = 'Women & younger men display a substantially
+higher probability of survival',
+    fill = 'Passenger\nSex'
+    ) +
+  theme(
+    plot.title.position = 'plot'
+    ) +
+  scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0, 1 , 0.25)
+    )
+
+```
+
+---
+
+```{r}
+bi_pdp_plt
+```
+
+---
+
+
+---
+
+# Three Variable PDP!
+
+I do not recommend doing more than 2 variable PDPs in many cases. 
+
+Run times can be **MASSIVE**, even with good machines. 
+
+  1. make sure you save your `.Rmd` before running this
+  2. with ≥ 2 variable PDPs, be aware of:
+  
+    a. the dimensions of the data set (rows x columns)
+    
+    b. your computer's capability 
+
+```{r}
+three_variable_pdp <- 
+  partial(
+    all_var_DT, 
+    pred.var = c('age', 'sex', 'pclass'),
+    type = 'classification',
+    which.class = 'survived',
+    prob = TRUE
+    )
+```
+
+---
+
+# Visualizing 
+
+PDPs get harder to visualize as number of variables included increase.
+
+We can make a slightly more complex plot to show this.
+
+```{r}
+three_variable_plt <- 
+  three_variable_pdp %>% 
+  ggplot(
+    aes(
+      y = yhat, 
+      x = age,
+      color = pclass
+    )
+  ) + 
+  theme_bw() + 
+  geom_jitter(
+    width = 0.02, 
+    height = 0.02,
+    alpha = 0.5
+    ) +
+  facet_wrap(vars(sex), ncol = 2)
+```
+
+---
+
+# Slightly Formating the Visualization
+
+```{r}
+three_variable_plt <-
+  three_variable_plt +
+  theme_bw(base_size = 15) +
+  labs(
+    x = 'Passenger Age', 
+    y = 'Predicted Probability of Surviving', 
+    title = 'Women & younger men display a substantially\n higher probability of survival',
+    fill = 'Passenger Class',
+    color = 'Passenger Class',
+    caption = 'Points are minimally jittered in x- and y-dimensions to show density'
+    ) +
+  theme(
+    plot.title.position = 'plot',
+    plot.caption.position = 'plot', 
+    legend.position = 'bottom'
+    )
+```
+
+---
+
+```{r, fig.align='center'}
+three_variable_plt
+```
+
+---
+
+Why are 1st class young men not seeing the younger protection effect?
+
+```{r echo=FALSE, fig.align='center', fig.width=10, fig.height=7.5}
+
+three_variable_plt + 
+  theme_bw(base_size = 20) +
+  geom_point(
+    inherit.aes = FALSE,
+    data = 
+      tibble(
+        x = 7.5, 
+        y = 0.35, 
+        sex = 'male'
+      ),
+    aes(x = x, y = y, fill = sex),
+    size = 23,
+    shape = 1,
+    show.legend = FALSE
+  )
+```
+
+---
+
+# Deep Dive: Composition of Training Data
+
+We can see what actually happened to the young, 1st class males in the sample.
+
+```{r include=TRUE, echo = FALSE}
+training_data %>% 
+  filter(
+    pclass == '1st', 
+    sex == 'male', 
+    age < 13
+  ) %>% 
+  tibble()
+```
+
+* In reality all observed cases survived
+* Reality ≠ Prediction
+* Misclassification of only 3 cases "does not matter"
+* **So, they did get the same protection, but the model prioritized other effects** 
+
+---
+
+# Look back at the decision tree
+
+If you're a 2nd or 3rd class male, the model split on other variables, however, in first class males it assigns everyone the same class. 
+
+```{r, fig.align='center', fig.height=6,fig.width=11}
+rpart.plot(all_var_DT)
+```
+
+---
+
+# Why did the model do that?
+
+Well, there aren't that many young, 1st class men. Basically, it's not a priority to the model.
+
+```{r fig.align='center', fig.height=3, fig.width=8}
+training_data %>% 
+  filter(sex == 'male') %>% 
+  ggplot(aes(y = pclass, x = age, fill = pclass)) + 
+  ggridges::geom_density_ridges(alpha = 0.2) + 
+  theme_bw(base_size = 15) + 
+  theme(legend.position = 'none')
+```
+
+---
+
+
+
+# Hyperparameter Tuning
+
+
+---
+
+# YIKES
+
+that model is not easy to interpret
+
+```{r include=TRUE,echo=FALSE}
+overly_complex_dt <- 
+  rpart(
+  formula = survived ~ ., 
+  data = training_data,
+  cp = 0.001
+)
+```
+
+```{r include=TRUE,echo=FALSE}
+rpart.plot(overly_complex_dt)
+```
+
+
+---
+
+# Specific Cases
+
+Does this model oversimplify things still?
+
+Let's look at those odd cases, 1st class young males for both models:
+
+Training data (seen):
+
+```{r include=TRUE, echo=FALSE}
+training_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  filter(
+    age < 13, 
+    sex == 'male', 
+    pclass == '1st'
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+testing data (unseen):
+
+```{r include=TRUE, echo=FALSE}
+testing_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  filter(
+    age < 13, 
+    sex == 'male', 
+    pclass == '1st'
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+---
+# Prediction Accuracy 
+
+For these fringe cases:
+
+* the complex model was correct for 100% 
+* the simple was correct 0% of the time. 
+
+This is only 4 cases, though. 
+
+Let's look at **all** predictions.
+
+```{r include=TRUE,echo=FALSE}
+testing_data %>% 
+  mutate(
+    prediction_complex = predict(overly_complex_dt, newdata = ., type = 'class'),
+    prediction_simple = predict(all_var_DT, newdata = ., type = 'class')
+  ) %>% 
+  select(survived, contains('prediction')) %>% 
+  pivot_longer(
+    cols = -survived,
+    names_to = c('.value','model'),
+    names_sep = '_',
+    ) %>% 
+  mutate(
+    accuracy = if_else(survived == prediction, 'correct', 'incorrect')
+  ) %>% 
+  group_by(model) %>% 
+  count(accuracy) %>% 
+  group_by(model) %>% 
+  mutate(percent = paste0('~',round(n/sum(n)*100), '%'))
+```
+
+The simple model outperforms the more complex model in aggregate.
+
+
+---
+
+
+
+---
+
+# PDPs
+
+Aggregated predictions will lead to more possible predicted probability values than the single tree
+
+Our RF PDPs will have more variance than those made yesterday with DTs
+
+```{r}
+partial <- pdp::partial
+
+rf_3_pdp <- 
+  partial(
+    rf_1, 
+    pred.var = c('age', 'sex', 'pclass'),
+    type = 'classification',
+    which.class = 'survived', 
+    prob = TRUE
+  )
+```
+
+---
+
+class: center, middle
+
+# PDPs
+
+```{r include=TRUE,echo=FALSE}
+rf_3_pdp %>% 
+  ggplot(
+    aes(
+      y = yhat, 
+      x = age,
+      shape = sex,
+      color = sex
+    )
+  ) + 
+  geom_hline(yintercept = 0.5, linetype = 2) + 
+  theme_bw() +
+  geom_point(
+    size = 4, 
+    alpha = 0.4
+  ) +
+  theme_bw(base_size = 15) +
+  theme(
+    plot.title.position = 'plot'
+    ) +
+  facet_wrap(
+    vars(pclass), 
+    ncol = 1
+    ) +
+  labs(
+    y = 'Predicted Probability of Survival'
+  )
+```
+
+---
+
+class: middle, center
+
+```{r eval=TRUE, include=FALSE}
+library(rpart)
+all_var_DT <- 
+  rpart(
+    survived ~ ., 
+    data = training_data
+    )
+glm_comparison <-
+  glm(
+    data = training_data,
+    formula = survived ~ ., 
+    family = binomial(link = "logit")
+  )
+```
+
+
+```{r eval=TRUE, include=FALSE}
+tmp_tbl <- 
+  testing_data %>% 
+  drop_na(age) %>% 
+  mutate(
+    # in this context, the . means "what's carried from the pipe"
+    predicted_DT = 
+      predict(all_var_DT, newdata = .)[, 'survived'], 
+    predicted_glm = 
+      predict(
+        glm_comparison,
+        newdata = ., 
+        type = 'response'
+        ), 
+    predicted_rf = 
+       predict(rf_1, data = .)$predictions[,'survived'],
+    actual = survived
+  )
+```
+
+
+
+```{r}
+
+cv_obj <- vfold_cv(sea_training, v = 5)
+
+max_entropy_grid <- 
+  grid_max_entropy(
+    # default = floor(sqrt(ncol(sea_training))) = 24
+    mtry(range = c(2, ncol(sea_training)-1)),
+    trees(range = c(400, 1000)), 
+    size = 100
+  )
+
+tuned_res <- 
+  cv_it_complex(
+    cv_obj = cv_obj, 
+    outcome_string = 'outcome_next_year',
+    seed = 333,
+    mod_formula = outcome_next_year ~ .,
+    tuning_grid = max_entropy_grid,
+    model_type = 'rf',
+    mode = 'regression'
+    ) 
+```
+
+```{r}
+manually_tuned_rmse <- 
+  rmse(
+  observed_y = sea_testing$outcome_next_year, 
+  predicted_y = predict(manually_tuned_rf, data = sea_testing)$prediction
+)
+```
+
+```{r}
+pos_d <- 
+  position_dodge(width = 1)
+
+plot_df <- 
+  tuned_res %>% 
+  pivot_longer(
+    cols = c(rmse_mean:mae_se),
+    names_to = c('metric', '.value'),
+    names_sep = '_'
+  ) 
+
+plot_df %>% 
+  ggplot(
+    aes(
+      y = factor(grid_index), 
+      x = mean, 
+      fill = metric,
+      group = metric, 
+      xmin = mean - 1.96*se, 
+      xmax = mean + 1.96*se
+    )
+  ) + 
+  geom_col(color = 'black') + 
+  geom_errorbar(width = 0.2, color = 'black') + 
+  geom_label(
+    aes(label = round(mean, 3)),
+    color = 'black'
+  ) +
+  theme_bw() + 
+  labs(
+    caption = 
+      '95% CIs drawn with t-distribution\nuse to conceptualize spread, not assess significance'
+  ) +
+  theme(
+    plot.caption.position = 'plot',
+    plot.title.position = 'plot'
+  ) +
+  facet_wrap(vars(metric), scales = 'free') + 
+  labs(
+    y = 'Grid index',
+    x = 'Average Fit'
+  )
+```
+
+```{r}
+final_mtry <- 
+  tuned_res %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
+  pull(mtry)
+
+final_trees <- 
+  tuned_res %>% 
+  filter(rmse_mean == min(rmse_mean)) %>% 
+  pull(trees)
+```
+
+```{r}
+rf_tuned <- 
+  ranger(
+    data = sea_training, 
+    formula = outcome_next_year ~ .,
+    importance = 'permutation',
+    mtry = final_mtry,
+    num.trees = final_trees
+  )
+```
+
+```{r}
+preds <- 
+  sea_testing %>% 
+  mutate(
+    # predicted_DT = 
+    #   predict(dt_training, newdata = sea_training), 
+    predicted_RF.manual = 
+      predict(manually_tuned_rf, data = .)$predictions,
+    predicted_RF.tuned = 
+      predict(rf_tuned, data = .)$predictions,
+  ) 
+```
+
+
+```{r}
+preds %>% 
+  mutate(
+    which_closer = 
+      case_when(
+        abs(outcome_next_year - predicted_RF.manual) ==
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Same',
+        abs(outcome_next_year - predicted_RF.manual) >
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Grid Tune',
+        abs(outcome_next_year - predicted_RF.manual) <
+          abs(outcome_next_year - predicted_RF.tuned)  ~ 'Manually',
+        )
+  ) %>% 
+  ggplot(
+    aes(
+      x = predicted_RF.tuned, 
+      y = predicted_RF.manual, 
+      color = which_closer,
+    )
+  ) +
+  geom_point(size = 4, alpha = 0.4)  + 
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw() +
+  labs(x = 'Grid Tuned', y = 'Manually Tuned')
+```
+
+
+```{r}
+preds %>% 
+  select(outcome_next_year, predicted_RF.manual, predicted_RF.tuned) %>% 
+  pivot_longer(
+    cols = -outcome_next_year,
+    #names_prefix = 'prediction', 
+    names_sep = '_',
+    names_to = c('.value', 'model')
+  ) %>% 
+  group_by(model) %>% 
+  summarize(
+    MAE = mae(
+      observed_y = outcome_next_year, 
+      predicted_y = predicted
+    ), 
+    RMSE = rmse(
+      observed_y = outcome_next_year, 
+      predicted_y = predicted
+    )
+  )
+```

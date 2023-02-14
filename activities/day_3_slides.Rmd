@@ -30,34 +30,67 @@ On Day 2, we discussed
 
 # Looking Ahead
 
-Today, we will discuss:
+Today
 
-* Grid Search for Tuning Hyperparameters
-* Cross validation
-* Interpretation of Random Forests
-* More Advanced Visualizations (Partial Dependency Plots)
+* Establishing benchmarks
+
+* Improving predictions through
+  
+  * Tuning Hyperparameters
+  * Cross-Validation
+  
+* Interpreting RFs with Partial Dependency Plots (PDPs)
 
 ---
 
 # set up
 
-```{r}
-outcome_next_year <- 'se_xpd_totl_gd_zs'
+#### Load packages
+
+```{r message = FALSE, warning = FALSE}
 library(tidyverse)
 library(ranger)
 library(rsample)
 library(dials)
 library(kableExtra)
 library(emojifont)
+library(pdp)
+library(vip)
+```
+
+#### Load functions
+
+```{r message = FALSE, warning = FALSE}
 source(here::here('scripts/functions.R'))
+```
+
+#### Set outcome
+
+```{r message = FALSE, warning = FALSE}
+outcome_next_year <- 'se_xpd_totl_gd_zs'
 ```
 
 ---
 
+# Technical detail
+
+This is used throughout my code: 
+    
+    !!sym(outcome_next_year) 
+This helps make drastic changes (i.e., what outcome) by simply changing this line: 
+    
+    outcome_next_year <- NAME_OF_SELECTED_OUTCOME
+The same output is generated from
+
+    se_xpd_totl_gd_zs 
+instead of 
+
+    !!sym(outcome_next_year)
+---
+
 # set up
 
-Let's go ahead and get things set up like yesterday:
-
+#### Load Key / Data
 
 ```{r}
 key <- 
@@ -69,65 +102,122 @@ dat <-
     'data', 
     'se_asia_imputed_world_bank.csv'
     ))
+```
 
+#### Split Data
 
+```{r}
 set.seed(022023)
-sea_split <- initial_split(dat, strata = country_name)
+sea_split <- 
+  initial_split(dat, strata = country_name, prop = 0.9)
 sea_training <- training(sea_split) 
 sea_testing <- testing(sea_split) 
 ```
 
-```{r include = FALSE, echo = FALSE}
-pstr <- 
-  key %>% 
-  filter(janitor_version == outcome_next_year) %>% 
-  pull(indicator_name)
-
-otcm <-  
-  key %>% 
-  filter(janitor_version == outcome_next_year) %>% 
-  pull(indicator_name)
-```
-
-Outcome =  <u>next year's</u> `r otcm`
-
-Units = `r str_extract(otcm, '\\([^\\)]+\\)')`
-
 ---
 
-# let's establish two "benchmarks" to beat
+# set up
 
-## Benchmark 1: guess the average
+These variable names are hard to interpret. 
 
-Guessing the mean or median has common-sense validity.
-
-The most common-sense approach is to guess the average (mean or median) `r paste0(outcome_next_year)` this year to be next year's value.
-
-If a model does not have a better RMSE than this, it is not worth using.
-
-```{r include=FALSE}
-naive_guess.median <- median(sea_training[,outcome_next_year])
-naive_guess.mean <- mean(sea_training[,outcome_next_year])
-```
-
----
-
-# Benchmark 2: Group-Averages
+Here's a function that returns a written name from the variable name.
 
 ```{r}
-group_averages <- 
-  sea_training %>% 
-  group_by(country_name) %>% 
-  summarize(
-    predictions_group.median = median(outcome_next_year),
-    predictions_group.mean = mean(outcome_next_year)
-  ) %>% 
-  ungroup()
+pstr <- 
+  function(variable = NULL){
+    # default returns written outcome
+    if(is.null(variable)) {variable <- outcome_next_year}
+       
+    written_name <- 
+      key %>% 
+      filter(janitor_version == variable) %>% 
+      pull(indicator_name)
+    
+    return(written_name)
+  }
 ```
 
+Outcome =  <u>next year's</u> `r pstr()`
+
+Units = `r str_extract(pstr(), '\\([^\\)]+\\)')`
 
 ---
+
+class: center, middle
+
+# Establishing Benchmarks
+
+(To check if the final model is any good)
+
+---
+
+# Benchmarks
+
+The process of using benchmarks is very easy:
+
+* Predict outcomes for unseen cases with all benchmarks.
+* Calculate adequacy of those models (e.g., with mean square error [MSE])
+* Determine if our model outperforms these benchmarks
+
+The better the benchmark the final model outperforms, the more confidence we can have in the model.
+
+---
+
+# Today's Benchmarks
+
+I chose 3 benchmarks for example:
+
+* Predicting the mean of training data (low benchmark)
+* An auto-regressive linear model (moderate benchmark)
+* A RF with default settings (advanced benchmark)
+
+---
+
+# Benchmark 1: Guess the Average (mean)
+
+Guessing the mean has common-sense validity.
+
+Although it is often not thought of as a model, the mean can be thought of as an overly-simple model.
+
+This model has only 1 output: the average of the training set's outcome (i.e., next year's `r pstr(outcome_next_year)`)
+
+Thus, we can take the MSE observed when every observation is predicted to have the mean of the training set for any unseen data
+
+
+```{r}
+predictions_guess.mean <- 
+  mean(sea_training[,'outcome_next_year'])
+
+mse_naive_guess.mean <- 
+  mse(
+    observed_y = sea_testing$outcome_next_year,
+    predicted_y = predictions_guess.mean
+  )
+```
+
+---
+
+# Benchmark 2: Simple Linear Model
+
+Going one step up from the simple average is a simple auto-regressive linear model
+
+Thus, regress  `outcome_next_year` on `r outcome_next_year` 
+
+```{r warning = TRUE}
+lm_simple <- 
+  lm(
+    formula = paste0('outcome_next_year ~ ',  outcome_next_year), 
+# equivalent to: 
+# formula = outcome_next_year ~ se_xpd_totl_gd_zs,
+    data = sea_training,
+  ) 
+```
+
+---
+
 # Benchmark 3: Default RF
+
+Another (very difficult) benchmark is the random forest set to the default settings. 
 
 ```{r}
 rf_default <- 
@@ -138,43 +228,54 @@ rf_default <-
   )
 ```
 
----
+___
 
-## A Note on RMSE
+A consideration on the default RF:
 
-The nice thing about RMSE is that it is in the units of the outcome. 
-
-RMSE is the average error in the units of the outcome. 
-
-$RMSE = \sqrt{\frac{\Sigma (y_{actual} - y_{predicted})^2}{N}}$
-
-For us, this is `r str_extract(otcm, '\\([^\\)]+\\)')`
+* There is nothing wrong with using the default settings of random forests if those settings perform the best.
+* RF prediction accuracy has been shown to vary less across tuning, compared to other common ML algorithms
 
 ---
 
-# Benchmark RMSEs
+# Determining Benchmark MSE
+
+### Step 1 — predict outcomes for unseen data
 
 ```{r}
-benchmark_rmse <- 
+model_preds <- 
   sea_testing %>% 
-  full_join(group_averages) %>% 
   transmute(
-    !!sym(outcome_next_year),
-    predictions_group.median,
-    predictions_group.mean,
-    prediction_default.rf = predict(rf_default, .)$prediction
-    ) %>% 
+    # equivalent to: se_xpd_totl_gd_zs
+    !!sym(outcome_next_year), 
+    predictions_guess.mean = predictions_guess.mean,
+    predictions_lm.simple = predict(lm_simple, newdata = .),
+    predictions_default.rf = predict(rf_default, .)$prediction
+    )
+```
+
+---
+
+# Determining Benchmark MSE
+
+### Step 2 — calculate MSE between predictions and observed
+
+```{r}
+benchmark_mse <- 
+  model_preds %>% 
   summarize(
-    rmse_guess.median = 
-      rmse(observed_y = !!sym(outcome_next_year), predicted_y = naive_guess.median),
-    rmse_guess.mean = 
-      rmse(observed_y = !!sym(outcome_next_year), predicted_y = naive_guess.mean),
-    rmse_guess.group.median = 
-      rmse(observed_y = !!sym(outcome_next_year), predicted_y = predictions_group.median),
-    rmse_guess.group.mean = 
-      rmse(observed_y = !!sym(outcome_next_year), predicted_y = predictions_group.mean),
-    rmse_default.rf = 
-      rmse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_default.rf)
+# use `across` to calculate MSE for 3 models at once
+    across(
+      .cols = 
+        c(predictions_guess.mean, 
+          predictions_default.rf,
+          predictions_lm.simple), 
+      .fns = 
+        ~mse(
+# equivalent to: observed_y = se_xpd_totl_gd_zs
+          observed_y = !!sym(outcome_next_year), 
+          predicted_y = .x
+        )
+    )
   )
 ```
 
@@ -182,137 +283,180 @@ benchmark_rmse <-
 
 # Benchmarks
 
-Well, it actually looks like our group means are outperforming out default random forest. 
+The default RF gives great improvement, relative to the other models. 
 
 ```{r include = TRUE, echo = FALSE}
-benchmark_rmse %>% 
+benchmark_mse %>% 
   pivot_longer(
     cols = everything(),
-    names_prefix = 'rmse_', 
-    names_to = 'rmse'
+    names_prefix = 'predictions_', 
+    values_to = 'mse',
+    names_to = 'model'
     ) %>% 
-  kbl(caption = 'Fit of various benchmarks', digits = 2)
+  arrange(mse) %>% 
+  mutate(rmse = sqrt(mse)) %>% 
+  kbl(caption = 'Fit of various benchmarks', digits = 4) %>% 
+  footnote('lower is better')
+
+# Note the group MSE and the individual MSE differ after `r sum(sapply(1:20,function(i) grepl(substr(benchmark_mse$predictions_guess.mean,1,i),benchmark_mse$predictions_group.mean)))-2` digits, so pretty much the same in our case.
 ```
 
-The training mean by country better predicts the outcome than a default random forest. 
-
-In this case, we either need to tune the model to outperform this, or else there is no reason to not take the group mean (unless you want to see VIPs, PDPs, etc)
-
-To put this in standard "research jargon", the between-country variance is higher than within
+**Hint:** if MSE feels intangible, you can get MSE in the units of the outcome by taking the square root (i.e., the "RMSE"). In other words, the square root of MSE is the average error on each prediction `r pstr()` in % units
 
 ---
+class: center, middle
 
-# Performance of Averages
-
-Let's actually look how bad the average guess would be for each country
+# Visualizing Predicting the Mean
 
 ```{r echo=FALSE, include=TRUE}
 sea_testing %>% 
   ggplot(
     aes(
+# equivalent to: se_xpd_totl_gd_zs
       y = !!sym(outcome_next_year),
-      x = year,
-      color = country_name
-    )
-  ) +
-  geom_segment(
-    #position = pos_tmp, 
-    aes(xend = year),
-    yend = naive_guess.mean,
-    ) +
-  geom_point(
-    alpha = 0.4,
-    #position = pos_tmp, 
-    aes(size = abs(!!sym(outcome_next_year) - naive_guess.mean)),
-  ) +
-  geom_hline(
-    yintercept = naive_guess.mean,
-    linetype = 2,
-    size = 1.2, 
-    alpha = 0.4
-  ) +
-  theme_bw() +
-  facet_wrap(
-    vars(
-      country_name
-    )
-  ) +
-  labs(
-    y = pstr,
-    size = 'Absolute\nDifference\nMean',
-    fill = element_blank(),
-    title = '(In)Adequecy of mean across Group'
-  ) +
-  theme(
-    plot.title.position = 'plot',
-    legend.position = c(0.8, 0.14)
-  ) +
-  guides(color = 'none')
-```
-
----
-
-
-# Performance of Averages
-
-We can get a decent estimate for a mean by group, actually.
-
-```{r echo=FALSE, include=TRUE}
-sea_testing %>% 
-  full_join(group_averages) %>% 
-  ggplot(
-    aes(
-      y = !!sym(outcome_next_year),
-      x = year,
-      color = country_name
-    )
-  ) +
-  geom_segment(
-    #position = pos_tmp, 
-    aes(
-      xend = year,
-      yend = predictions_group.mean
+      x = year
       )
+  ) +
+  geom_segment(
+    aes(xend = year),
+    yend = predictions_guess.mean,
     ) +
   geom_point(
-    alpha = 0.4,
-    #position = pos_tmp, 
-    aes(
-      size = abs(!!sym(outcome_next_year) - predictions_group.mean),
-      ),
+    size = 3, alpha = 0.7,
+    color = 'cornflowerblue'
   ) +
   geom_hline(
-    aes(yintercept = predictions_group.mean),
+    yintercept = predictions_guess.mean,
     linetype = 2,
     size = 1.2, 
     alpha = 0.4
   ) +
-  theme_bw() +
+  theme_bw(base_size = 16) +
   facet_wrap(
     vars(
       country_name
     )
   ) +
   labs(
-    y = pstr,
-    size = 'Absolute\nDifference\nMean',
+    y = pstr(),
+    size = 'Squared Error',
     fill = element_blank(),
-    title = 'Adequecy of Mean within Group'
+    subtitle = 'Dotted line indicates mean %GDP on education', 
+    title = 'Demonstrating (mean-only) predictions on testing data'
   ) +
   theme(
     plot.title.position = 'plot',
-    legend.position = c(0.8, 0.14)
+    legend.position = 'top'
   ) +
   guides(color = 'none')
 ```
 
+---
+class: center, middle
 
+# Visualizing Using Linear Model to Predict
+
+```{r echo=FALSE, include=TRUE}
+sea_testing %>% 
+  mutate(
+      predicted = predict(lm_simple, newdata = .),
+      actual =  !!sym(outcome_next_year), # equivalent to: se_xpd_totl_gd_zs
+      squared_difference = (actual - predicted)^2
+  ) %>% 
+  pivot_longer(
+    cols = c(predicted, actual)
+  ) %>% 
+  ggplot(
+    aes(
+      y = value,
+      x = year,
+      color = name,
+      shape = name,
+    )
+  ) + 
+  geom_line(
+    aes(group = year),
+    color = 'black'
+    ) +
+  geom_point(
+    size = 3, alpha = 0.7
+  ) +
+  theme_bw(base_size = 16) +
+  facet_wrap(
+    vars(
+      country_name
+    )
+  ) +
+  labs(
+    y = pstr(),
+    size = 'Squared\nError',
+    fill = element_blank(),
+    color = element_blank(),
+    shape = element_blank(),
+    title = 'Demonstrating linear model predictions on testing data'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    legend.position = 'top'
+  ) 
+```
+
+---
+class: center, middle
+
+# Visualizing Using Default RF to Predict
+
+```{r echo=FALSE, include=TRUE}
+sea_testing %>% 
+  mutate(
+      predicted = predict(rf_default, .)$prediction,
+      actual =  !!sym(outcome_next_year), # equivalent to: se_xpd_totl_gd_zs
+      squared_difference = (actual - predicted)^2
+  ) %>% 
+  pivot_longer(
+    cols = c(predicted, actual)
+  ) %>% 
+  ggplot(
+    aes(
+      y = value,
+      x = year,
+      color = name,
+      shape = name,
+    )
+  ) +
+  geom_line(
+    aes(group = year),
+    size = 1,
+    color = 'black'
+    ) +
+  geom_point(
+    size = 3, alpha = 0.7
+  ) +
+  theme_bw(base_size = 16) +
+  facet_wrap(
+    vars(
+      country_name
+    )
+  ) +
+  labs(
+    y = pstr(),
+    fill = element_blank(),
+    color = element_blank(),
+    shape = element_blank(),
+    title = 'Demonstrating RF predictions on testing data'
+  ) +
+  theme(
+    plot.title.position = 'plot',
+    legend.position = 'top'
+  ) 
+
+```
 
 ---
 
 class: center, middle
 
-# Onward & Upward
+# Improving Predictions: Hyperparameter Tuning
 
 Now that we've established these benchmarks, let's talk hyperparameters again
 
@@ -335,7 +479,7 @@ Despite being more systematic:
 * most still require human decision-points
 * some have their own hyper-hyperparameters!
 
-**This is an entire field; we are only going to discuss grid search today**
+**This is an entire field; we are only going to discuss <u>grid search</u> today**
 
 ---
 
@@ -362,253 +506,166 @@ When I demonstrated what hyperparameters are, I actually conducted 2 grid search
   * `num.trees`
   * `mtry`
 
-This did not include a grid search of all possible values
+This did not include a "grid search" of all possible values
+
+Grid search just means iterating through rows with different combinations of hyperparameters. 
+
+It is called that because the tables you iterate through are laid out like grids (I'll show in one second)
 
 ---
 
-# Let's make a grid
+# Creating a Grid: Approach
+
+There are many way to make a grid of possible hyperparameter values. We will discuss 2:
+
+* A full, or expanded, grid
+* A space-filling grid
+
+Both involve:
+
+* choosing hyperparameters to tune
+* determining possible values for each hyperparameters (individually)
+* creating a grid (i.e., a table) that finds permutations of these values
+
+space-filling grids: 
+
+* involve another step: determining which of the permutations cover as much of the grid as possible.
+* have faster run-times
+* uses an algorithm to eliminate redundant permutations
+
+---
+
+# Creating a Grid: Choosing Hyperparemeters & Ranges
+
+```{r include=TRUE, echo=FALSE}
+p <- ncol(sea_testing)-1
+```
+
+The data has `p = ` `r p` variables available.
+
+* num.trees = [`p*10` = `r p*10`, `p*100` = `r p*100`] by 300
+* mtry = [2, `p/2` = `r p/2`] by 2
+* min.node.size = [1, 8] by 1
+
+
 
 ```{r}
 tree_sizes <- 
-  seq(from = 400, to = 3000, by = 200)
+  seq(from = p*10, to = p*50, by = 150)
+# [1]  470  620  770  920 1070 1220 1370 1520 1670 1820 1970 2120 2270
 
 mtry_values <- 
-  seq(from = 2, to = ncol(sea_testing)-1, 3)
+  seq(from = 2, to = p/2, by = 1)
+# [1]  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
 
 node_sizes <- 
-  seq(from = 1, to = 10, by = 3)
+  seq(from = 1, to = 8, by = 1)
+# [1] 1  2  3  4  5  6  7  8
+```
 
-# expand this
+---
 
+# Creating a Grid: Expand Combinations
+
+We can return a table that offers all combinations of those 3 vectors with `expand_grid()`.
+
+```{r}
 all_params <- 
   expand_grid(
     num.tree = tree_sizes, 
     mtry = mtry_values, 
     node_sizes = node_sizes
     )
-
-dim(all_params)
 ```
+
+This is a total of `r nrow(all_params)` combinations. 
+
+These possible combinations of values are often referred to as the "hyperparameter space". 
+
+Each row is one combination hyperparameters or a "hyperparameter state"
 
 ---
 
-# loop through
+# Creating a Grid: The Problem
 
-```{r echo = FALSE, include = TRUE, eval = FALSE}
-rf_list <- vector('list', nrow(all_params))
+Fitting all `r nrow(all_params)` models will take a large amount of time.
 
-for (i in 1:length(rf_list)){
-  rf_list[[i]] <- 
-    ranger(
-      outcome_next_year ~ ., 
-      data = sea_training,
-      mtry = all_params$mtry[i],
-      num.trees = all_params$num.tree[i],
-      num.threads = 8L
-    )
-  print(paste0('iteration #', i, ' complete'))
-}
-```
+We are only tuning 3 hyperparameters. 
 
+As your grid gets larger:
 
-```{r echo = FALSE, include = TRUE, eval = FALSE}
-OOB_heatmap <- 
-  all_params %>% 
-  mutate(
-    prediction_error = map_dbl(rf_list, ~.x$prediction.error),
-    min = if_else(prediction_error == min(prediction_error), 'minimum', ''), 
-    pe_label = rbinom(nrow(.), 1, 0.1),
-    pe_label = if_else(pe_label == 1 | min == 'minimum', round(prediction_error, 3), NA_real_)
-  ) %>% 
-  ggplot(
-    aes(
-      x = mtry,
-      y = num.tree,
-      fill = prediction_error
-      )
-  ) + 
-  geom_tile() + 
-  geom_label(
-    aes(
-      color = min, 
-      label = pe_label
-      ), 
-    show.legend = FALSE
-    ) +
-  coord_cartesian() + 
-  scale_color_grey(start = 0.6, end = 1) +
-  theme_minimal(base_size = 30) +
-  labs(
-    title = 'OOB Prediction Error by mtry and num.trees', 
-    x = 'mtry',
-    y = 'num.tree',
-    fill = 'Mean Square Error (MSE)',
-    caption = 'OOB Error (MSE) printed in each cell\nRandom sampling of OOB printed'
-  ) +
-  theme(legend.position = 'bottom')
-
-ggsave(
-  filename = here::here('imgs', 'day_3_OOB_heatmap.png'),
-  plot = OOB_heatmap,
-  )
-```
-
-
-```{r echo = FALSE, include = TRUE}
-knitr::include_graphics(
-  here::here('imgs', 'day_3_OOB_heatmap.png')
-)
-```
+* the likelihood of missing an optimal hyperparameter state decreases
+* computation time increases
 
 ---
 
-# Predictions are pretty flat... 
+# Creating a Grid: The Solution 
 
-As you can see, the best value isn't that much better than the worst.
+## Space-filling algorithms 
 
+* attempt to cover the full hyperparameter space by limiting it to "distinct enough" hyperparameter states
+* frequently used when tuning with grid search.
+* `Maximum entropy` is the one we'll use, but know there are many others
 
-On day 1, what did I say were the 3 ways to improve a model?
-
-1. a model
-2. user-specified settings (**hyperparameters**)
-3. data
-
-Because hyperparameters are evaluated on data, we actually can only find optimal settings **with respect to the training and testing data**.
-
-By random chance, what if the training and testing sets were biased towards different settings?
-
-This could lead to an algorithm to perform poorly, even though we conducted hyperparameter tuning.
 
 ---
 
-# other issues with tuning via grid search
+# Maximum Entropy Grid
 
-Before turning our intention to improving the data used to train, we should talk about two other issues with grid search: 
+The `dials` package offers a built-in `grid_max_entropy()` function. It requires 2 things:
 
-* local minimums, unless
-  * you cover the **entire** space 
-  * you get lucky `r emoji('four_leaf_clover')`
-
-* computation time increases with number of
-  * hyperparameters
-  * possible hyperparameter values
-
-**Spoiler:** we're not going to cover local minimums in this workshop. Consider independent research at a later date.
-
----
-
-# Increasing the variation in predictions
-
-k-fold (a.k.a v-fold) cross-validation CV:
-
-* improves the issues with flat predictions.
-* makes of our training data to both train and test the model.
-* allows variance around fit to be assessed (e.g., standard error of OOB error)
-* is done **after we withhold final testing data**
-
-The logic is a mixture of resampling and withholding for training and testing (done before):
-
-* the data withheld here is called the "fold testing data" or "assessment data"
-* the data used to train the model is called "fold training" or "analysis data"
-
----
-
-# k-fold Cross Validation
-
-Process: 
-* split the training data into "k" pieces.
-* train a model with a proportion of the data ($n_{train} = \frac{k-1}{k}*N_{total}$)
-* assess prediction accuracy with withheld ($n_{assess} = \frac{1}{k}*N_{total}$)
-
-For example:`n` = 1000 *observations* & `k` = 10 k-fold CV
-* Each fold has `n`/10 = 1000/10 = 100 observations
-* Model fit for a given hyperparameter is determined
-
----
-
-# Diagram
-
-
-```{r include = TRUE, echo = FALSE}
-diagram_dat <- data.frame(matrix(rep('analysis', 100), nrow = 10, ncol = 10))
-
-for (i in 1:10){
-  diagram_dat[i, i] <- 'assessment'
-}
-
-diagram_dat %>% 
-  mutate(
-    row_id = 1:n()
-  ) %>% 
-  pivot_longer(cols = -row_id) %>% 
-  mutate(
-    name = as.numeric(gsub('X', '', name)),
-    unseen = if_else(value == 'FOLD\nTESTING', 'UNSEEN', '')
-    ) %>% 
-  ggplot(
-    aes(x = name, y = row_id, fill = value, label = unseen)
-  ) +
-  geom_tile(alpha = 0.5, color = 'black') + 
-  geom_text(color = 'black') + 
-  coord_cartesian() +
-  scale_y_reverse(breaks = 1:10) +
-  scale_x_continuous(breaks = 1:10, position = 'top') +
-  labs(
-    x = 'Fold ID Number',
-    y = 'Fold ID Number',
-    title = '10-fold Cross Validation Example',
-    caption = 'table represents all TRAINING data',
-    fill = element_blank()
-  ) +
-  theme_minimal(base_size = 15) +
-  theme(
-    panel.grid = element_blank(),
-    legend.position = 'bottom',
-    plot.title.position = 'plot'
-    ) 
-```
-
-
-```{r, eval = FALSE}
-library(dials)
-```
-
-```{r, eval = FALSE}
-cv_obj <- vfold_cv(sea_training, v = 5, repeats = 2, strata = country_name)
-```
+1. a list of `param` objects (built into `dials`)
+  * These must have a minimum and maximum stated 
+  * We can use the minimum and maximum from above
+  
+2. the `size` of your hyperarameter space (i.e., number of unique states)
 
 ```{r}
 max_entropy_grid <-
   grid_max_entropy(
+    # param object 1:  `mtry`
     mtry(range = c(min(mtry_values), max(mtry_values))),
+    # param object 2: `num.trees`
     trees(range = c(min(tree_sizes), max(tree_sizes))),
-    dials::min_n(range = c(min(node_sizes), max(node_sizes))),
-    size = 150
+    # param object 3: `min.node.size`
+    min_n(range = c(min(node_sizes), max(node_sizes))),
+    size = 500
   )
-
 ```
 
+---
 
-```{r}
-max_entropy_grid %>% 
+# Comparison
+
+Max entropy grid has `r nrow(max_entropy_grid)` states, and the full grid has `r nrow(all_params)`
+
+.center[
+```{r, echo=FALSE, include=TRUE, warning=FALSE}
+stacked_grids <- 
+  max_entropy_grid %>% 
   mutate(
     Approach = 'Maximum Entropy Grid'
   ) %>% 
   bind_rows(
     all_params %>% 
       mutate(Approach = 'Full Grid') %>% 
-      rename(trees = num.tree)
-  ) %>% 
+      rename(
+        trees = num.tree,
+        min_n = node_sizes
+      )
+  ) 
+
+stacked_grids %>% 
+  arrange(Approach) %>% 
   ggplot(
     aes(
       x = mtry, 
       y = trees, 
-      fill = Approach,
       color = Approach,
-      shape = Approach
+      alpha = Approach
     )
   ) +
-  geom_point(size = 5, alpha = 0.5) +
+  geom_point() + 
   labs(
     y = 'Number of Trees',
     title = 'Coverage of Hyperparmater Space by Approach',
@@ -619,422 +676,482 @@ max_entropy_grid %>%
   theme(
     legend.position = 'bottom',
     plot.title.position = 'plot'
+    ) +
+  facet_wrap(vars(min_n)) + 
+  scale_alpha_discrete(range = c(0.4, 1)) 
+```
+]
+
+---
+
+# Fit Model to all Hyperparameter States
+
+
+```{r eval = FALSE}
+rfs_tmp <- vector('list', nrow(max_entropy_grid))
+mses_tmp <- vector('double', nrow(max_entropy_grid))
+for (i in 1:nrow(max_entropy_grid)){
+   
+  rfs_tmp[[i]] <- 
+    ranger(
+      data = sea_training, 
+      formula = outcome_next_year ~ ., 
+      mtry = max_entropy_grid$mtry[[i]],
+      num.trees = max_entropy_grid$trees[[i]],
+      min.node.size = max_entropy_grid$min_n[[i]], 
+    )
+  
+  mses_tmp[[i]] <- rfs_tmp[[i]]$prediction.error
+  
+  print(paste0('iteration #', i, ' complete'))
+}
+```
+
+---
+
+# Pull Best Value
+
+```{r eval = FALSE}
+best_i <- which.min(mses_tmp)
+
+rfs_tmp[[best_i]] <- 
+  ranger(
+    data = sea_training, 
+    formula = outcome_next_year ~ ., 
+    mtry = max_entropy_grid$mtry[[best_i]],
+    num.trees = max_entropy_grid$trees[[best_i]],
+    min.node.size = max_entropy_grid$min_n[[best_i]], 
+    importance = 'permutation'
+  )
+
+
+best_fitting <- 
+  rfs_tmp[[which.min(mses_tmp)]]
+```
+
+
+```{r eval = FALSE, echo = FALSE}
+write_rds(
+  best_fitting,
+  here::here('data/long_runtime_objects', 'day3_best_fitting_rf.Rds')
+  )
+rf_tuned <- best_fitting
+```
+
+```{r echo = FALSE, include = FALSE}
+rf_tuned <- 
+  read_rds(
+    here::here('data/long_runtime_objects', 'day3_best_fitting_rf.Rds')
     )
 ```
 
+---
 
-```{r, eval = FALSE}
-tuned_res <-
-  cv_it_complex(
-    cv_obj = cv_obj,
-    outcome_string = 'outcome_next_year',
-    seed = 022023,
-    mod_formula = outcome_next_year ~ .,
-    tuning_grid = max_entropy_grid,
-    model_type = 'rf',
-    mode = 'regression'
-    ) 
-#dir.create(here::here('data/long_runtime_objects')
+# Comparing Hyperparameters
 
+.pull-left[
 
-write_rds(tuned_res, here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
-```
+#### Tuned
 
 ```{r}
-tuned_res <- 
-  tuned_res %>% 
-  # mae or rmse
-   arrange(mae_mean)
-
-tuned_res %>% 
-  select(trees, mtry, min_n, mae_mean) %>% 
-  #mutate(minimum = factor(if_else(mae_mean == min(mae_mean), 5, 1))) %>% 
-  ggplot(
-    aes(
-      y = trees,
-      x = min_n,
-      color = mae_mean
-      )
-  ) + 
-  geom_point(
-    data = 
-      filter(tuned_res, mae_mean == min(mae_mean)), 
-    size = 15,
-    shape = 1, 
-    color = 'darkred'
-    ) + 
-  geom_hline(
-    data = 
-      filter(tuned_res, mae_mean == min(mae_mean)), 
-    linetype = 2, 
-    aes(yintercept = trees)
-  ) + 
-    geom_vline(
-    data = 
-      filter(tuned_res, mae_mean == min(mae_mean)), 
-    linetype = 2, 
-    aes(xintercept = min_n)
-  ) +
-  geom_point() +
-  scale_color_continuous(
-    high = "#132B43", 
-    low = "#56B1F7"
-      )
-  theme_minimal(base_size = 30) +
-  labs(
-    title = 'OOB Prediction Error by mtry and num.trees', 
-    x = 'mtry',
-    y = 'num.tree',
-    fill = 'Mean Square Error (MSE)',
-    caption = 'OOB Error (MSE) printed in each cell\nRandom sampling of OOB printed'
-  ) +
-  theme(legend.position = 'bottom')
-
+rf_tuned$mtry
+rf_tuned$num.trees
+rf_tuned$min.node.size
 ```
 
+]
+
+.pull-right[
+
+#### Default
 
 ```{r}
-tuned_res <- read_rds(here::here('data/long_runtime_objects', 'day3_tuned_results.Rds'))
-tuned_rf <- 
-  ranger(
-    formula = outcome_next_year ~ ., 
-    data = sea_training, 
-    mtry = tuned_res$mtry[[1]],
-    num.trees = tuned_res$trees[[1]],
-    importance = 'permutation'
-  )
+rf_default$mtry
+rf_default$num.trees
+rf_default$min.node.size
 ```
 
+]
 
+---
 
-```{r}
-library(vip)
-vip(tuned_rf)
+# Comparing VIPs
 
-tuned_rf
-rf_default
+.pull-left[
+
+```{r include = TRUE, echo = FALSE}
+vip(rf_tuned) + theme_minimal(base_size = 25) + labs(title = 'VIP from Tuned RF')
 ```
 
+]
 
+.pull-right[
 
+```{r include = TRUE, echo = FALSE}
+vip(rf_default) + theme_minimal(base_size = 25) + labs(title = 'VIP from Default RF')
+```
+
+]
+---
+
+# Top 5 Important Variables (in text)
+
+.pull-left[
 
 ```{r include=TRUE, echo=FALSE}
-important_variables <- 
-  vi(tuned_rf) %>% 
+important_variables_default <- 
+  vi(rf_default) %>% 
   arrange(desc(Importance)) %>% 
-  slice(1:8) %>% 
+  slice(1:5) %>% 
   mutate(order = 1:n()) %>% 
   select(janitor_version = Variable, order)
 
-pstr <- 
-  key %>% 
-  filter(janitor_version == outcome_next_year) %>% 
-  pull(indicator_name)
 
 key %>% 
-  inner_join(important_variables) %>% 
+  inner_join(important_variables_default, by = 'janitor_version') %>% 
   arrange(order) %>% 
-  select(order, indicator_name) %>% 
-  kbl() %>% 
-  add_footnote(
-    paste0('Outcome is ', pstr, ' in the upcoming year')
-  )
+  select(indicator_name) %>% 
+  kbl(caption =  'Tuned RF') 
 ```
 
+]
 
+.pull-right[
+
+```{r include=TRUE, echo=FALSE}
+important_variables <- 
+  vi(rf_tuned) %>% 
+  arrange(desc(Importance)) %>% 
+  slice(1:5) %>% 
+  mutate(order = 1:n()) %>% 
+  select(janitor_version = Variable, order)
+
+key %>% 
+  inner_join(important_variables, by = 'janitor_version') %>% 
+  arrange(order) %>% 
+  select(indicator_name) %>% 
+  kbl(caption =  'Default RF') 
+
+```
+]
 
 ---
 
-```{r}
+# Evaluate Performance
 
+This model performs well, just barely outperforming the others.
+
+```{r echo=FALSE, include=TRUE}
 sea_testing %>% 
   transmute(
+# equivalent to: se_xpd_totl_gd_zs
     !!sym(outcome_next_year),
-    prediction_tuned.rf = predict(tuned_rf, .)$prediction
+    prediction_tuned.rf = predict(rf_tuned, .)$prediction
   ) %>% 
   summarize(
-    rmse_rf.tuned = 
-      rmse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_tuned.rf)
-  ) 
-
-benchmark_rmse
+    mse_rf.tuned = 
+      mse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_tuned.rf)
+  ) %>% 
+  bind_cols(
+    benchmark_mse
+  ) %>% 
+  pivot_longer(
+    cols = everything(), 
+    names_to = 'Model / Benchmark', 
+    values_to = 'Mean Squared Error', 
+    names_prefix = 'mse_'
+  ) %>% 
+  arrange(`Mean Squared Error`) %>% 
+  kbl(caption = 'Fit of Models & Benchmarks', digits = 4) %>% 
+  footnote('Lower is better')
 ```
+
+---
+
+class: center, middle
+
+# Interpreting RFs: Partial Dependency Plots
+
+---
+
+## Variable Importance Plots
+
+We've discussed and shown these extensively. 
+
+Useful to know *what* influences the outcome, but does not tell *how* it influences the outcome.
+
+## Partial Dependency Plots (PDPs):
+
+* Used to visualize the relationship between a subset of the features 
+* Typically include 1-3 predictors and outcome
+* Show how these predictors influence outcome, holding other variables constant
+* It is common practice to make PDPs of variables with high Variable Importance scores (i.e., those at top of VIPs)
+* Very hard to interpret more than 2-3 features
+
+---
+
+# Selecting Variables for PDP
+
+Variables with top 3 importance scores
+
+```{r}
+top_3_importance <- 
+  vi(rf_tuned) %>% 
+  arrange(desc(Importance)) %>% 
+  slice(1:3) %>% 
+  mutate(order = 1:n()) %>% 
+  select(janitor_version = Variable, order)
+
+top_3_importance %>% 
+  left_join(key, by = 'janitor_version') %>% 
+  select(importance = order, indicator_name) %>% 
+  kbl()
+```
+
+---
+
+# Selecting Variables for PDP
+
+```{r}
+# get names of ordered importance variables
+ordered_imp_vars <- top_3_importance$janitor_version
+# make a list of the combinations
+combos  <-
+  list(
+    first_second = ordered_imp_vars[c(1, 2)],
+    first_third = ordered_imp_vars[c(1, 3)],
+    second_third = ordered_imp_vars[c(2, 3)]
+    )
+
+combos
+```
+
+---
+
+# Partial Dependency Plots
+
+Heads up: This is computationally intensive! 
+
+```{r, eval=FALSE, include=TRUE, echo=TRUE}
+library(pdp)
+pds <- vector('list', length(combos))
+
+# fit a pdp for all combos of top 3 variables
+
+for (i in 1:length(combos)){
+  pds[[i]] <-  partial(
+      rf_tuned, 
+      pred.var = combos[[i]]
+    ) 
+  }
+```
+
+
+```{r, eval = FALSE, include=FALSE, echo=FALSE}
+library(pdp)
+pds <- vector('list', length(combos))
+
+# fit a pdp for all combos of top 3 variables
+
+for (i in 1:length(combos)){
+  pds[[i]] <-  partial(
+      rf_tuned, 
+      pred.var = combos[[i]]
+    ) 
+  }
+
+names(pds) <- names(combos)
+
+write_rds(pds, here::here('data/long_runtime_objects', 'day3_tuned_pdps_rf.Rds'))
+
+```
+
+---
+
+```{r include=FALSE, echo=FALSE}
+pds <- read_rds(here::here('data/long_runtime_objects', 'day3_tuned_pdps_rf.Rds'))
+names(pds) <- names(combos)
+```
+
+```{r}
+pdp_first_second <- 
+  pds$first_second %>% 
+  ggplot(
+    aes(
+      # first combo variable
+      x = se_xpd_totl_gd_zs,
+      fill = yhat,
+      # second combo variable
+      y = it_mlt_main,
+    )
+  ) +
+  labs(
+    title = 
+      "PDP of important variables in predicting next year's",
+    subtitle = pstr(),
+    y = pstr('it_mlt_main'),
+    x = pstr('se_xpd_totl_gd_zs')
+  ) +
+  geom_tile() + 
+  coord_cartesian() +
+  theme_bw(base_size = 16)
+  
+```
+
+---
+
+.left-column[
+
+This heatmap uses brightness to represent `yhat` or the predicted level of the outcome.
+
+x-axis is the most important variable, y-axis is the second most
+
+The most important variable has several discrete jumps (i.e., unique shades left-to-right)
+
+The second most has only 3 unique levels (i.e., unique shades up-and-down)
+
+]
+
+.right-column[
+
+```{r echo = FALSE, include = TRUE}
+pdp_first_second
+```
+]
+
+---
+
+```{r}
+pdp_first_third <- 
+  pds$first_third %>% 
+  ggplot(
+    aes(
+      # first combo variable
+      x = se_xpd_totl_gd_zs,
+      fill = yhat,
+      # second combo variable
+      y = se_pre_enrr,
+    )
+  ) +
+  labs(
+    title = 
+      "PDP of important variables in predicting next year's",
+    subtitle = pstr(),
+    y = pstr('se_pre_enrr'),
+    x = pstr('se_xpd_totl_gd_zs')
+  ) +
+  geom_tile() + 
+  coord_cartesian() +
+  theme_bw(base_size = 16)
+  
+```
+
+---
+
+
+.left-column[
+
+x-axis is the most important variable, y-axis is the third most important
+
+The third most important has only 3 unique levels (i.e.,  unique shades up-and-down)
+
+Again, effects are positively associated, but the relationship is not linear 
+
+]
+
+.right-column[
+
+```{r echo = FALSE, include = TRUE}
+pdp_first_third
+```
+]
 
 
 ---
 
 ```{r}
-library(vip)
-vip(tuned_rf)
-```
-
-
-```{r eval=FALSE, include=FALSE, echo=FALSE}
-library(pdp)
-
-combos  <- 
-  list(
-    first_second = important_variables$janitor_version[c(1, 2)],
-    first_third = important_variables$janitor_version[c(1, 3)],
-    second_third = important_variables$janitor_version[c(2, 3)]
+pdp_second_third <- 
+  pds$second_third %>% 
+  ggplot(
+    aes(
+      # first combo variable
+      x = it_mlt_main,
+      fill = yhat,
+      # second combo variable
+      y = se_pre_enrr,
     )
-
-
-pds <- 
-  map(
-    .x = combos, 
-    .f = 
-      ~partial(
-        tuned_rf, 
-        pred.var = .x,
-        progress = TRUE
-      ) 
-  )
+  ) +
+  labs(
+    title = 
+      "PDP of important variables in predicting next year's",
+    subtitle = pstr(), 
+    y = pstr('se_pre_enrr'),
+    x = pstr('it_mlt_main')
+  ) +
+  geom_tile() + 
+  coord_cartesian() +
+  theme_bw(base_size = 16)
   
-
-
-pdps <-
-  map2(
-    .x = pds, 
-    .y = combos,
-    .f = ~.x %>% 
-      ggplot(
-        aes(
-          x = !!sym(.y[1]),
-          y = yhat,
-          size = !!sym(.y[2]),
-        )
-      ) +
-      labs(
-        y = paste0('Predicted: ', pstr, ' next year'), 
-        title = paste0('PDP of important variables in predicting\n', pstr, ' next year')
-      ) +
-      geom_point(alpha = 0.5) +
-      coord_cartesian() +
-      theme_bw()
-  )
-
-
-map2(
-  .x = pdps, 
-  .y = names(pdps),
-  ~ggsave(
-    filename = 
-      here::here('imgs', paste0('day_3_pdp_', .y,'_important_vars.png')),
-    plot = .x,
-  )
-)
-```
-
-
-```{r eval=FALSE, include=FALSE, echo=FALSE}
-name_and_year <- 
-  partial(
-    tuned_rf, 
-    pred.var = c('country_name', 'year'),
-    progress = TRUE
-  ) 
-
-name_and_year_plt <- 
-  name_and_year %>% 
-  ggplot(
-    aes(
-      x = year, 
-      y = yhat,
-      fill = country_name,
-      color = country_name
-    )
-  ) +
-  geom_jitter(alpha = 0.5, height = 0.0002, width = 0.2) +
-  coord_cartesian() +
-  geom_smooth(se = FALSE) +
-  theme_bw() + 
-  labs(
-    fill = 'Country' ,
-    color = 'Country',
-    y = paste0('Predicted: ', pstr, ' next year'),
-    title = paste0('Predicted: ', pstr, ' over time'),
-    caption = 'Points jittered minimally & made transparent to show overlaps'
-  ) +
-  theme(
-    plot.title.position = 'plot',
-    plot.caption.position = 'plot'
-  )
-
-ggsave(
-  filename = here::here('imgs', 'day_3_pdp_name_year.png'),
-  plot = name_and_year_plt,
-  )
 ```
 
 ---
 
-# PDP: First and Second VI Scores
+.left-column[
+
+x-axis is the second most important variable, y-axis is the third most important
+
+The third most important has only 3 unique levels (i.e., unique shades up-and-down)
+
+]
+
+.right-column[
 
 ```{r echo = FALSE, include = TRUE}
-knitr::include_graphics(
-  here::here('imgs', 'day_3_pdp_first_second_important_vars.png'),
-)
+pdp_second_third
 ```
-
----
-
-# PDP: First and Third VI Scores
-
-```{r echo = FALSE, include = TRUE}
-knitr::include_graphics(
-  here::here('imgs', 'day_3_pdp_first_third_important_vars.png'),
-)
-```
-
----
-
-# PDP: Second Third VI Scores
-
-```{r echo = FALSE, include = TRUE}
-knitr::include_graphics(
-  here::here('imgs', 'day_3_pdp_second_third_important_vars.png'),
-)
-```
-
----
-
-# PDP: All VI scores
-
-```{r eval=FALSE, include=FALSE, echo=FALSE}
-top3 <- 
-  partial(
-    tuned_rf, 
-    pred.var = important_variables$janitor_version[1:3],
-    progress = TRUE
-  )
-```
-
-```{r eval=FALSE, include=FALSE, echo=FALSE}
-top3_plt <- 
-  top3 %>% 
-  ggplot(
-    aes(
-      x = !!sym(important_variables$janitor_version[1]), 
-      y = yhat,
-      fill = !!sym(important_variables$janitor_version[2]),
-      color = !!sym(important_variables$janitor_version[2]),
-      size = !!sym(important_variables$janitor_version[3])
-    )
-  ) +
-  geom_point(alpha = 0.1) +
-  coord_cartesian() +
- # geom_smooth(se = FALSE, alpha = 0.5 ) +
-  theme_bw() + 
-  labs(
-    # fill = 'Country' ,
-    # color = 'Country',
-    #y = paste0('Predicted: ', pstr, ' next year'),
-    title = paste0('Predicted: ', pstr, ' over time'),
-    #caption = 'Points jittered minimally & made transparent to show overlaps'
-  ) +
-  theme(
-    plot.title.position = 'plot',
-    plot.caption.position = 'plot'
-  )
-
-ggsave(
-  filename = here::here('imgs', 'day_3_pdp_top3_important_vars.png'),
-  plot = top3_plt,
-  )
-```
-
-
-```{r echo = FALSE, include = TRUE}
-knitr::include_graphics(
-  here::here('imgs', 'day_3_pdp_top3_important_vars.png'),
-)
-```
-
-
----
-
-# PDP: By country & year
-
-We see here that our fitted RF does not actually have different predictions by country. If we had a deeper tree, or if it were more important, it would
-
-```{r echo = FALSE, include = TRUE}
-knitr::include_graphics(
- here::here('imgs', 'day_3_pdp_name_year.png')
-)
-```
+]
 
 
 ---
 
 # So, what do we know about the outcome?
 
-Well, `r pstr` appears to increase along with each of the variables we investigated. 
+Well, `r pstr()` appears to increase along with each of the variables we investigated. 
 
+In several cases, the increase is compounding across variables; however, univariate and multivariate effects had a threshold. 
 
+Unlike linear regression, continuing to increase in one variable did not lead to continuous increases in the outcome. 
+
+In other words, all 3 heatmaps showed that increasing any of these variables lead to an expected increase in the outcome. 
+
+However, the model expects these to be discrete jumps between levels of the outcome, not a linear or even a smooth increase.
 
 ---
 
-# DTs, GLMs, and PDPs (oh my)
+class: center, middle
 
-```{r include = TRUE, echo = FALSE, eval = FALSE}
-glm_pdp <- 
-  partial(
-    glm_comparison, 
-    pred.var = c('sex', 'age', 'pclass'),
-    type = 'classification'
-    #which.class = 'survived'
-    ) %>% 
-  mutate(
-    model = 'glm'
-  )
-```
+# Activity / Discussion
 
-
-.left-column[
-
-These models predict survival differently
-
-refer to: 
-
-linear vs. piecewise age effect
-
-constant effects across passenger class vs. differential effects of (`sex` x `class` x `age`)
-
-]
-
-.right-column[
-```{r include = TRUE, echo = FALSE, eval = FALSE}
-three_variable_pdp %>% 
-  mutate(
-    model = 'DT'
-  ) %>% 
-  bind_rows(glm_pdp) %>% 
-  ggplot(
-    aes(
-      y = yhat, 
-      x = age,
-      shape = sex,
-      color = model
-    )
-  ) + 
-  theme_bw() +
-  geom_point(
-    size = 4, 
-    alpha = 0.4
-  ) +
-  theme_bw(base_size = 15) +
-  labs(
-    x = 'Passenger Age', 
-    y = 'Predicted Probability of Surviving', 
-    title = 'Women & younger men (>= 15) display a substantially\n higher probability of survival',
-    fill = 'Passenger\nSex'
-    ) +
-  theme(
-    plot.title.position = 'plot',
-    legend.position = 'bottom'
-    ) +
-  facet_wrap(vars(pclass), ncol = 1) 
-```
-]
 ---
+
+# From Model to Understanding
+
+This workshop's focus was on the models, and not the data. 
+
+But let's take a minute to brain storm why some of these variables might be important. 
+
+We can do this in many ways, but I suggest:
+
+* Reading the World Bank's extended definition of these items
+* Plotting each variable over time
+* Searching the peer-reviewed literature
+
+---
+
+class: center, middle
+
+### Open `workshop_data_guide.html` 
+
+Chrome and Firefox work very well. Safari has trouble with some images. 
+
+Other browsers *should*, but might not, work well.

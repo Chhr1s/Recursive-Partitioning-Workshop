@@ -65,7 +65,7 @@ ptitanic &lt;-
   mutate(
     survived = relevel(survived, ref = 'died')
   ) %&gt;% 
-  drop_na() %&gt;% 
+  #drop_na() %&gt;% 
   missRanger(pmm.k=1, verbose = FALSE)
 
 split_data &lt;- initial_split(ptitanic)
@@ -156,7 +156,7 @@ RFs achieve this by
 
 🌲 = 🙂 
 
-`\(\Sigma\)` 🌳, 🌲, 🌳, 🌲, 🌴, 🌲, 🌲, 🌳, 🎋, 🎋... (500th tree) = 😃
+`\(\Sigma\)` 🎋, 🌲, 🌳, 🌴, 🎋, 🌳, 🎄, 🌲, 🌴, 🎄... (500th tree) = 😃
 
 ]
 ---
@@ -219,12 +219,12 @@ The VIP from the RF is very similar to the VIP from the DT
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; correct &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 205 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 255 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; 78% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; incorrect &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 57 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 73 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; 22% &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -245,22 +245,22 @@ The VIP from the RF is very similar to the VIP from the DT
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
    &lt;td style="text-align:right;"&gt; 18 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 7% &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 5% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 39 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 15% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 55 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 17% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 134 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 51% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 170 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 52% &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
-   &lt;td style="text-align:right;"&gt; 71 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 27% &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 85 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 26% &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -392,7 +392,7 @@ dat &lt;-
     'se_asia_imputed_world_bank.csv'
     ))
 
-sea_split &lt;- initial_split(dat)
+sea_split &lt;- initial_split(dat, strata = country_name, prop = 0.9)
 sea_training &lt;- training(sea_split) 
 sea_testing &lt;- testing(sea_split) 
 ```
@@ -459,7 +459,7 @@ best_num.trees
 ```
 
 ```
-## [1] 500
+## [1] 600
 ```
 
 ```r
@@ -468,7 +468,7 @@ best_mtry
 ```
 
 ```
-## [1] 8
+## [1] 5
 ```
 
 
@@ -542,7 +542,7 @@ A deeper interpretation will have to wait until tomorrow!
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; School enrollment, preprimary (% gross) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Labor force, total &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
@@ -550,7 +550,7 @@ A deeper interpretation will have to wait until tomorrow!
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Imports of goods, services and primary income (BoP, current US$) &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; School enrollment, preprimary (% gross) &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
@@ -562,7 +562,7 @@ A deeper interpretation will have to wait until tomorrow!
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; International tourism, number of arrivals &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Exports of goods, services and primary income (BoP, current US$) &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;tfoot&gt;
@@ -575,7 +575,7 @@ A deeper interpretation will have to wait until tomorrow!
 
 
 ```
-## [1] 0.1938694
+## [1] 0.1691376
 ```
 
 

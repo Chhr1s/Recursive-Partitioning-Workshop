@@ -1,0 +1,196 @@
+---
+title: "Workshop Data Guide"
+author: "Christopher M. Loan"
+date: "Februrary 20-22, 2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = TRUE, message = FALSE)
+library(tidyverse)
+library(DT)
+outcome_next_year <- 'se_xpd_totl_gd_zs'
+```
+
+```{r}
+pstr <- 
+  function(variable = NULL){
+    # default returns written outcome
+    if(is.null(variable)) {variable <- outcome_next_year}
+       
+    written_name <- 
+      key %>% 
+      filter(janitor_version == variable) %>% 
+      pull(indicator_name)
+    
+    return(written_name)
+  }
+```
+
+```{r}
+vars_to_include <- 
+  c('se_xpd_totl_gd_zs',
+  'it_mlt_main',
+  'nv_ind_totl_zs',
+  'se_pre_enrr',
+  'sh_dyn_1014',
+  'bm_gsr_totl_cd',
+  'sh_dyn_0509',
+  'se_prm_enrl',
+  'ne_con_totl_zs',
+  'sl_tlf_totl_in'
+)
+
+key <- 
+  read.csv(here::here('data/keys', 'key_impute.csv'))
+
+dat <- 
+  read.csv(
+    here::here(
+      'data', 
+      'se_asia_imputed_world_bank.csv'
+    )
+  ) %>% 
+  select(
+    country_name, 
+    year,
+    outcome_next_year,
+    all_of(vars_to_include)
+  )
+```
+
+# {.tabset}
+
+## Data Key
+
+Here is a searchable key for the South East Asian World Bank Data.
+
+<u>**DISCLAIMER** Keep in mind the `{missRanger}` package was used for imputation of missing data. See supplemental files for exact data handling</u> 
+
+___
+
+
+```{r}
+key %>% 
+  datatable(
+    filter = 'top',
+    caption = 'janitor_version is named after a package used to clean variable names; this indicates the naming convention used in the workshop'
+  ) 
+```
+
+
+## Links to World Bank Data {.tabset}
+
+Use the `General Links` tab to explore the World Bank's website and their homepage for indicators. 
+
+The `All Indicators` tab has exact links for each of these indicators.
+
+___
+
+
+### General Links
+
+Here are general links that may be useful: 
+
+* [General](https://data.worldbank.org/)
+* [Data / Indicators](https://data.worldbank.org/indicators)
+
+### All Indicators
+
+```{r}
+key %>% 
+  mutate(
+    link = paste0('https://data.worldbank.org/indicators/', indicator_code)
+  ) %>% 
+  select(janitor_version, indicator_name, link) %>% 
+  datatable(
+    filter = 'top',
+    caption = 'Links to Documentation'
+  ) 
+```
+
+
+## Outcome Trajectory
+
+As an outcome, we are predicting Next year's `r pstr()`.
+
+___
+
+
+```{r include = TRUE, fig.height=10, fig.width=15}
+dat %>% 
+  ggplot(
+    aes(
+      y = outcome_next_year, 
+      x = year, 
+      fill = country_name, 
+      color = country_name
+    )
+  ) +
+  labs(
+    y = element_blank(), 
+    title = paste0("Next Year's ", pstr(), ' over time, by country'),
+    fill = 'Country\nName',
+    color = 'Country\nName', 
+    subtitle = paste0('Variable name = outcome_next_year')
+  ) +
+  geom_point(alpha = 0.5, size = 3) + 
+  geom_smooth(se = FALSE) +
+  theme_bw(base_size = 20) +
+  theme(
+    plot.title.position = 'plot',
+    legend.position = 'bottom'
+  ) +
+  scale_x_continuous(
+    breaks = seq(2000, 2020, 2)
+  )
+      
+```
+
+
+## DAY 3 SPOILERS: High Importance Features
+
+Below are trajectories of items which have high variable importance from the tuned RF (end of day 3).
+
+___
+
+
+```{r include=TRUE, fig.height=10, fig.width=15}
+vars_to_include %>% 
+  walk(
+    ~{
+      p <- 
+        dat %>% 
+        ggplot(
+          aes(
+            y = !!sym(.x), 
+            x = year, 
+            fill = country_name, 
+            color = country_name
+          )
+        ) +
+        labs(
+          y = element_blank(), 
+          title = paste0(pstr(.x), ' over time, by country'),
+          fill = 'Country\nName',
+          color = 'Country\nName',
+          subtitle = paste0('Variable name = ', .x)
+        ) +
+        geom_point(alpha = 0.5, size = 3) + 
+        geom_smooth(se = FALSE) +
+        theme_bw(base_size = 20) +
+        theme(
+          plot.title.position = 'plot',
+          legend.position = 'bottom'
+          ) +
+        scale_x_continuous(
+          breaks = seq(2000, 2020, 2)
+        )
+      
+      cat('\n\n\n')
+      print(p)
+    }
+  )
+
+```
+
