@@ -299,7 +299,7 @@ descriptives <- psych::describe(rpart.plot::ptitanic$age)
 ```
 
 
-### Some descriptives 
+# Some descriptives 
 
 In the whole sample, ~`r round(sum(ptitanic$survived == 'survived')/nrow(ptitanic)*100)`% survived the incident.
 
@@ -346,24 +346,19 @@ surv_by_sex <-
 
 .left-column[
 
-Each node shows
-* predominant predicted class
-* predicted probability of survival
-* percent of total sample in this node
+#### Each node shows
+predominant predicted class
 
-We can make it look a little different too
+predicted probability of survival
+
+percent of total sample in this node
 
 ]
 
 .right-column[
-```{r echo=FALSE}
-rpart.plot(
-  two_var_DT, 
-  type = 4,
-  branch = 0.6,
-  clip.right.labs = FALSE,
-  box.palette = "Grays"
-)
+```{r echo=TRUE, include = TRUE, fig.height=5}
+rpart.plot(two_var_DT, type = 4, 
+           clip.right.labs = FALSE)
 ```
 ]
 ---
@@ -386,11 +381,9 @@ Split order, Predicted probabilities, & node size give sense of the observed tra
 ```{r echo=FALSE}
 rpart.plot(
   two_var_DT, 
-  type = 4,
-  branch = 0.6,
-  clip.right.labs = FALSE,
-  box.palette = "Grays"
-)
+  type = 4, 
+  clip.right.labs = FALSE
+  )
 ```
 ]
 
@@ -398,32 +391,55 @@ rpart.plot(
 
 # Zoomed in
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.align='center', fig.width = 10, fig.height=7}
 rpart.plot(
   two_var_DT, 
-  type = 4,
-  branch = 0.6,
+  type = 4, 
   clip.right.labs = FALSE,
-  box.palette = "Grays"
-)
+  cex = 1.5
+  )
 ```
 
 ---
 
-# Variable Importance Plots
+# Variable Importance
 
 * Variable importance give the relative contribution of each variable to the model. 
-* As complexity / size of tree increases, VIPs become more helpful after the fist few splits.
+* As complexity / size of tree increases, variable importance plots (VIPs) become more helpful after the fist few splits.
 * Depending on the modeling framework, they are created with slightly different approaches.
-* The name gives the underlying logic, though
+* Interpretation of VI magnitudes depends on the measure.
+* This is beyond the scope of this workshop.
 
-with the `vip` package, you can get a basic VIP easily.
+___
 
-You can add layers from `ggplot2` to the VIP
+### Variable importance (in this workshop)
+
+* The `vip` package can calculate variable importance for all the models we'll use
+* Higher importance values indicate greater importance in all examples we'll discuss
+* Again, **<u>always check the help documentation</u>**
+
+
+---
+
+# Titanic VIP
+
+Once we load the library, 
 
 ```{r, eval = FALSE, echo = T}
 library(vip)
-vip(two_var_DT, include_type = TRUE) + 
+```
+
+we can get a VIP for our decision tree in 1 line of code.
+
+```{r, eval = FALSE, echo = T}
+plt <- 
+  vip(two_var_DT, include_type = TRUE)
+```
+
+If we want to label the axes or format, we treat it like `ggplot2` objects
+
+```{r, eval = FALSE, echo = T}
+plt + 
   theme_bw(base_size = 15) +
   labs(
     title = 'Variable Importance Plot for Decision Tree',
@@ -433,44 +449,33 @@ vip(two_var_DT, include_type = TRUE) +
 
 ---
 
-# Variable Importance Plot
+# Titanic VIP
 
-.left-column[
-
-Many modeling frameworks have their own measures of variable importance (VI). 
-
-Interpretation of VI magnitudes depends on the measure.
-
-This is beyond the scope of this workshop.
-
-]
-.right-column[
-```{r echo = FALSE}
+```{r echo = FALSE, fig.align='center', fig.width=12, fig.height=7}
 library(vip)
 vip(two_var_DT, include_type = TRUE) + 
   theme_bw(base_size = 15) +
   labs(
-    title = 'Variable Importance Plot for Decision Tree',
-    subtitle = 'Data from `ptitanic`',
+    title = 'Variable Importance Plot for 2-Variable Decision Tree',
+    subtitle = 'Data from `ptitanic`'
   )
 ```
-]
+
 ---
 
-# Another way to look at it
+# Visualizing the Decision Boundaries
 
 .left-column[
-Visually, the model is finding the best split to separate the shapes. 
 
-This case is intuitive (2 splitting variables & 2 total splits)
+Visually, we are asking the model to draw the fewest lines possible to get maximum separation of triangles and circles.
 
-Higher dimensional models do the same thing, but harder to conceptualize.
+First we separate men from women, then young men from old men.
 
 ]
 
 .right-column[
 
-```{r echo=FALSE, fig.align='center'}
+```{r echo=FALSE, fig.align='center', fig.height = 6}
 training_data %>% 
   drop_na() %>% 
   mutate(
@@ -488,6 +493,7 @@ training_data %>%
       y = sex,
       alpha = accuracy
     ),
+    size = 4, 
     width = 0,
     height = 0.2
   ) +
@@ -512,17 +518,24 @@ training_data %>%
     color = 'black'
   )  +
   scale_alpha_discrete(range = c(0.9, 0.4)) +
-  theme_bw(base_size = 15) 
+  theme_bw(base_size = 15) +
+  labs(
+    title = 'Visualization of 2-variable Decision Tree Cutpoints',
+    subtitle = 'Decision tree given 2 variables: sex and age', 
+    caption = 'Data source = rpart.plot::ptitanic',
+    y = element_blank()
+    ) +
+  theme(
+    plot.title.position = 'plot', 
+    plot.caption.position = 'plot'
+  )
 ```
 ]
 ---
 
-Here's an animated graphic of a decision tree (on another dataset)
+class: center, middle
 
-```{r eval=FALSE, include=FALSE}
-# https://github.com/ryanholbrook/decision-boundaries-animations/blob/master/README.md
-knitr::include_graphics('imgs/rpart_mix.gif')
-```
+# Evaluate Performance
 
 ---
 
@@ -539,11 +552,13 @@ Remember, the model has not seen `testing_data`
 
 
 ```{r}
-pred_df <- 
-  testing_data %>% 
-  mutate(
-    predicted = predict(two_var_DT, newdata = ., type = 'class')
+preds <- 
+  predict(
+    two_var_DT, 
+    newdata = testing_data,
+    type = 'class'
     )
+actual <- testing_data$survived
 ```
 
 ---
@@ -553,9 +568,7 @@ pred_df <-
 Let's peak at the data we made:
 
 ```{r}
-pred_df %>% 
-  select(predicted, survived) %>% 
-  tibble()
+table(preds, actual)
 ```
 
 
@@ -564,17 +577,13 @@ pred_df %>%
 # Accuracy
 
 ```{r}
-pred_df %>% 
-  mutate(
-    accuracy = 
-      if_else(
-        predicted == survived, 
-        'accurate',
-        'inaccurate'
-      )
-  ) %>% 
-  count(accuracy) %>% 
-  mutate(percent = paste0(round(n/sum(n)*100), '%'))
+accuracy_vector <- 
+  if_else(preds == actual, 'accurate', 'inaccurate')
+
+percent_accurate <- 
+  table(accuracy_vector)/length(accuracy_vector)*100
+
+round(percent_accurate)
 ```
 
 ---

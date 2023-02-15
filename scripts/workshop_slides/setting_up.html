@@ -44,7 +44,7 @@ Introductions &amp; (abbreviated) Foundations in R
     * ✅ Introductions &amp; KZ Lecture 
     * ✅ coffee break
     * `R` refresher (**up next**)
-    * `dplyr`, ` %&gt;% `, &amp; `ggplot2` refresher
+    * `ggplot2` refresher
     * Lab activity
   
 * Lunch **(12:00 pm - 12:59 pm)**
@@ -55,35 +55,33 @@ Introductions &amp; (abbreviated) Foundations in R
     * Lecture / worked examples: diving deeper
     * Summary, cons, and avenues for model improvement
     
-
 ---
 
-# A Quick Note about the Workshop
+# Communications Throughout
 
 I want this to be a comfortable environment for all attendees.
 
 I'm from another University and don't know your curricula or norms, so I want to establish that.
 
-* I am a former high school teacher (high school students are rambunctious!)
 * Oregon &amp; the University of Oregon are also relatively "laid back" 
 * As long as you raise your hand, feel free to interrupt me if you have questions - no need to wait until the end!
 * the only exception will be technical issues which concern just 1 person and not the group
 * for technical issues, I'm happy to help individuals during coffee breaks and/or lunch
 
-As long as it's polite, I'm a big fan of informal 🙃 
+I'm a big fan of informal 🙃 
 
 ---
 
 class: middle, center
 
-# Now, let's get started! 
+# Packages 📦 in `R`
 
 ---
-# Packages 📦 in `R`
+# Packages 📦
 
 In `R`, objects, functions, data, and anything besides the coding language itself need to be loaded.
 
-These are bundled together as "packages" 📦 and placed on CRAN* for download with the built-in `install.packages()` function.
+These are bundled together as "packages" and placed on CRAN* for download with the built-in `install.packages()` function.
 
 (*CRAN = the Comprehensive R Archive Network )
 
@@ -101,7 +99,7 @@ Without default packages (or your loaded ones)
 
 class: center, middle
 
-# Refresher: Coding in `R` 💻
+# Reading in Data `R` 💻
 
 ---
 
@@ -124,7 +122,7 @@ getwd()
 
 ---
 
-# Reading in Data
+# Examples
 
 For this workshop, all data will be pre-loaded or formatted as `.csv` files.
 
@@ -163,16 +161,19 @@ Let's load some data from the World Bank (WB):
 
 * The WB describes these as their "educational" data
 * I classify them as Prevention Science data, but I'm biased 🙃
-* In a folder called `data`
+* In a folder called `data` within the project subfolder
 * called `se_asia_imputed_world_bank.csv`
 
 
 **Don't forget to store the data as an object with `&lt;-`**
 
 ```r
-# dat / df are short for "data frame"
-# they are commonly used names in programming
-# I will inevitably slip these in
+dat &lt;- read.csv('data/se_asia_imputed_world_bank.csv')
+```
+
+
+```r
+# doing it this way for xaringan
 dat &lt;- read.csv(here::here('data', 'se_asia_imputed_world_bank.csv'))
 ```
 
@@ -182,60 +183,213 @@ dat &lt;- read.csv(here::here('data', 'se_asia_imputed_world_bank.csv'))
 
 * Inspecting data is as easy as running the object name.
 * Before doing so, I am going to use `tibble()` to format the data frame slightly
-* I'll overwrite the prior object `dat` with itself as a tibble. 
 
+___
 
-```r
-dat &lt;- tibble(dat)
-```
-
-`tibbles`
+## An aside re: `tibbles`
 
 * are part of the `tidyverse` framework 
 * differ very slightly from data frame (mostly beyond our scope)
 * default to only printing 10 rows, which is nice for our purposes
 
+___
+
+
+(output on next page)
+
 ---
 
-Now I'll inspect the object:
+# Inspect 
 
 It is 152 observations (rows) of data on some Southeast Asian countries.
 
 Each observation (row) has many variables (columns). 
 
-There are dozens of equivalent ways to refer to the dimensions (rows and columns). 
+A row represents an observation of a given country, on a given year. 
 
-**Now and Later: If I slip into using an unfamiliar term, please ask!!**
+All variables in that row correspond to that country and year.
+
 
 
 ```r
-head(dat)
+tibble(dat)
 ```
 
 ```
-## # A tibble: 6 × 48
-##   countr…¹  year pa_nu…² pa_nu…³ sh_dy…⁴ sh_dy…⁵ sh_dy…⁶ sh_dy…⁷ sh_dt…⁸ sh_dt…⁹
-##   &lt;chr&gt;    &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;
-## 1 Indones…  2000   1387.   8422.     5.7     6.2     3.7     6     24050   27828
-## 2 Indones…  2001   1550.  10261.     5.7     6.2     3.6     5.7   24341   27698
-## 3 Indones…  2002   1616.   9311.     5.7     6.3     3.5     5.5   24476   27545
-## 4 Indones…  2003   1672.   8577.     5.7     6.2     3.4     5.3   24443   27417
-## 5 Indones…  2004   1767.   8939.     8.1     8.7     6.1     9     34325   38237
-## 6 Indones…  2005   1959.   9705.     5.7     6.2     3.3     4.8   23995   27415
-## # … with 38 more variables: sh_dth_1014 &lt;int&gt;, sh_dth_0509 &lt;int&gt;,
-## #   se_ter_enrr &lt;dbl&gt;, se_sec_durs &lt;int&gt;, se_sec_ages &lt;int&gt;, se_prm_tchr &lt;int&gt;,
-## #   se_prm_enrr &lt;dbl&gt;, se_prm_enrl &lt;int&gt;, se_prm_durs &lt;int&gt;, se_prm_ages &lt;int&gt;,
-## #   se_pre_enrr &lt;dbl&gt;, se_pre_durs &lt;int&gt;, se_com_durs &lt;int&gt;, st_int_arvl &lt;int&gt;,
-## #   it_net_bbnd &lt;int&gt;, it_mlt_main &lt;int&gt;, it_cel_sets &lt;int&gt;, is_air_psgr &lt;dbl&gt;,
-## #   is_air_dprt &lt;dbl&gt;, bm_gsr_totl_cd &lt;dbl&gt;, bn_fin_totl_cd &lt;dbl&gt;,
-## #   bx_gsr_totl_cd &lt;dbl&gt;, bx_pef_totl_cd_wd &lt;dbl&gt;, fi_res_totl_cd &lt;dbl&gt;, …
+## # A tibble: 152 × 48
+##    count…¹  year pa_nu…² pa_nu…³ sh_dy…⁴ sh_dy…⁵ sh_dy…⁶ sh_dy…⁷ sh_dt…⁸ sh_dt…⁹
+##    &lt;chr&gt;   &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;int&gt;   &lt;int&gt;
+##  1 Indone…  2000   1387.   8422.     5.7     6.2     3.7     6     24050   27828
+##  2 Indone…  2001   1550.  10261.     5.7     6.2     3.6     5.7   24341   27698
+##  3 Indone…  2002   1616.   9311.     5.7     6.3     3.5     5.5   24476   27545
+##  4 Indone…  2003   1672.   8577.     5.7     6.2     3.4     5.3   24443   27417
+##  5 Indone…  2004   1767.   8939.     8.1     8.7     6.1     9     34325   38237
+##  6 Indone…  2005   1959.   9705.     5.7     6.2     3.3     4.8   23995   27415
+##  7 Indone…  2006   2168.   9159.     5.7     6.1     3.2     4.7   24197   26949
+##  8 Indone…  2007   2349.   9141      5.6     6.1     3.1     4.5   24184   26441
+##  9 Indone…  2008   2723.   9699.     5.6     6       3       4.3   23884   25951
+## 10 Indone…  2009   2930.  10390.     5.6     6       2.9     4.1   23339   25681
+## # … with 142 more rows, 38 more variables: sh_dth_1014 &lt;int&gt;,
+## #   sh_dth_0509 &lt;int&gt;, se_ter_enrr &lt;dbl&gt;, se_sec_durs &lt;int&gt;, se_sec_ages &lt;int&gt;,
+## #   se_prm_tchr &lt;int&gt;, se_prm_enrr &lt;dbl&gt;, se_prm_enrl &lt;int&gt;, se_prm_durs &lt;int&gt;,
+## #   se_prm_ages &lt;int&gt;, se_pre_enrr &lt;dbl&gt;, se_pre_durs &lt;int&gt;, se_com_durs &lt;int&gt;,
+## #   st_int_arvl &lt;int&gt;, it_net_bbnd &lt;int&gt;, it_mlt_main &lt;int&gt;, it_cel_sets &lt;int&gt;,
+## #   is_air_psgr &lt;dbl&gt;, is_air_dprt &lt;dbl&gt;, bm_gsr_totl_cd &lt;dbl&gt;,
+## #   bn_fin_totl_cd &lt;dbl&gt;, bx_gsr_totl_cd &lt;dbl&gt;, bx_pef_totl_cd_wd &lt;dbl&gt;, …
 ```
 
 ---
 
-# Factors
+class: center, middle
 
-I'm assuming this is a familiar term to `R` users, but wanted to address it
+# Data Types &amp; Structures
+
+I am oversimplifying this section quite a bit. If you're curious on the details, see: https://cran.r-project.org/doc/manuals/r-release/R-intro.html
+
+---
+
+# Data Types in `R`
+
+Computers process data based on its data type. For this workshop, you'll need to understand some data types in order to work in R:
+
+* logical (dichotomous = TRUE/FALSE)
+* numeric / double (numeric values with decimals)
+* integer (whole numbers)
+* characters / strings (words)
+
+---
+
+# Data Structures: Vectors
+
+* vectors: represented as `c()`
+
+  * multiple observations of one data type
+  * access data in vector by its position or name (if named)
+  * example: 3 run times (in seconds) for 3 different complexity models
+  
+
+```r
+run_time_seconds &lt;- 
+  c('simple model' = 30, 
+    'intermediate model' = 58, 
+    'complex model' = 90)
+# by position
+run_time_seconds[1]
+```
+
+```
+## simple model 
+##           30
+```
+
+```r
+# by name
+run_time_seconds['simple model']
+```
+
+```
+## simple model 
+##           30
+```
+
+---
+
+
+# Data Structures: Lists
+
+
+.pull-left[
+
+
+```r
+example_list &lt;- 
+  list(
+    model = lm(data = dat, formula = se_xpd_totl_gd_zs ~ year + country_name),
+    plot = plot(y = dat$se_xpd_totl_gd_zs, x = dat$year)
+  )
+```
+
+![](setting_up_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+
+```r
+example_list[['plot']]
+```
+
+```
+## NULL
+```
+
+]
+
+.pull-right[
+  * conceptually the same as a vector, but more flexible
+  * a way to store more general data
+  * data types do not have to be the same across
+  * we will use this to store models, plots, etc.
+  * Refer to the object in the list with double brackets
+
+
+
+```r
+example_list[[2]]
+```
+
+```
+## NULL
+```
+
+]
+
+
+---
+
+# Data Structures: Data Frames
+
+* data.frame / tibble 
+  
+  * A table
+  * each cell is coded as [row_number, column_number]
+  * each column can be its own data type, but must be constant within column
+  * Refer to variables with `$` and name, or by position
+  
+
+```r
+# subset first 10 observations to decrease output
+iris$Species[1:10]
+```
+
+```
+##  [1] setosa setosa setosa setosa setosa setosa setosa setosa setosa setosa
+## Levels: setosa versicolor virginica
+```
+
+```r
+iris[1:10,5]
+```
+
+```
+##  [1] setosa setosa setosa setosa setosa setosa setosa setosa setosa setosa
+## Levels: setosa versicolor virginica
+```
+
+---
+
+# Data Structures: Factors
+
+* factors
+
+    * a method of storing categorical data 
+    * can store numeric data with factors to make ordered categories
+    * can store character / strings to make unordered categories
+    * a factor structure is thus applied to a vector to make it a factor
+    * refer to a factor just as any other vector (position or name)
+
+(example coming in 2 slides)
+
+---
+
+# Data Structures: Factors
 
 * How `R` organizes categorical data
 * With many models, how we handle categorical data is important
@@ -265,10 +419,11 @@ class(dat$country_name)
 
 ---
 
-# Quick Dummy-Coding
+# Data Structures: Factors
 
 * Reference category is omitted from the model
 * Dummy-codes are made with all other factor levels (i.e., 0/1 value for each level)
+* estimates are thus the difference between this group and the reference
 * By default R uses the alpha-numerically first category (i.e., "a" or "1" etc.)
 
 
@@ -299,262 +454,6 @@ coef(lm(data = dat, formula = se_xpd_totl_gd_zs ~ country_name))
 
 ---
 
-# Useful Warnings
-
-Here is a nonsensical model, to show what some warnings might look like
-
-
-```r
-useless_model &lt;- lm(data = dat, formula = country_name ~ year)
-```
-
-```
-## Warning in model.response(mf, "numeric"): using type = "numeric" with a factor
-## response will be ignored
-```
-
-```
-## Warning in Ops.factor(y, z$residuals): '-' not meaningful for factors
-```
-
-If these sorts of warnings ever come out of your model, something (probably) didn't got as planned
-
-The model actually runs, but it doesn't mean anything. 
-
-
----
-
-# Under the Hood 🚗
-
-Internally, `R` is converting the factor to the levels of the factor, i.e., 1, 2, 3, 4, 5, 6, 7, 8
-
-
-```r
-# factor levels
-unique(dat$country_name)
-```
-
-```
-## [1] Indonesia   Cambodia    Lao PDR     Malaysia    Philippines Singapore  
-## [7] Thailand    Vietnam    
-## 8 Levels: Cambodia Indonesia Lao PDR Malaysia Philippines ... Vietnam
-```
-
-
-
-```r
-# numeric equivalent
-unique(as.numeric(dat$country_name))
-```
-
-```
-## [1] 2 1 3 4 5 6 7 8
-```
-
-Even though the prior model ran, `R` suspected you did something wrong and is letting you know
-
----
-
-# The pipe `%&gt;%` or `|&gt;`
-
-* A very useful feature of the `tidyverse` framework is the pipe
-* The pipe takes an object and passes it along as the first argument of a function
-* It's use with `dplyr` - a `tidyverse` package - is one of my favorite use cases.
-* (examples coming next slide)
-___
-* `%&gt;%` longstanding piece of `tidyverse` framework
-* Base `R` incorporated a "base pipe" `|&gt;` recently
-* They are functionally almost identical
-* I load the tidyverse in 100% of my projects, so I use `%&gt;%` out of habit
-
----
-
-# Examples
-
-Make a pipe by typing 
-
-* the pieces out (`%` &amp; `&gt;` / `|` &amp; `&gt;` )
-* `cmd`/`cntrl` + `shift` + `m`  (mac/PC, respectively)
-
-____
-
-* `dplyr` is perhaps the easiest way to use the pipe effectively
-* `dplyr` function names are written to make code sound like a sentence
-* with this logic, you read the pipe as "then" or "and then"
-
-**Example 1: Let's print all distinct countries present in our data.**
-
-
-```r
-# [using] the data [then] 
-#      find distinct `country_name`
-cntries &lt;- 
-  dat %&gt;% 
-  distinct(country_name) 
-```
-
----
-
-
-```r
-cntries
-```
-
-```
-## # A tibble: 8 × 1
-##   country_name
-##   &lt;fct&gt;       
-## 1 Indonesia   
-## 2 Cambodia    
-## 3 Lao PDR     
-## 4 Malaysia    
-## 5 Philippines 
-## 6 Singapore   
-## 7 Thailand    
-## 8 Vietnam
-```
-
----
-
-# Examples
-
-**Example 2: Let's count the number of countries with data per year.**
-
-
-```r
-# [using] the data [then] 
-#      count `year`
-cnts &lt;- 
-  dat %&gt;% 
-  count(year) 
-
-ex_plt &lt;- cnts %&gt;% 
-  ggplot(
-    aes(x = year, y = n, label = n)
-  ) + 
-  geom_col(alpha = 0.7, fill = 'cornflowerblue') + 
-  geom_label(nudge_y = 0.2) + 
-  scale_y_continuous(breaks = seq(0, 10, 2)) +
-  theme_bw(base_size = 18) +
-  labs(
-    y = 'count',
-    title = 'Observations by Year',
-    caption = 'World Bank Data on SE Asian Countries'
-  )
-```
-
----
-
-# Plot it
-
-
-```r
-ex_plt
-```
-
-&lt;img src="setting_up_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
-
-
----
-
-# Considerations with the Pipe
-
-To print the first 3 rows of data, you can call: 
-
-
-```r
-head(dat, 3)
-# or
-dat %&gt;% head(3) 
-```
-
-* These are the same because
-  * The object on the left of the pipe is given the the function on the right as the first argument
-  * The first argument of `head()` is data (the second is the number of rows)
-
-This, though, will give an error
-
-
-```r
-dat %&gt;% 
-  lm(se_xpd_totl_gd_zs ~ year + country_name)
-```
-    Error in as.data.frame.default(data) : 
-      cannot coerce class ‘"formula"’ to a data.frame
-      
----
-# Considerations with the Pipe
-
-The issue was that the first argument of `lm()` is `formula` 
-    
-    (see `?lm()` for documentation)
-We can get around this, though:
-
-
-```r
-dat %&gt;% 
-  lm(
-    data = .,
-    formula = se_xpd_totl_gd_zs ~ year + country_name
-    )
-```
-
-We can use the period `.` to tell where we want to put the piped object.
-
----
-
-# Why do we care about `dplyr` &amp;  %&gt;%?
-
-* Gave a framework to review a few things about `R`
-* Allows me to show pipes with less confusion
-* In some later cases, it is *substantially* easier to read code with pipes
-
-**Example: get the mean and standard deviation of `se_xpd_totl_gd_zs` for each year**
-
-`se_xpd_totl_gd_zs` is the percent of the population between 15-64.
-
-In `tidyverse` framework:
-
-
-```r
-dat %&gt;% 
-  group_by(year) %&gt;% 
-  summarize(
-    means = mean(se_xpd_totl_gd_zs),
-    sds = sd(se_xpd_totl_gd_zs)
-    ) 
-```
-
----
-
-# Why do we care about `dplyr` &amp;  %&gt;%?
-
-Example continued (in base)
-
-
-```r
-year_list &lt;- split(dat, dat$year)
-means &lt;- 
-  vapply(
-    X = year_list, 
-    FUN = function(x) mean(x$se_xpd_totl_gd_zs), 
-    FUN.VALUE = double(1)
-  ) 
-sds &lt;- vapply(
-  X = year_list, 
-  FUN = function(x) sd(x$se_xpd_totl_gd_zs),
-  FUN.VALUE = double(1)
-  ) 
-data.frame(
-  years = names(year_list),
-  means = means,
-  sds = sds
-)
-```
-
-
----
-
 # ggplot2
 
 GG stands for "grammar of graphics"
@@ -569,7 +468,7 @@ The basic concept is:
     * `geom_smooth` = line of best fit between `y` and `x` aesthetics
     * `geom_col` = column plot
 * `ggplot2` objects are considered stacked in layers for that reason, 
-* we use `+` instead of pipes to add layers
+* we use `+` to link layers 
 * let's look at an example
 ---
 
@@ -585,8 +484,8 @@ Let's map:
 
 ```r
 plot_mapping &lt;- 
-  dat %&gt;% 
   ggplot(
+    data = dat, 
     mapping = 
       aes(
         y = se_xpd_totl_gd_zs, 
@@ -603,7 +502,7 @@ plot_mapping &lt;-
 plot_mapping
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-25-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -616,7 +515,7 @@ plot_mapping
 plot_mapping + geom_point()
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-26-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -627,7 +526,7 @@ plot_mapping + geom_point()
 plot_mapping + geom_point() + geom_smooth()
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-27-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -640,7 +539,7 @@ plot_mapping + geom_point() + geom_smooth() +
   aes(color = country_name, fill = country_name) 
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -688,7 +587,7 @@ plt_labled &lt;-
 
 ---
 
-&lt;img src="setting_up_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="setting_up_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: center, middle
