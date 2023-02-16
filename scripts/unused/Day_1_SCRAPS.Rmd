@@ -1,0 +1,88 @@
+---
+title: "Day 1 Scraps"
+author: "Christopher Loan"
+date: "2023-02-16"
+output: html_document
+---
+
+#### DAY 1: 
+
+
+
+---
+
+# (extra slide if time)
+
+Exponentiate Parameters -> Odds Ratios
+
+Intercept = Odds ratio for "full statistical reference" 
+
+Full statistical reference is:
+  * `pclass` = `1st`
+  * `sex` = `female`
+  * `age` = 0 (because not mean centered)
+  * `sibsp` = 0
+  * `parch` = 0
+  
+Interpreting coefficients:
+
+From [UCLA's Statistical Methods & Data Analytics website](https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/): 
+
+*each estimated coefficient is the expected change in the log odds of [surviving] for a unit increase in the corresponding predictor variable holding the other predictor variables constant...Each exponentiated coefficient is the ratio of two odds, or the change in odds [...] for a unit increase in the corresponding predictor variable holding other variables at certain value [typically 0].*
+
+---
+
+```{r include = FALSE}
+odds_ratios <- exp(coef(glm_comparison))
+f1 <- function(variable_name){paste0('~', round(odds_ratios[[variable_name]]), ' times more likely to survive than die')}
+
+f2 <- 
+  function(variable_name, print_name, reference){
+    
+    tmp <- round((odds_ratios[[variable_name]] - 1)*100) 
+    
+    paste0(
+      'the odds of ', 
+      print_name, 
+      ' surviving are ~', 
+      abs(tmp),
+      '%', 
+      if_else(sign(tmp) < 0, ' lower', ' higher'),
+      ' than the odds for ', 
+      reference
+      )
+    }
+
+```
+
+# (extra slide if time)
+
+
+Effects:
+* Intercept group is `r f1('(Intercept)')`
+* `r f2('pclass2nd', '2nd class', '1st class')` 
+* `r f2('pclass3rd', '3rd class', '1st class')` 
+* `r f2('sexmale', 'males', 'females')` 
+* `r f2('age', 'someone 1 year older', 'someone 1 year younger')`  
+* `r f2('sibsp', 'someone with 1 more sibling or spouse on board', 'someone with 1 fewer')`
+* `r f2('parch', 'someone with 1 more parent or child on board', 'someone with 1 fewer')`
+
+---
+
+---
+
+# Logistic Regression Parameters
+
+The direction of effects do not conflict with the DT. 
+
+```{r include = TRUE, echo = FALSE}
+glm_comparison %>% 
+  broom::tidy() %>% 
+  mutate(
+   odds_ratio = exp(coef(glm_comparison)),
+   p.value = if_else(p.value < 0.001, '<0.001', paste0(round(p.value, 3)))
+  ) %>% 
+  kbl(caption = 'Estimated Parameters', digits = 3)
+```
+
+---

@@ -9,6 +9,22 @@ output: xaringan::moon_reader
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+---
+
+# Technical detail
+
+This is used throughout my code: 
+    
+    !!sym(outcome_next_year) 
+This helps make drastic changes (i.e., what outcome) by simply changing this line: 
+    
+    outcome_next_year <- NAME_OF_SELECTED_OUTCOME
+The same output is generated from
+
+    se_xpd_totl_gd_zs 
+instead of 
+
+    !!sym(outcome_next_year)
 
 ---
 

@@ -82,11 +82,8 @@ Let's load 2 data files:
 **Don't forget to store the data as an object with `<-`**
 
 ```{r}
-# dat / df are short for "data frame"
-# they are commonly used names in programming
-# I will inevitably slip these in
-key <- read.csv('data/world_bank_key.csv')
-dat <- read.csv('data/se_asia_imputed_world_bank.csv')
+key <- read.csv(here::here('data/keys', 'world_bank_key.csv'))
+dat <- read.csv(here::here('data', 'se_asia_imputed_world_bank.csv'))
 ```
 
 Here's a description of the files:

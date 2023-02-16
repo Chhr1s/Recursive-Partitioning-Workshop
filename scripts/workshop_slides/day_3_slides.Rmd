@@ -1,96 +1,112 @@
 ---
-title: "slides day 3"
-author: "Christopher M. Loan, MS"
+title: "Workshop Day 3\nImproving & Interpreting Models"
+author: "Christopher M. Loan"
 date: 'February 22, 2022'
-output: xaringan::moon_reader
+output: 
+  xaringan::moon_reader:
+    css: ["default"]
+    nature:
+      slideNumberFormat: "%current%/%total%"
+---
+
+layout: true
+<div style="position: absolute;left:60px;bottom:11px;color:gray;">`r gsub('hristopher M', '', rmarkdown::metadata$author)`</div>
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# all of these are useful for the creation of slides
+library(emojifont)
+library(kableExtra)
+outcome_next_year <- 'se_xpd_totl_gd_zs'
+chk._ <- emoji('white_check_mark')
+incr._ <- emoji('chart_with_upwards_trend')
+barchrt._ <- emoji('bar_chart')
+crstl._ <- emoji('crystal_ball')
+key <- 
+  read.csv(here::here('data/keys', 'key_impute.csv'))
+
+pstr <- 
+  function(variable = NULL){
+    # default returns written outcome
+    if(is.null(variable)) {variable <- outcome_next_year}
+       
+    written_name <- 
+      key %>% 
+      dplyr::filter(janitor_version == variable) %>% 
+      dplyr::pull(indicator_name)
+    
+    return(written_name)
+  }
+
 ```
 
+.right[**Background**]
 
 # Workshop Progress
 
 On Day 1, we discussed:
-  * what DTs are
-  * how to fit DTs
-  * how to interprate/visualize DTs
-  * how to evaluate DTs
+  * concepts of recursive partitioning & decision trees (DTs) `r chk._`
+  * fitting DTs `r chk._`
+  * interpreting / visualizing DTs `r chk._`
+  * evaluating DTs `r chk._`
 
 On Day 2, we discussed
   
-  * what RFs are
-  * how to fit RFs
-  * how to evaluate RFs
-  * hyperparameters
-  * how hyperparameters are used to improve models
+  * concepts of Random Forests (RFs) `r chk._`
+  * fitting RFs `r chk._`
+  * evaluating RFs `r chk._`
+  * hyperparameters `r chk._`
+  * improving the model with hyperparameters `r chk._`
+  
   
 ---
+
+.right[**Background**]
 
 # Looking Ahead
 
-Today
+#### Today, well cover
 
-* Establishing benchmarks
+`r barchrt._` Establishing benchmarks
 
-* Improving predictions through
+`r incr._` Improving predictions through tuning hyperparameters
   
-  * Tuning Hyperparameters
-  * Cross-Validation
-  
-* Interpreting RFs with Partial Dependency Plots (PDPs)
+`r crstl._` Interpreting RFs with Partial Dependency Plots (PDPs)
+
+If time allows, we'll discuss cross validation & other modeling improvements
 
 ---
 
-# set up
+.right[**Background**]
 
-#### Load packages
+# Today's Goals
+
+1. Tune a random forest such that it predicts next year's `r pstr()` with greater accuracy than 3 benchmark models
+
+2. Interpret how the most important features influence the outcome with Partial Dependency Plots
+
+---
+
+.right[**Background**]
+
+# Load packages
 
 ```{r message = FALSE, warning = FALSE}
 library(tidyverse)
-library(ranger)
 library(rsample)
+library(ranger)
 library(dials)
-library(kableExtra)
-library(emojifont)
-library(pdp)
 library(vip)
-```
-
-#### Load functions
-
-```{r message = FALSE, warning = FALSE}
-source(here::here('scripts/functions.R'))
-```
-
-#### Set outcome
-
-```{r message = FALSE, warning = FALSE}
-outcome_next_year <- 'se_xpd_totl_gd_zs'
+library(pdp)
 ```
 
 ---
 
-# Technical detail
+.right[**Background**]
 
-This is used throughout my code: 
-    
-    !!sym(outcome_next_year) 
-This helps make drastic changes (i.e., what outcome) by simply changing this line: 
-    
-    outcome_next_year <- NAME_OF_SELECTED_OUTCOME
-The same output is generated from
-
-    se_xpd_totl_gd_zs 
-instead of 
-
-    !!sym(outcome_next_year)
----
-
-# set up
-
-#### Load Key / Data
+# Load data
 
 ```{r}
 key <- 
@@ -104,120 +120,151 @@ dat <-
     ))
 ```
 
-#### Split Data
+#### split data
 
 ```{r}
 set.seed(022023)
 sea_split <- 
-  initial_split(dat, strata = country_name, prop = 0.9)
+  initial_split(dat, strata = country_name, prop = 0.85)
 sea_training <- training(sea_split) 
 sea_testing <- testing(sea_split) 
 ```
 
 ---
 
-# set up
+.right[**Background**]
 
-These variable names are hard to interpret. 
+# Today's Outcome Variable
 
-Here's a function that returns a written name from the variable name.
+The variable `outcome_next_year` was made before the workshop. 
 
-```{r}
-pstr <- 
-  function(variable = NULL){
-    # default returns written outcome
-    if(is.null(variable)) {variable <- outcome_next_year}
-       
-    written_name <- 
-      key %>% 
-      filter(janitor_version == variable) %>% 
-      pull(indicator_name)
-    
-    return(written_name)
-  }
-```
+It is the <u>following year's</u> `r pstr()`. 
 
-Outcome =  <u>next year's</u> `r pstr()`
+The variable which represents <u>current year's</u> `r pstr()` is called `se_xpd_totl_gd_zs`. 
 
-Units = `r str_extract(pstr(), '\\([^\\)]+\\)')`
+For example, Thailand's value in 2003 for `outcome_next_year` is the same value as `se_xpd_totl_gd_zs` in 2004. 
+
+Cambodia's 2010 `outcome_next_year` is the same as their 2011 value for `se_xpd_totl_gd_zs`.
+
+Both are expressed in units of `r str_extract(pstr(), '\\([^\\)]+\\)')`
 
 ---
 
 class: center, middle
 
-# Establishing Benchmarks
+# Benchmarks
 
 (To check if the final model is any good)
 
 ---
 
-# Benchmarks
+.right[**Benchmarks**]
 
-The process of using benchmarks is very easy:
+# Overall Process
 
+* Choose which models to use as benchmarks
 * Predict outcomes for unseen cases with all benchmarks.
 * Calculate adequacy of those models (e.g., with mean square error [MSE])
 * Determine if our model outperforms these benchmarks
 
-The better the benchmark the final model outperforms, the more confidence we can have in the model.
+By outperforming benchmarks, we increase confidence in the model.
+
+Here's a function to calculate MSE from 2 vectors
+
+```{r}
+mse <- function(observed_y, predicted_y){
+    (sum(observed_y - predicted_y)^2)/length(observed_y)
+}
+```
+
+___
+
+We will assess mean squared error (MSE) between observed (true) value and predictions from 3 different benchmark models.
 
 ---
 
-# Today's Benchmarks
+.right[**Benchmarks**]
 
-I chose 3 benchmarks for example:
+# Simple: Outperform Common Sense `r emoji('cake')`
 
-* Predicting the mean of training data (low benchmark)
-* An auto-regressive linear model (moderate benchmark)
-* A RF with default settings (advanced benchmark)
+The mean of the outcome — the "common sense" model
+
+It's odd to think of the mean as a function, but we can write it that way:
+
+```{r include = TRUE}
+mean_as_function <-
+  function(input_data){
+    prediction <- 
+      rep(
+        x = mean(sea_training$outcome_next_year), 
+        times = nrow(input_data)
+      )
+    return(prediction)
+    }
+```
+
+This is a function that takes any data, and outputs the mean of the training data's outcome. 
 
 ---
 
-# Benchmark 1: Guess the Average (mean)
+.right[**Benchmarks**]
 
-Guessing the mean has common-sense validity.
+# Advanced `r emoji('muscle')`
 
-Although it is often not thought of as a model, the mean can be thought of as an overly-simple model.
+More advanced benchmarks include attempting to outperform quick-to-implement models. 
 
-This model has only 1 output: the average of the training set's outcome (i.e., next year's `r pstr(outcome_next_year)`)
+* A conditional, linear growth model
 
-Thus, we can take the MSE observed when every observation is predicted to have the mean of the training set for any unseen data
+* A RF with default hyperparameters
 
+---
+
+.right[**Benchmarks**]
+
+# Benchmark 1: Training Data Mean `r emoji('cake')`
+
+We assess the mean squared error (MSE) between predicting the mean and the true values, just as we would any other model.
+
+Because R is vectorized, I'm not going to deal with the mean as a function.
+
+Instead I store the mean and it will use that number the correct number of times.
 
 ```{r}
 predictions_guess.mean <- 
-  mean(sea_training[,'outcome_next_year'])
+  mean(sea_training$outcome_next_year)
+
+actual <- sea_testing$outcome_next_year
 
 mse_naive_guess.mean <- 
   mse(
-    observed_y = sea_testing$outcome_next_year,
+    observed_y = actual,
     predicted_y = predictions_guess.mean
   )
 ```
 
 ---
 
-# Benchmark 2: Simple Linear Model
+.right[**Benchmarks**]
 
-Going one step up from the simple average is a simple auto-regressive linear model
+# Benchmark 2: Conditional Growth Model  `r emoji('muscle')`
 
-Thus, regress  `outcome_next_year` on `r outcome_next_year` 
+Next, we'll regress  `outcome_next_year` on `country_name` and `year`, which is a growth model that controls for baseline differences
 
 ```{r warning = TRUE}
-lm_simple <- 
+simple_lm <- 
   lm(
-    formula = paste0('outcome_next_year ~ ',  outcome_next_year), 
-# equivalent to: 
-# formula = outcome_next_year ~ se_xpd_totl_gd_zs,
-    data = sea_training,
+    formula = outcome_next_year ~ country_name + year,
+    data = sea_training
   ) 
 ```
 
 ---
 
-# Benchmark 3: Default RF
+.right[**Benchmarks**]
 
-Another (very difficult) benchmark is the random forest set to the default settings. 
+# Benchmark 3: Default RF `r emoji('muscle')`
+
+Another benchmark is a random forest set to the default settings. 
 
 ```{r}
 rf_default <- 
@@ -228,14 +275,9 @@ rf_default <-
   )
 ```
 
-___
-
-A consideration on the default RF:
-
-* There is nothing wrong with using the default settings of random forests if those settings perform the best.
-* RF prediction accuracy has been shown to vary less across tuning, compared to other common ML algorithms
-
 ---
+
+.right[**Benchmarks**]
 
 # Determining Benchmark MSE
 
@@ -245,15 +287,16 @@ A consideration on the default RF:
 model_preds <- 
   sea_testing %>% 
   transmute(
-    # equivalent to: se_xpd_totl_gd_zs
-    !!sym(outcome_next_year), 
+    outcome_next_year, 
     predictions_guess.mean = predictions_guess.mean,
-    predictions_lm.simple = predict(lm_simple, newdata = .),
+    predictions_simple.lm = predict(simple_lm, newdata = .),
     predictions_default.rf = predict(rf_default, .)$prediction
     )
 ```
 
 ---
+
+.right[**Benchmarks**]
 
 # Determining Benchmark MSE
 
@@ -268,11 +311,11 @@ benchmark_mse <-
       .cols = 
         c(predictions_guess.mean, 
           predictions_default.rf,
-          predictions_lm.simple), 
+          predictions_simple.lm,
+          ), 
       .fns = 
         ~mse(
-# equivalent to: observed_y = se_xpd_totl_gd_zs
-          observed_y = !!sym(outcome_next_year), 
+          observed_y = outcome_next_year, 
           predicted_y = .x
         )
     )
@@ -281,9 +324,11 @@ benchmark_mse <-
 
 ---
 
+.right[**Benchmarks**]
+
 # Benchmarks
 
-The default RF gives great improvement, relative to the other models. 
+Our benchmarks have a wide spread in accuracy. Keep in mind, different benchmarks are appropriate in different circumstances
 
 ```{r include = TRUE, echo = FALSE}
 benchmark_mse %>% 
@@ -297,23 +342,19 @@ benchmark_mse %>%
   mutate(rmse = sqrt(mse)) %>% 
   kbl(caption = 'Fit of various benchmarks', digits = 4) %>% 
   footnote('lower is better')
-
-# Note the group MSE and the individual MSE differ after `r sum(sapply(1:20,function(i) grepl(substr(benchmark_mse$predictions_guess.mean,1,i),benchmark_mse$predictions_group.mean)))-2` digits, so pretty much the same in our case.
 ```
 
-**Hint:** if MSE feels intangible, you can get MSE in the units of the outcome by taking the square root (i.e., the "RMSE"). In other words, the square root of MSE is the average error on each prediction `r pstr()` in % units
+**NOTE:** if MSE feels intangible, you can get MSE in the units of the outcome by taking the square root (i.e., the "RMSE"). In other words, the square root of MSE is the average error on each prediction `r pstr()` in % units
 
 ---
-class: center, middle
 
-# Visualizing Predicting the Mean
+.right[**Benchmarks**]
 
-```{r echo=FALSE, include=TRUE}
+```{r echo=FALSE, include=TRUE, fig.height=8, fig.width=11, fig.align='center'}
 sea_testing %>% 
   ggplot(
     aes(
-# equivalent to: se_xpd_totl_gd_zs
-      y = !!sym(outcome_next_year),
+      y = outcome_next_year,
       x = year
       )
   ) +
@@ -322,7 +363,8 @@ sea_testing %>%
     yend = predictions_guess.mean,
     ) +
   geom_point(
-    size = 3, alpha = 0.7,
+    size = 3, 
+    alpha = 0.7,
     color = 'cornflowerblue'
   ) +
   geom_hline(
@@ -352,15 +394,14 @@ sea_testing %>%
 ```
 
 ---
-class: center, middle
 
-# Visualizing Using Linear Model to Predict
+.right[**Benchmarks**]
 
-```{r echo=FALSE, include=TRUE}
+```{r echo=FALSE, include=TRUE, fig.height=8, fig.width=11, fig.align='center'}
 sea_testing %>% 
   mutate(
-      predicted = predict(lm_simple, newdata = .),
-      actual =  !!sym(outcome_next_year), # equivalent to: se_xpd_totl_gd_zs
+      predicted = predict(simple_lm, newdata = .),
+      actual =  outcome_next_year, 
       squared_difference = (actual - predicted)^2
   ) %>% 
   pivot_longer(
@@ -393,7 +434,7 @@ sea_testing %>%
     fill = element_blank(),
     color = element_blank(),
     shape = element_blank(),
-    title = 'Demonstrating linear model predictions on testing data'
+    title = 'Demonstrating Linear Model predictions on testing data'
   ) +
   theme(
     plot.title.position = 'plot',
@@ -402,15 +443,13 @@ sea_testing %>%
 ```
 
 ---
-class: center, middle
+.right[**Benchmarks**]
 
-# Visualizing Using Default RF to Predict
-
-```{r echo=FALSE, include=TRUE}
+```{r echo=FALSE, include=TRUE, fig.height=8, fig.width=11, fig.align='center'}
 sea_testing %>% 
   mutate(
       predicted = predict(rf_default, .)$prediction,
-      actual =  !!sym(outcome_next_year), # equivalent to: se_xpd_totl_gd_zs
+      actual =  outcome_next_year, 
       squared_difference = (actual - predicted)^2
   ) %>% 
   pivot_longer(
@@ -456,11 +495,13 @@ sea_testing %>%
 
 class: center, middle
 
-# Improving Predictions: Hyperparameter Tuning
+# Hyperparameter Tuning
 
-Now that we've established these benchmarks, let's talk hyperparameters again
+(to improve predictions)
 
 ---
+
+.right[**Hyperparameter Tuning**]
 
 # Selecting Hyperparameters
 
@@ -470,107 +511,173 @@ This is likely true when you're applying the basic methods we're going to cover 
 
 Some automated methods are much more systematic:
 
-* particle swarm optimization (PSO)
-* genetic algorithm (GA)
+* gradient descent
+* particle swarm optimization 
+* genetic algorithm
 
-Despite being more systematic:
+Despite being more systematic, such models:
 
-* such methods require deeper knowledge
-* most still require human decision-points
-* some have their own hyper-hyperparameters!
+* require deeper knowledge
+* require human decision-points
+* sometimes have their own hyper-hyperparameters!
+
+___
 
 **This is an entire field; we are only going to discuss <u>grid search</u> today**
 
 ---
+.right[**Grid Search**]
 
 # Grid Search
+___
 
-Purpose:
-* (technical) Calibrate the underlying algorithms to your data
-* (practical) Have the most accurate predictions 
+#### Concept
 
-Steps:
+In plain English, we go row-wise through a table that contains different combinations of hyperparameters. For each row, we assess accuracy.
+
+####Purpose
+
+Calibrate the underlying algorithms to your data
+
+#### Goal
+
+Have the most accurate predictions 
+
+---
+
+.right[**Grid Search**]
+
+# Steps
+
 * make a grid of possible hyperparameters
 * train models using those constraints
 * estimate accuracy - MSE / classification accuracy / etc. - in predicting the outcome with unseen data for each model 
 
 ___
 
-## Wait ... does this sound familiar?
+Hopefully this sounds familiar
 
 ---
 
-# Refresher
+.right[**Grid Search**]
 
-When I demonstrated what hyperparameters are, I actually conducted 2 grid searches:
+# Think back to yesterday
+
+We determined model accuracy for several values of two hyperparameters independently.
+
   * `num.trees`
   * `mtry`
 
-This did not include a "grid search" of all possible values
+This was two, separate, 1-dimensional grid searches.
 
-Grid search just means iterating through rows with different combinations of hyperparameters. 
-
-It is called that because the tables you iterate through are laid out like grids (I'll show in one second)
+Typically, this is done together, but I was trying to keep it simple.
 
 ---
 
-# Creating a Grid: Approach
+.right[**Grid Search**]
 
-There are many way to make a grid of possible hyperparameter values. We will discuss 2:
+# A Visualization
 
-* A full, or expanded, grid
+.pull-left[
+
+Yesterday, we covered a vector of values (below)
+
+```{r}
+example_mtry_vector <- 2:7
+example_mtry_vector
+```
+
+Today, we're covering a "grid" of values (on right)
+
+]
+.pull-right[
+
+```{r, include = TRUE, echo = FALSE}
+data.frame(
+  mtry = example_mtry_vector,
+  num.trees = 
+    c(
+      rep(500, times = length(2:7)),
+      rep(1000, times = length(2:7))
+    )
+) %>% 
+  kbl(caption = 'Example Grid')
+```
+]
+
+---
+
+.right[**Grid Search**]
+
+# Approach
+
+There are many ways to make a grid of possible hyperparameter values. We will discuss 2:
+
+* An expanded grid 
 * A space-filling grid
 
-Both involve:
+Both methods start the same:
 
 * choosing hyperparameters to tune
 * determining possible values for each hyperparameters (individually)
 * creating a grid (i.e., a table) that finds permutations of these values
 
-space-filling grids: 
-
-* involve another step: determining which of the permutations cover as much of the grid as possible.
-* have faster run-times
-* uses an algorithm to eliminate redundant permutations
-
 ---
 
-# Creating a Grid: Choosing Hyperparemeters & Ranges
+.right[**Grid Search**]
+
+# Choosing Hyperparemeters & Ranges
 
 ```{r include=TRUE, echo=FALSE}
 p <- ncol(sea_testing)-1
 ```
 
-The data has `p = ` `r p` variables available.
+Let's tune 3 hyperparameters. The data has `p = ` `r p` variables available. I'm using that to influence the range of hyperparameters I try.
 
-* num.trees = [`p*10` = `r p*10`, `p*100` = `r p*100`] by 300
-* mtry = [2, `p/2` = `r p/2`] by 2
-* min.node.size = [1, 8] by 1
+* num.trees = [`p*10` = `r p*10`, `p*50` = `r p*50`]
+* mtry = [2, `p/2` = `r p/2`]
+* min.node.size = [1, 8]
 
+Do not consider these hard-and-fast rules; as I said, this is some art and science. Please refer to peer-reviewed literature for best practices.
 
+---
+
+class: center, middle
+
+# Conducting Grid Search
+
+---
+
+.right[**Conducting Grid Search**]
+
+#### Vectors of Possible Hyperparameters
+
+pay attention to the `seq()` argument here
 
 ```{r}
 tree_sizes <- 
   seq(from = p*10, to = p*50, by = 150)
-# [1]  470  620  770  920 1070 1220 1370 1520 1670 1820 1970 2120 2270
+tree_sizes
 
 mtry_values <- 
   seq(from = 2, to = p/2, by = 1)
-# [1]  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+mtry_values
 
 node_sizes <- 
-  seq(from = 1, to = 8, by = 1)
-# [1] 1  2  3  4  5  6  7  8
+  seq(from = 2, to = 8, by = 1)
+node_sizes
 ```
 
 ---
 
-# Creating a Grid: Expand Combinations
+.right[**Conducting Grid Search**]
+
+#### Expand All Permutations of Vectors
 
 We can return a table that offers all combinations of those 3 vectors with `expand_grid()`.
 
 ```{r}
-all_params <- 
+all_hypers <- 
   expand_grid(
     num.tree = tree_sizes, 
     mtry = mtry_values, 
@@ -578,17 +685,48 @@ all_params <-
     )
 ```
 
-This is a total of `r nrow(all_params)` combinations. 
-
-These possible combinations of values are often referred to as the "hyperparameter space". 
-
-Each row is one combination hyperparameters or a "hyperparameter state"
+This is our expanded grid; it is a total of `r nrow(all_hypers)` combinations of 3 variables, even sequencing `tree_sizes`
 
 ---
 
-# Creating a Grid: The Problem
+.right[**Conducting Grid Search**]
 
-Fitting all `r nrow(all_params)` models will take a large amount of time.
+.pull-left[
+
+## Hyperparameter State
+
+Each row is one combination hyperparameters, called the <u>hyperparameter *STATE*</u>
+
+e.g., 1st state: 
+```{r}
+all_hypers[1,]
+```
+e.g., 2nd state:
+```{r}
+all_hypers[2,]
+```
+]
+
+.pull-right[
+## Hyperparameter Space
+
+Collectively, the whole grid is the entire searched
+
+<u>hyperparameter *SPACE*</u> 
+
+```{r, fig.align='top'}
+all_hypers
+```
+
+]
+
+---
+
+.right[**Conducting Grid Search**]
+
+# The Problem
+
+Fitting all `r nrow(all_hypers)` models will take a large amount of time.
 
 We are only tuning 3 hyperparameters. 
 
@@ -599,24 +737,30 @@ As your grid gets larger:
 
 ---
 
-# Creating a Grid: The Solution 
+# Expanded Grids: One Solution 
 
 ## Space-filling algorithms 
 
-* attempt to cover the full hyperparameter space by limiting it to "distinct enough" hyperparameter states
-* frequently used when tuning with grid search.
-* `Maximum entropy` is the one we'll use, but know there are many others
+Space-filling algorithms have another step: determining which of the permutations cover as much of the grid as possible.
 
+The logic is to use an algorithm to eliminate redundant permutations in the grid.
+
+Tuning this way decreases overall computation time
+
+`Maximum entropy` is the one we'll use, but know there are many others
 
 ---
+
+.right[**Conducting Grid Search**]
 
 # Maximum Entropy Grid
 
 The `dials` package offers a built-in `grid_max_entropy()` function. It requires 2 things:
 
-1. a list of `param` objects (built into `dials`)
-  * These must have a minimum and maximum stated 
-  * We can use the minimum and maximum from above
+1. a list of `param` objects (several built into `dials`)
+  
+  * You provide the minimum and maximum value to these objects
+  * We will use the same min and max used above
   
 2. the `size` of your hyperarameter space (i.e., number of unique states)
 
@@ -635,19 +779,21 @@ max_entropy_grid <-
 
 ---
 
-# Comparison
-
-Max entropy grid has `r nrow(max_entropy_grid)` states, and the full grid has `r nrow(all_params)`
+.right[**Conducting Grid Search**]
 
 .center[
-```{r, echo=FALSE, include=TRUE, warning=FALSE}
+
+
+The max entropy grid has `r nrow(max_entropy_grid)` states, and the expanded grid has `r nrow(all_hypers)`
+
+```{r, echo=FALSE, include=TRUE, warning=FALSE, fig.height=7, fig.width=11}
 stacked_grids <- 
   max_entropy_grid %>% 
   mutate(
     Approach = 'Maximum Entropy Grid'
   ) %>% 
   bind_rows(
-    all_params %>% 
+    all_hypers %>% 
       mutate(Approach = 'Full Grid') %>% 
       rename(
         trees = num.tree,
@@ -657,6 +803,7 @@ stacked_grids <-
 
 stacked_grids %>% 
   arrange(Approach) %>% 
+  mutate(min_n = paste0('min.node.size = ', min_n)) %>% 
   ggplot(
     aes(
       x = mtry, 
@@ -669,8 +816,6 @@ stacked_grids %>%
   labs(
     y = 'Number of Trees',
     title = 'Coverage of Hyperparmater Space by Approach',
-    subtitle = 
-      'Maximum entropy grid can cover similar amount of space\nwith fewer models'
   ) +
   theme_bw(base_size = 18) +
   theme(
@@ -682,39 +827,50 @@ stacked_grids %>%
 ```
 ]
 
+
 ---
 
-# Fit Model to all Hyperparameter States
+.right[**Conducting Grid Search**]
 
+# Fit Random Forests in a Loop
 
-```{r eval = FALSE}
-rfs_tmp <- vector('list', nrow(max_entropy_grid))
-mses_tmp <- vector('double', nrow(max_entropy_grid))
+Loop through all possible hyperparameter states within the maximum entropy grid.
+
+```{r}
+rfs_tmp <- list()
+mses_tmp <- list()
+
 for (i in 1:nrow(max_entropy_grid)){
-   
+# fit RF for each hyperparameter state  
   rfs_tmp[[i]] <- 
     ranger(
       data = sea_training, 
       formula = outcome_next_year ~ ., 
       mtry = max_entropy_grid$mtry[[i]],
       num.trees = max_entropy_grid$trees[[i]],
-      min.node.size = max_entropy_grid$min_n[[i]], 
+      min.node.size = max_entropy_grid$min_n[[i]]
     )
-  
+# store MSE
   mses_tmp[[i]] <- rfs_tmp[[i]]$prediction.error
-  
-  print(paste0('iteration #', i, ' complete'))
 }
 ```
 
 ---
 
-# Pull Best Value
+.right[**Conducting Grid Search**]
 
-```{r eval = FALSE}
+### Pull Best Value
+
+```{r}
 best_i <- which.min(mses_tmp)
+```
 
-rfs_tmp[[best_i]] <- 
+### Refit best RF to extract a VIP
+
+Refit the  best model with `importance = 'permutation'` for the VIP. We omitted this from the loop to save time.
+
+```{r}
+rf_tuned <- 
   ranger(
     data = sea_training, 
     formula = outcome_next_year ~ ., 
@@ -723,29 +879,11 @@ rfs_tmp[[best_i]] <-
     min.node.size = max_entropy_grid$min_n[[best_i]], 
     importance = 'permutation'
   )
-
-
-best_fitting <- 
-  rfs_tmp[[which.min(mses_tmp)]]
-```
-
-
-```{r eval = FALSE, echo = FALSE}
-write_rds(
-  best_fitting,
-  here::here('data/long_runtime_objects', 'day3_best_fitting_rf.Rds')
-  )
-rf_tuned <- best_fitting
-```
-
-```{r echo = FALSE, include = FALSE}
-rf_tuned <- 
-  read_rds(
-    here::here('data/long_runtime_objects', 'day3_best_fitting_rf.Rds')
-    )
 ```
 
 ---
+
+.right[**Conducting Grid Search**]
 
 # Comparing Hyperparameters
 
@@ -775,24 +913,13 @@ rf_default$min.node.size
 
 ---
 
-# Comparing VIPs
+class: center, middle
 
-.pull-left[
+# Tuned vs. Default RFs
 
-```{r include = TRUE, echo = FALSE}
-vip(rf_tuned) + theme_minimal(base_size = 25) + labs(title = 'VIP from Tuned RF')
-```
-
-]
-
-.pull-right[
-
-```{r include = TRUE, echo = FALSE}
-vip(rf_default) + theme_minimal(base_size = 25) + labs(title = 'VIP from Default RF')
-```
-
-]
 ---
+
+.right[**Tuned vs. Default RFs**]
 
 # Top 5 Important Variables (in text)
 
@@ -837,20 +964,52 @@ key %>%
 
 ---
 
+.right[**Tuned vs. Default RFs**]
+
+# VIPs
+
+.pull-left[
+
+```{r include = TRUE, echo = FALSE}
+vip(rf_tuned) + theme_minimal(base_size = 25) + labs(title = 'VIP from Tuned RF')
+```
+
+]
+
+.pull-right[
+
+```{r include = TRUE, echo = FALSE}
+vip(rf_default) + theme_minimal(base_size = 25) + labs(title = 'VIP from Default RF')
+```
+
+]
+
+VI is fairly similar across these models, but you'll notice that the auto-regressive effect is picked up more in the tuned model
+
+---
+
+.right[**Tuned vs. Default RFs**]
+
 # Evaluate Performance
 
-This model performs well, just barely outperforming the others.
+This model performs well, outperforming all of the others. 
+
+Remember, we can look at RMSE to get the amount of misfit in outcome units (% for us). 
+
+This makes understanding the level of improvement more intuitive.
 
 ```{r echo=FALSE, include=TRUE}
 sea_testing %>% 
   transmute(
-# equivalent to: se_xpd_totl_gd_zs
-    !!sym(outcome_next_year),
+    outcome_next_year,
     prediction_tuned.rf = predict(rf_tuned, .)$prediction
   ) %>% 
   summarize(
     mse_rf.tuned = 
-      mse(observed_y = !!sym(outcome_next_year), predicted_y = prediction_tuned.rf)
+      mse(
+        observed_y = outcome_next_year, 
+        predicted_y = prediction_tuned.rf
+        )
   ) %>% 
   bind_cols(
     benchmark_mse
@@ -862,9 +1021,19 @@ sea_testing %>%
     names_prefix = 'mse_'
   ) %>% 
   arrange(`Mean Squared Error`) %>% 
+  mutate(
+      RMSE = sqrt(`Mean Squared Error`)
+      ) %>% 
   kbl(caption = 'Fit of Models & Benchmarks', digits = 4) %>% 
   footnote('Lower is better')
 ```
+
+
+---
+
+class: center, middle
+
+# Activity
 
 ---
 
@@ -874,13 +1043,41 @@ class: center, middle
 
 ---
 
-## Variable Importance Plots
+.right[**PDPs**]
 
-We've discussed and shown these extensively. 
+# Interpretation Model
 
-Useful to know *what* influences the outcome, but does not tell *how* it influences the outcome.
+Using unseen testing data, we found the best hyperparameters.
 
-## Partial Dependency Plots (PDPs):
+Now that we're ready to interpret the model, we should use all available data. 
+
+So, let's use the tuned hyperparameters on 1 final RF with all data (training and testing). 
+
+We'll use this for interpretation.
+
+```{r}
+rf_interpretation <-
+  ranger(
+    formula = outcome_next_year ~ .,
+    data = dat,
+    mtry = rf_tuned$mtry,
+    num.trees = rf_tuned$num.trees,
+    min.node.size = rf_tuned$min.node.size, 
+    importance = 'permutation'
+  )
+```
+
+---
+
+.right[**PDPs**]
+
+# Concept
+
+VIPs useful to know *what* influences the outcome, but does not tell *how* it influences the outcome.
+
+___
+
+PDPs
 
 * Used to visualize the relationship between a subset of the features 
 * Typically include 1-3 predictors and outcome
@@ -890,13 +1087,15 @@ Useful to know *what* influences the outcome, but does not tell *how* it influen
 
 ---
 
-# Selecting Variables for PDP
+.right[**PDPs**]
 
-Variables with top 3 importance scores
+# Selecting Variables
+
+Variables with top 3 importance scores will go in PDPs
 
 ```{r}
 top_3_importance <- 
-  vi(rf_tuned) %>% 
+  vi(rf_interpretation) %>% 
   arrange(desc(Importance)) %>% 
   slice(1:3) %>% 
   mutate(order = 1:n()) %>% 
@@ -910,7 +1109,9 @@ top_3_importance %>%
 
 ---
 
-# Selecting Variables for PDP
+.right[**PDPs**]
+
+# Selecting Variables
 
 ```{r}
 # get names of ordered importance variables
@@ -928,50 +1129,40 @@ combos
 
 ---
 
-# Partial Dependency Plots
+.right[**PDPs**]
+
+# Application
 
 Heads up: This is computationally intensive! 
 
-```{r, eval=FALSE, include=TRUE, echo=TRUE}
-library(pdp)
-pds <- vector('list', length(combos))
+```{r, include=TRUE, echo=TRUE}
+pds <- list()
 
 # fit a pdp for all combos of top 3 variables
 
 for (i in 1:length(combos)){
-  pds[[i]] <-  partial(
-      rf_tuned, 
-      pred.var = combos[[i]]
+  pds[[i]] <-  
+    partial(
+      rf_interpretation, 
+      pred.var = combos[[i]], 
+      prob = TRUE
     ) 
-  }
-```
-
-
-```{r, eval = FALSE, include=FALSE, echo=FALSE}
-library(pdp)
-pds <- vector('list', length(combos))
-
-# fit a pdp for all combos of top 3 variables
-
-for (i in 1:length(combos)){
-  pds[[i]] <-  partial(
-      rf_tuned, 
-      pred.var = combos[[i]]
-    ) 
-  }
+}
 
 names(pds) <- names(combos)
+```
 
+**hint:** If you aren't a fan of plotting, look into `plot = TRUE` for `partial()` function.
+
+```{r, eval = FALSE, include=FALSE, echo=FALSE}
 write_rds(pds, here::here('data/long_runtime_objects', 'day3_tuned_pdps_rf.Rds'))
-
+#pds <- read_rds(here::here('data/long_runtime_objects', 'day3_tuned_pdps_rf.Rds'))
+#names(pds) <- names(combos)
 ```
 
 ---
 
-```{r include=FALSE, echo=FALSE}
-pds <- read_rds(here::here('data/long_runtime_objects', 'day3_tuned_pdps_rf.Rds'))
-names(pds) <- names(combos)
-```
+.right[**PDPs**]
 
 ```{r}
 pdp_first_second <- 
@@ -979,36 +1170,34 @@ pdp_first_second <-
   ggplot(
     aes(
       # first combo variable
-      x = se_xpd_totl_gd_zs,
+      x = !!sym(names(pds$first_second)[1]),
       fill = yhat,
       # second combo variable
-      y = it_mlt_main,
+      y = !!sym(names(pds$first_second)[2]),
     )
   ) +
   labs(
     title = 
       "PDP of important variables in predicting next year's",
     subtitle = pstr(),
-    y = pstr('it_mlt_main'),
-    x = pstr('se_xpd_totl_gd_zs')
+    x = pstr(names(pds$first_second)[1]),
+    y = pstr(names(pds$first_second)[2])
   ) +
   geom_tile() + 
   coord_cartesian() +
-  theme_bw(base_size = 16)
+  theme_bw(base_size = 16) +
+  theme(plot.title.position = 'plot') 
   
 ```
 
 ---
+.right[**PDPs**]
 
 .left-column[
 
 This heatmap uses brightness to represent `yhat` or the predicted level of the outcome.
 
 x-axis is the most important variable, y-axis is the second most
-
-The most important variable has several discrete jumps (i.e., unique shades left-to-right)
-
-The second most has only 3 unique levels (i.e., unique shades up-and-down)
 
 ]
 
@@ -1021,39 +1210,41 @@ pdp_first_second
 
 ---
 
+.right[**PDPs**]
+
 ```{r}
 pdp_first_third <- 
   pds$first_third %>% 
   ggplot(
     aes(
       # first combo variable
-      x = se_xpd_totl_gd_zs,
+      x = !!sym(names(pds$first_third)[1]),
       fill = yhat,
-      # second combo variable
-      y = se_pre_enrr,
+      # third combo variable
+      y = !!sym(names(pds$first_third)[2]),
     )
   ) +
   labs(
     title = 
       "PDP of important variables in predicting next year's",
     subtitle = pstr(),
-    y = pstr('se_pre_enrr'),
-    x = pstr('se_xpd_totl_gd_zs')
+    y = pstr(names(pds$first_third)[2]),
+    x = pstr(names(pds$first_third)[1])
   ) +
   geom_tile() + 
   coord_cartesian() +
-  theme_bw(base_size = 16)
+  theme_bw(base_size = 16) +
+  theme(plot.title.position = 'plot') 
   
 ```
 
 ---
 
+.right[**PDPs**]
 
 .left-column[
 
 x-axis is the most important variable, y-axis is the third most important
-
-The third most important has only 3 unique levels (i.e.,  unique shades up-and-down)
 
 Again, effects are positively associated, but the relationship is not linear 
 
@@ -1068,29 +1259,31 @@ pdp_first_third
 
 
 ---
+.right[**PDPs**]
 
 ```{r}
 pdp_second_third <- 
-  pds$second_third %>% 
+  pds$second_third %>%
   ggplot(
     aes(
-      # first combo variable
-      x = it_mlt_main,
-      fill = yhat,
       # second combo variable
-      y = se_pre_enrr,
+      x = !!sym(names(pds$second_third)[1]),
+      fill = yhat,
+      # third combo variable
+      y = !!sym(names(pds$second_third)[2]),
     )
   ) +
   labs(
     title = 
       "PDP of important variables in predicting next year's",
     subtitle = pstr(), 
-    y = pstr('se_pre_enrr'),
-    x = pstr('it_mlt_main')
+    x = pstr(names(pds$second_third)[1]),
+    y = pstr(names(pds$second_third)[2])
   ) +
   geom_tile() + 
   coord_cartesian() +
-  theme_bw(base_size = 16)
+  theme_bw(base_size = 16) +
+  theme(plot.title.position = 'plot') 
   
 ```
 
@@ -1099,8 +1292,6 @@ pdp_second_third <-
 .left-column[
 
 x-axis is the second most important variable, y-axis is the third most important
-
-The third most important has only 3 unique levels (i.e., unique shades up-and-down)
 
 ]
 
@@ -1111,10 +1302,11 @@ pdp_second_third
 ```
 ]
 
-
 ---
 
-# So, what do we know about the outcome?
+.right[**PDPs**]
+
+# Summarizing
 
 Well, `r pstr()` appears to increase along with each of the variables we investigated. 
 
@@ -1128,9 +1320,214 @@ However, the model expects these to be discrete jumps between levels of the outc
 
 ---
 
+class: center, middle 
+
+# Summarizing
+
+What did we accomplish today?
+ 
+---
+
+.right[**Summarizing**]
+
+# Together, we:
+
+1. split data into training and testing
+
+2. established baseline accuracy for simple models (in hopes of out-performing it later)
+
+3. determined a reasonable hyperparameter space to search
+
+4. limited the number of searched hyperparameter states to a reasonable number of states with a space-filling design
+
+5. assessed the fit across hyperparameter space (with unseen "testing" data)
+
+6. investigated the influence of several important variables on the outcome 
+
+
+---
+
+.right[**Summarizing**]
+
+# Groundwork
+
+However, don't forget that before the workshop, I did a few important steps that you would have to do if repeating this with other data. 
+
+Specifically, I
+
+1. found data sources & combined them (i.e., Several World Bank Data Sources)
+2. limited to a subset of data (i.e., by geographical region and time)
+3. selected an outcome to predict (i.e., Government expenditure on education)
+4. determined an adequate modeling framework (i.e., Random forests)
+5. formatted the data to align with the requirements of the modeling framework; in this case:
+    
+  a. converted World Bank to "tidy" format (see [Hadley Wickham's Book](https://r4ds.hadley.nz/data-tidy.html))
+  
+  b. conducted feature selection to limit the number of predictors based on availability of the data in these countries
+
+---
+
 class: center, middle
 
-# Activity / Discussion
+# Improvements
+
+---
+
+.right[**Improvements**]
+
+# Considerations
+
+A perfect model does not exist; therefore, we can always propose theoretically better approaches indefinitely.
+
+Here are a few improvements to our process that I suggest; <u>keep in mind that I'm limiting these suggestions to the context of</u>:
+
+  a. this data
+  
+  b. random forests
+  
+  c. the feature / observation limitation choices choices (during data cleaning)
+
+Without time constraints, the following improvements would be on the agenda.
+
+---
+
+.right[**Improvements**]
+
+# k-Fold Cross-Validation
+
+k-fold cross-validation while tuning the data.
+
+Benefits:
+
+* prevents "accidental" preference of a given hyperparameter state (based on which observations in testing vs. training)
+* ensures every case is used as training data and testing data at some point
+* allows variance around fit to be assessed (e.g., standard error of OOB error)
+
+Important to know this is done with training data, meaning testing data is already withheld.
+
+---
+
+.right[**Improvements**]
+
+# k-fold CV
+
+k can be any integer; 5 and 10 are the values I see used most often.
+
+Process: 
+
+* split the <u>training</u> data into "k" subsets or "folds" (e.g., 10-folds)
+* Use k-1 folds (e.g., 9-folds) for training 1 fold for testing
+* repeat 9 times, until each of the folds is the withheld testing data.
+
+During cross-validation, some people try to prevent confusion with the words "training" and "testing" data. 
+
+During cross-validation, you may hear 
+
+* "analysis data" instead of "training data" 
+
+* "assessment data" instead of "testing data"
+
+
+---
+
+.right[**Improvements**]
+
+# k-fold CV Diagram
+
+```{r include = TRUE, echo = FALSE, fig.width=11, fig.height=8}
+diagram_dat <- data.frame(matrix(rep('analysis', 100), nrow = 10, ncol = 10))
+
+for (i in 1:10){
+  diagram_dat[i, i] <- 'assessment'
+}
+
+diagram_dat %>% 
+  mutate(
+    row_id = 1:n()
+  ) %>% 
+  pivot_longer(cols = -row_id) %>% 
+  mutate(
+    name = as.numeric(gsub('X', '', name)),
+    unseen = if_else(value == 'FOLD\nTESTING', 'UNSEEN', '')
+    ) %>% 
+  ggplot(
+    aes(x = name, y = row_id, fill = value, label = unseen)
+  ) +
+  geom_tile(alpha = 0.5, color = 'black') + 
+  geom_text(color = 'black') + 
+  coord_cartesian() +
+  scale_y_reverse(breaks = 1:10) +
+  scale_x_continuous(breaks = 1:10, position = 'top') +
+  labs(
+    x = 'Fold ID Number',
+    y = 'Fold ID Number',
+    title = '10-fold Cross Validation Example',
+    caption = 'table represents all TRAINING data',
+    fill = element_blank()
+  ) +
+  theme_minimal(base_size = 15) +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = 'bottom',
+    plot.title.position = 'plot'
+    ) 
+```
+
+---
+
+.right[**Improvements**]
+
+# Improvement 2: Increase Hyperparameter Space for Tuning
+
+Many possible improvements:
+
+* increase the range of values
+* examine areas of good fit more closely (i.e., iterative grid search)
+* include additional hyperparameters
+
+I won't go into great depth here; you now know how to tune hyperparameters.
+
+Use the help documentation `?ranger()` to see other hyperparameters, their possible values, etc.
+
+---
+
+.right[**Improvements**]
+
+# Improvement 3: Consider Mixed Effects Random Forests
+
+See [Capitaine (2021)](https://doi.org/10.1177/0962280220946080).
+
+From a theory perspective, repeated observations of several countries should be modeled with mixed effects. Theory does not always equate to observed data, though.
+
+This is a topic is beyond the scope of this workshop.
+
+If you want a summary of this approach, I would refer you to my website as a low-barrier entry to these models, see [my website's blog](https://www.christopherloan.com/blog/running-longitudinal-random-forests-with-longiturf/)
+
+However, this assumes you're comfortable with the concept of mixed effects and is not a substitute for peer-reveiewed literature.
+
+---
+
+class: center, middle
+
+# Take-Away Question 1
+
+What other improvements can you suggest to our approach?
+
+---
+
+class: center, middle
+
+# Take-Away Question 2
+
+How could theory work with observed data to limit variables included in the model? (i.e., improve feature selection)
+
+---
+
+class: center, middle
+
+# Final Activity
+
+(if time permits)
 
 ---
 
@@ -1138,7 +1535,7 @@ class: center, middle
 
 This workshop's focus was on the models, and not the data. 
 
-But let's take a minute to brain storm why some of these variables might be important. 
+But let's take a minute to brainstorm why some of these variables might be important. 
 
 We can do this in many ways, but I suggest:
 

@@ -1,14 +1,50 @@
 ---
-title: "slides day 2"
-author: "Christopher M. Loan, MS"
-date: 'February 21, 2022'
-output: xaringan::moon_reader
+title: "Workshop Day 2\nRandom Forests"
+author: "Christopher M. Loan"
+date: 'February 21, 2023'
+output: 
+  xaringan::moon_reader:
+    css: ["default"]
+    nature:
+      slideNumberFormat: "%current%/%total%"
+---
+
+layout: true
+<div style="position: absolute;left:60px;bottom:11px;color:gray;">`r gsub('hristopher M', '', rmarkdown::metadata$author)`</div>
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-outcome_next_year <- 'se_xpd_totl_gd_zs'
+library(emojifont)
+library(kableExtra)
+chk._ <- emoji('white_check_mark')
 ```
+
+.right[**Background**]
+
+# Workshop Progress
+
+On Day 1, we discussed:
+  * concepts of recursive partitioning & decision trees (DTs) `r chk._`
+  * fitting DTs `r chk._`
+  * interpreting / visualizing DTs `r chk._`
+  * evaluating DTs `r chk._`
+  
+----
+
+# Looking Ahead
+
+#### Today, we'll cover:
+
+  * concepts of Random Forests (RFs)
+  * fitting RFs 
+  * evaluating RFs
+  * hyperparameters
+  * improving the model with hyperparameters
+  
+---
+
+.right[**Background**]
 
 # Set up 
 
@@ -18,33 +54,27 @@ library(tidyverse)
 library(ranger)
 library(rsample)
 library(vip)
-library(kableExtra)
-library(missRanger)
-library(emojifont)
 library(dials)
-source(here::here('scripts', 'functions.R'))
-ptitanic <- rpart.plot::ptitanic
+outcome_next_year <- 'se_xpd_totl_gd_zs'
 ```
 
 ---
 
+.right[**Background**]
+
 # Load Data
 
+There are protocols for missing data in RFs
 
-There are ways to handle missing data with random forests
-* `ranger` does not embed them
-* [`missRanger`](https://cran.r-project.org/web/packages/missRanger/vignettes/missRanger.html) (built on `ranger` actually), `mice`, and `Ameila` can all be used to impute data
-* this is beyond the scope of the workshop
-
+* `{ranger}` does not embed these methods 
+* we will not talk about them due to time constrants
 
 ```{r}
 ptitanic <- 
-  ptitanic %>% 
-  mutate(
-    survived = relevel(survived, ref = 'died')
-  ) %>% 
-  #drop_na() %>% 
-  missRanger(pmm.k=1, verbose = FALSE)
+  drop_na(rpart.plot::ptitanic)
+
+ptitanic$survived <- 
+  relevel(ptitanic$survived, ref = 'died')
 
 split_data <- initial_split(ptitanic)
 training_data <- training(split_data) 
@@ -59,42 +89,25 @@ class: center, middle
 
 ---
 
+.right[**Random Forests**]
+
 # Underlying Logic
 
-Random forests (RFs) are an **ensemble** method designed to improve several shortcomings of decision trees.
+Random forests (RFs) are an *ensemble* method designed to improve several shortcomings of decision trees. 
 
-The logic is relatively simple: 
-  * Create a bootstrapped data set
-  * Fit a decision tree with a random subset of variables at each split point (often called `mtry`)
-  * Repeat 500+ times (often called `ntree`/`num_tree`, etc.)
+<u>Ensemble</u>: *a group of items viewed as a whole rather than individually*
 
----
+The logic is relatively simple
 
-# Predictions
+  * Re-sample (with replacement) the dataset many times to create many copies
   
-Prediction with RFs is just weighted DTs
-* Each (e.g.) 500 trees predict the outcome with new data
-* Typically, each tree gets a weight of 1/`ntree` 
+  * Fit a decision tree with a random subset of variables at each split point
+  
+  * Repeat many times
 
+___
 
-.center[
-$prediction_{total} = \Sigma(\frac{1}{ntree} * prediction_{indiviual})$
-]
-
----
-
-# Connecting to Decision Trees
-
-<u>**B**</u>ootstrap <u>**AG**</u>gregated predictions are called <u>**bag**</u>ged predictions
-
-If the RFs could select from all variables, RFs would be bootstrap aggregated ("bagged") decision trees.
-
-* Resampling is done with replacement, which results in some non-selected cases
-* These cases are called the out-of-bag (OOB) sample
-* The OOB sample can be used to test prediction accuracy
-* OOB Error can thus be a measure of accuracy / error, and can be inspected similarly to residuals
-
-**Let's look at some diagrams to clear things up**
+**Let's look at some diagrams**
 
 ---
 class: center, middle
@@ -127,22 +140,20 @@ knitr::include_graphics(
 
 ---
 
-# The Value of Variation
+.right[**Random Forests**]
+.left[
 
-RFs use the aggregate prediction from many, (potentially) different trees
+# The Value of Variation
 
 Trees which comprise the RF can vary greatly compared to a traditional DT on the same sample 
 
 RFs achieve this by
   * Using a bootstrapped sample for each tree
   * Leveraging only a subset of variables at each DT's splits
-  * Making prediciton with a "voting" system 
-    * each tree predicts unseen data
-    * each prediction is a "vote" (i.e., a weighted prediction) 
-    * sum of weights used to calculate the final prediction
   
 **In essence, many *similar yet distinct* decision trees work better together than a single decision tree**
 
+]
 .center[
 
 `r emoji('evergreen_tree')` = `r emoji('slightly_smiling_face')` 
@@ -152,42 +163,109 @@ $\Sigma$ `r sample(emoji(search_emoji('tree')), 10, replace = TRUE)`... (500th t
 ]
 ---
 
-# Benefits of Random Forests
+.right[**Random Forests**]
 
-* when number of predictors > number of observed units
-  * established protocols for variable importance 
-  * not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)
-  
+# Connecting to Decision Trees
+
+<u>**B**</u>ootstrap <u>**AG**</u>gregated predictions are called <u>**bag**</u>ged predictions
+
+If the RFs considered all variables at all splits: RF = bootstrap aggregated ("bagged") decision trees.
+
+* Resampling is done with replacement, which results in some non-selected cases
+* These cases are called the out-of-bag (OOB) sample
+* The OOB sample can be used to test prediction accuracy
+* OOB Error can thus be a measure of accuracy / error
+
+---
+
+.right[**Random Forests**]
+
+# Benefits
+
+All of the benefits of decision trees (except the easy-to-interpret visual structure)
+
+Useful when number of predictors > number of observed units
+
+Established protocols for variable importance 
+
+Not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)
+
+---
+
+.right[**Random Forests**]
+
+.left[
+
+# Predictions
+
+Predictions are essentially a "voting" system.
+
+Each of (e.g.) 500 trees predict an outcome with new data, independently
+
+Typically, each tree gets a weight of $\frac{1}{ntree}$
+
+The final prediction is the weighted average of all trees
+
+]
+
+.center[
+$prediction_{total} = \Sigma(\frac{1}{ntree} * prediction_{indiviual})$
+]
+
 ---
 
 class: middle, center
 
-# What is the **bare-minimum** process to fitting a random forest?
-
-(i.e., saying *"it's okay"* to use defaults for everything)
+# Applications
 
 ---
 
-```{r}
-rf_1 <- 
+.right[**Applications**]
+
+# Bare minimum
+
+The bare minimum to fit an RF with `{ranger}`
+
+```{r eval = FALSE, echo = TRUE, include = TRUE}
  ranger(
     formula = survived ~ ., 
-    data = training_data,
-    importance = 'impurity',
-    probability = TRUE
+    data = training_data
     )
 ```
 
+However, adding `importance = 'impurity'` helps us not repeat a step later.
+
+```{r}
+rf_1 <- 
+  ranger(
+    formula = survived ~ ., 
+    data = training_data,
+    importance = 'impurity'
+    )
+```
+
+
 ---
+
+.right[**Applications**]
 
 # Variable Importance Plot
 
 .left-column[
+
 The VIP from the RF is very similar to the VIP from the DT
+
+
+```{r eval = FALSE, include = TRUE, echo = TRUE}
+vip(rf_1) 
+```
+
+(The above code will make a VIP, but the one I present alongside this is stylized)
+
 ]
 
 .right-column[
-```{r echo = FALSE, include = TRUE}
+```{r echo = FALSE, include = TRUE, fig.height = 6}
 vip(rf_1) + theme_bw(base_size = 18) + 
   labs(y = 'Importance (Gini Impurity Index)') +
   aes(fill = 1, alpha = 0.7) +
@@ -197,55 +275,48 @@ vip(rf_1) + theme_bw(base_size = 18) +
 
 ---
 
-# Accuracy
+.right[**Applications**]
 
+## Accuracy
 
-```{r echo = FALSE, include = TRUE}
-tmp_plt_df <- 
-  testing_data %>% 
-  mutate(
-    predicted = 
-       predict(rf_1, data = .)$predictions[,'survived'],
-    actual = survived,
-    predicted_class = 
-      if_else(round(predicted) == 1, 'survived', 'died'),
-    accuracy = 
-      if_else(predicted_class == actual, 'correct', 'incorrect')
-  )
+```{r echo = TRUE, include = TRUE}
+actual <- testing_data$survived
 
-plt_df <- 
-  tmp_plt_df %>% 
-  count(accuracy) %>% 
-  mutate(
-    proportion = 
-      paste0(
-        round(
-          (n / sum(n))* 100), 
-        '%'
-        )
-    )
+predicted_class <- 
+  predict(rf_1, data = testing_data)$predictions
+
+accuracy <- 
+  ifelse(predicted_class == actual, 'correct', 'incorrect')
+
+accuracy_percentage <- table(accuracy)/length(accuracy)*100
+
+accuracy_percentage
 ```
 
-```{r echo = FALSE, include = TRUE}
-plt_df %>% kbl(caption = 'Model Performance (no imputation)')
-```
+---
 
-# In-Depth Accuracy
+.right[**Applications**]
+
+## In-Depth Accuracy
 
 ```{r echo = FALSE, include=TRUE}
-tmp_plt_df %>%
+testing_data %>% 
   mutate(
-   type_of_prediction =
-     case_when(
-       actual == 'died' & predicted_class == 'died' ~ 
-         'true negative',
-       actual == 'died' & predicted_class == 'survived' ~ 
-         'false negative',
-       actual == 'survived' & predicted_class == 'died' ~ 
-         'false positive',
-       actual == 'survived' & predicted_class == 'survived' ~ 
-         'true positive'
-     )
+    predicted_class = 
+      predict(rf_1, data = testing_data)$predictions,
+    accuracy = 
+      if_else(predicted_class == survived, 'correct', 'incorrect'),
+    type_of_prediction =
+      case_when(
+        survived == 'died' & predicted_class == 'died' ~ 
+          'true negative',
+        survived == 'died' & predicted_class == 'survived' ~ 
+          'false negative',
+        survived == 'survived' & predicted_class == 'died' ~ 
+          'false positive',
+        survived == 'survived' & predicted_class == 'survived' ~ 
+          'true positive'
+      )
   ) %>%
   count(type_of_prediction) %>% 
   rename(`Type of Accuracy` = type_of_prediction) %>% 
@@ -253,25 +324,27 @@ tmp_plt_df %>%
     percent = paste0(round(100*n/sum(n)), '%')
   ) %>% 
   ungroup() %>% 
-  kbl(caption = 'Model Performance by Type of Accuracy (no imputation)')
+  kbl(caption = 'Model Performance by Type of Accuracy  (deleting missing cases)')
 ```
 
 
 ---
 class: center, middle
 
-# Now it's your turn
+# Activity
 
 ---
 
 class: center, middle
 
-# Day 2 (Part 2): Model Improvement
+# Model Improvement
 ---
+
+.right[**Model Improvement**]
 
 # Hyperparameters
 
-hyperparameters = <u>Analyst-specified</u> parameters
+Hyperparameters = <u>Analyst-specified</u> parameters
 
 * Specified by analyst
 * These parameters can be thought of as the "settings" of your model 
@@ -282,18 +355,40 @@ Hyperparameters influence <u>model-estimated</u> parameters
 * Learned from the data
 * *Conceptually* similar to regression coefficients
 
+---
 
-___
+.right[**Model Improvement**]
+
+# RF Hyperparameters
+
+RFs have several hyperparameters.
+
+To start, let's focus on:
+
+* `mtry` - the number of variables to choose from at each split
+* `ntree` - the number of decision trees to grow
+
+There are many others though (e.g.,`max.depth`, `min.node.size`).
+
+See `?ranger` for the full list.
+
+---
+
+.right[**Model Improvement**]
+
+# Tuning
 
 The process of modifying these is called hyperparameter "tuning"
 
 "Hyperparameter optimization (HPO)" may be used interchangeably with tuning, though some take this to imply automated tuning procedures
 
-We'll start with manual tuning
+We'll evaluate the influence of changing hyperparameters on the model (today) before getting into more formal tuning approaches (tomorrow).
 
 ---
 
-# Hyperparameters 
+.right[**Model Improvement**]
+
+# An Analogy 
 
 Another analogy comes from calibrating any machine.
 
@@ -309,46 +404,67 @@ For example, consider a camera `r emoji('camera')`
 
 ---
 
-# Hyperparameters: Random Forests
+.right[**Model Improvement**]
 
-We have discussed 2 hyperparameters for random forests:
+## Assessing the Quality of "hyperparameter state"
 
-* `mtry` - the number of variables to choose from at each split
-* `ntree` - the number of decision trees to grow
-* there are many others though
-* a few important hyperparameters are:
-     * `importance` 
-     * `max.depth`
-     * `min.node.size`
+A given combination of all hyperparameters is the <u>"hyperparameter state"</u> for a model
 
-* see `?ranger` to see additional
+All theoretically possible combinations of of hyperparameters is the <u>"hyperparameter space"</u> for a model
 
+___
+
+The process of choosing the best hyperparameters state is always the same.
+
+1. Set an objective function — some measure of model error / accuracy
+2. Find the minimum
 
 ---
 
-# Hyperparameters: Objective Functions 
+.right[**Model Improvement**]
 
-The process of choosing the best hyperparameters is always the same
+.left[
 
-**Set an objective function — some form of prediction error — and find the minimum**
+# Mean Squared Error (MSE)
 
+The choice of objective function is too deep of a dive for this workshop.
 
-Like always, we need to check the default of what `ranger()` provides:
+Some circumstances necessitate different objective functions based on analyst goals.
 
-By default `prediction.error` outputs 
+Like always, we need to check the default of what `ranger()` provides with `?ranger()`.
+
+___
+
+The help documentation `ranger()` says the objective function is  `prediction.error`.
+
+By default `prediction.error` is
   * mean squared error (MSE; for regression)
   * fraction of missclassified samples (for classification)
-  
+]
+
+___
 
 .center[
 $MSE = \frac{1}{n}\Sigma(Y_{observed} - Y_{predicted})^2$
 ]
 
-The choice of objective function is too deep of a dive for this workshop
+---
 
-Some circumstances necessitate different objective functions based on what you care about
+.right[**Model Improvement**]
+
+# MSE in R
+
+Here's a function to calculate MSE from 2 vectors
+
+```{r}
+mse <- function(observed_y, predicted_y){
+    (sum(observed_y - predicted_y)^2)/length(observed_y)
+}
+```
 
 ---
+
+.right[**Model Improvement**]
 
 # Manually finding the minimum
 
@@ -362,12 +478,11 @@ For now, let's
   * repeat for `mtry`
 
 ---
+.right[**Model Improvement**]
 
-# Real-World Data
+## Real-World Data
 
-We've outgrown the titanic example at this point. 
-
-There are so few variables available, making demonstrating tuning less meaningful.
+We've outgrown the titanic example at this point. There are so few variables available, making demonstrating tuning less meaningful.
 
 Let's load the WB South East Asia Data.
 
@@ -387,8 +502,9 @@ sea_training <- training(sea_split)
 sea_testing <- testing(sea_split) 
 ```
 
-
 ---
+
+.right[**Model Improvement**]
 
 # Varying `num.trees`
 
@@ -402,7 +518,8 @@ tree_sizes <-
 use a loop to fit `ranger()` to all values of `num.trees`
 
 ```{r}
-rfs_num_tree <- vector('list', length(tree_sizes))
+rfs_num_tree <- list()
+mses_num_tree <- vector()
 
 for (i in 1:length(tree_sizes)){
   rfs_num_tree[[i]] <- 
@@ -411,27 +528,24 @@ for (i in 1:length(tree_sizes)){
       data = sea_training,
       num.trees = tree_sizes[[i]]
     )
-  #print(paste0('iteration #', i, ' complete'))
+  mses_num_tree[i] <- rfs_num_tree[[i]]$prediction.error
 }
 ```
 
 ---
 
+.right[**Model Improvement**]
+
 # Varying `num.trees`
 
 ```{r eval=TRUE, include=FALSE}
 names(rfs_num_tree) <- paste0('num.trees = ', tree_sizes)
-
-pred_errors_num_tree <- 
-  rfs_num_tree %>%  
-  map_dbl(~.x$prediction.error)
 ```
 
-
-```{r, echo = FALSE, include = TRUE}
+```{r, echo = FALSE, include = TRUE, fig.height=6, fig.align='center'}
 num_trees_plt <- 
   data.frame(
-  pred_error = pred_errors_num_tree, 
+  pred_error = mses_num_tree, 
   num_trees = tree_sizes
 ) %>% 
   ggplot(
@@ -444,7 +558,7 @@ num_trees_plt <-
   geom_label(
     inherit.aes = FALSE,
     label = 'Model Default\n num.trees = 500', 
-    y = pred_errors_num_tree[which.max(pred_errors_num_tree)] - 0.03* pred_errors_num_tree[which.max(pred_errors_num_tree)],
+    y = mses_num_tree[which.max(mses_num_tree)] + 0.05* mses_num_tree[which.max(mses_num_tree)],
     x = 1100) +
   geom_vline(
     xintercept = 500, 
@@ -455,49 +569,55 @@ num_trees_plt <-
   geom_smooth() +
   labs(
     title = 'OOB Prediction Error by Number of Trees',
-    y = 'Out of Bag (OOB) Error (Mean Square Error)'
-
+    y = 'Out of Bag (OOB) Error (Mean Square Error)',
+    caption = 'Lower is better'
     ) +
-  theme_bw() 
+  theme_bw(base_size = 16) + 
+  lims(y = c(0.17, 0.25))
 
-num_trees_plt 
-#Overall out of bag prediction error. For classification this is the fraction of missclassified samples, for probability estimation the Brier score, for regression the mean squared error and for survival one minus Harrell's C-index.
-
+num_trees_plt
 ```
 
 ---
 
+.right[**Model Improvement**]
+
 # Varying `mtry`
 
-```{r echo = FALSE, include = TRUE}
+```{r, echo = TRUE, include = TRUE}
 mtry_values <- 
   seq(1, ncol(sea_testing)-1, 1)
 
-rfs_mtry <- vector('list', length(mtry_values))
+rfs_mtry <- list()
+mses_mtry <- vector()
 
 for (i in 1:length(mtry_values)){
   rfs_mtry[[i]] <- 
     ranger(
       outcome_next_year ~ ., 
       data = sea_training,
-      mtry = mtry_values[[i]],
-      num.threads = 8L
+      mtry = mtry_values[[i]]
     )
-  #print(paste0('iteration #', i, ' complete'))
+  mses_mtry[i] <- rfs_mtry[[i]]$prediction.error
 }
 
-names(rfs_mtry) <- paste0('mtry = ', mtry_values)
+```
 
-pred_errors_mtry <- 
-  rfs_mtry %>%  
-  map_dbl(~.x$prediction.error)
+---
+
+.right[**Model Improvement**]
+
+# Varying `mtry`
+
+```{r, echo = FALSE, include = TRUE}
+names(rfs_mtry) <- paste0('mtry = ', mtry_values)
 ```
 
 
-```{r echo = FALSE, include = TRUE}
+```{r echo = FALSE, include = TRUE, fig.height=6, fig.align='center'}
 mtry_plt <- 
   data.frame(
-  pred_error = pred_errors_mtry, 
+  pred_error = mses_mtry, 
   mtry = mtry_values
 ) %>% 
   ggplot(
@@ -518,38 +638,47 @@ mtry_plt <-
       paste0(
         'Model Default\nmtry = ', floor(sqrt(ncol(sea_training)-1))
       ), 
-    y = pred_errors_mtry[which.max(pred_errors_mtry)] - 0.1* pred_errors_mtry[which.max(pred_errors_mtry)],
+    y = mses_mtry[which.max(mses_mtry)] - 0.1* mses_mtry[which.max(mses_mtry)],
     x = floor(
       sqrt(
         ncol(sea_training)-1) #+ 50
     )
   ) +
   geom_line() +
-  theme_bw() +
+  theme_bw(base_size = 18) +
   labs(
     title = 'OOB Prediction Error by mtry', 
     x = 'mtry',
-    y = 'Out of Bag (OOB) Error (Mean Square Error)'
-  )
-```
+    y = 'Out of Bag (OOB) Error (Mean Square Error)', 
+    caption = 'Lower is better'
+  ) +
+  theme_bw(base_size = 16) + 
+  lims(y = c(0.17, 0.25))
 
-
-```{r echo = FALSE, include = TRUE}
 mtry_plt
 ```
 
 ---
 
-# select smallest error
+.right[**Model Improvement**]
+
+# Select Best-Fitting Hyperparameters
 
 ```{r}
-best_num.trees <- tree_sizes[which.min(pred_errors_num_tree)]
-best_num.trees
+best_num.trees <- tree_sizes[which.min(mses_num_tree)]
+# default is 500
+best_num.trees 
 
-best_mtry <- mtry_values[which.min(pred_errors_mtry)]
+best_mtry <- mtry_values[which.min(mses_mtry)]
+# default is 5
 best_mtry
 ```
 
+---
+
+.right[**Model Improvement**]
+
+# Re-fit Model with Hyperparameters
 
 ```{r}
 manually_tuned_rf <- 
@@ -564,9 +693,11 @@ manually_tuned_rf <-
 
 ---
 
+.right[**Model Improvement**]
+
 # Manually Tuning Overlaid (`num.trees`)
 
-```{r echo = FALSE, include = TRUE}
+```{r echo = FALSE, include = TRUE, fig.height = 6, fig.align='center'}
 num_trees_plt +
   geom_hline(
     color = 'cornflowerblue', 
@@ -587,7 +718,7 @@ num_trees_plt +
 
 # Manually Tuning Overlaid (`mtry`)
 
-```{r echo = FALSE, include = TRUE}
+```{r echo = FALSE, include = TRUE, fig.height = 6, fig.align='center'}
 mtry_plt +
   geom_hline(
     color = 'cornflowerblue', 
@@ -606,33 +737,28 @@ mtry_plt +
 
 ---
 
-# `r emoji('tired_face')` `r emoji('angry')` We spent all that time & the manually tuned model is not the best?! 
+.right[**Model Improvement**]
 
-Well... yes
+# Why such minimal improvements?
 
 We found the best hyperparameter value, **assuming the other hyperparameters were constant**.
 
-In other words, if we wanted to tune 2 hyper parameters, we'd have to do that simultaneously. 
+In other words, we should have tuned both hyperparameters together.
 
-If you're familiar with interactions in multiple regression, this concept is familiar: 
-
-the influence of one hyperparameter on the model may differ based on values of another hyperparameter.
+This is because hyperparameters may influence one another directly or indirectly.
 
 Tomorrow we'll tune both hyperparameters together `r emoji('smile')`
 
 ---
 
-# Quick VIP
+class:center,middle
 
-A deeper interpretation will have to wait until tomorrow!
-
-```{r echo = FALSE, include = TRUE}
-vip(manually_tuned_rf)
-```
+# Variable Importance
 
 ---
 
-# Extract names from key
+.right[**Variable Importance**]
+# Tables
 
 ```{r include=TRUE, echo=FALSE}
 important_variables <- 
@@ -655,41 +781,33 @@ key %>%
   add_footnote(
     paste0('Outcome is ', pstr, ' in the upcoming year')
   )
-
-# important_variables <- 
-#   vi(manually_tuned_rf) %>% 
-#   arrange(desc(Importance)) %>% 
-#   slice(1:8) %>% 
-#   pull(Variable)
-# 
-# pstr <- 
-#   key %>% 
-#   filter(janitor_version == outcome_next_year) %>% 
-#   pull(indicator_name)
-# 
-# key %>% 
-#   filter(
-#     janitor_version %in% important_variables
-#   ) %>% 
-#   mutate(
-#     janitor_version = fct_reorder(janitor_version, important_variables),
-#     importance = as.numeric(janitor_version)
-#   ) %>% 
-#   arrange(janitor_version) %>% 
-#   select(importance, indicator_name) %>% 
-#   kbl() %>% 
-#   add_footnote(
-#     paste0('Outcome is ', pstr, ' in the upcoming year')
-#   )
 ```
-
-
-```{r include=TRUE, echo=FALSE}
-manually_tuned_rf$prediction.error
-```
-
 
 ---
+
+.right[**Variable Importance**]
+
+# Plot
+
+```{r echo = FALSE, include = TRUE, fig.align='center', fig.height=6, fig.width=11}
+vip(manually_tuned_rf, include_type = TRUE) + theme_bw(base_size = 16)
+```
+
+---
+
+class: center, middle
+
+# Activity
+
+---
+
+class: center, middle
+
+# Looking Ahead
+
+---
+
+.right[**Looking Ahead**]
 
 # Interpretation: Expectation
 
@@ -709,11 +827,14 @@ knitr::include_graphics(
 
 ---
 
+.right[**Looking Ahead**]
+
 # Interpretation: Reality 
 
 Keep in mind that prediction - not interpretation - was the original goal of RFs
 
 That said:
+
 * Several methods have been developed to interpret ensemble models
 * Predicted outcomes / probabilities at various levels of covariates make models easy to interpret 
 
@@ -728,30 +849,36 @@ knitr::include_graphics(
 
 ---
 
+.right[**Looking Ahead**]
+
 # Workshop Progress
 
-Yesterday, we discussed:
-  * what DTs are
-  * how to fit DTs
-  * how to interprate/visualize DTs
-  * how to evaluate DTs
+### Yesterday
 
-Today, we discussed
+  * concepts of recursive partitioning & decision trees (DTs) `r chk._`
+  * fitting DTs `r chk._`
+  * interpreting / visualizing DTs `r chk._`
+  * evaluating DTs `r chk._`
+
+### Today
   
-  * what RFs are
-  * how to fit RFs
-  * how to evaluate RFs
-  * hyperparameters
-  * how hyperparameters are used to improve models
+  * concepts of Random Forests (RFs) `r chk._`
+  * fitting RFs `r chk._`
+  * evaluating RFs `r chk._`
+  * hyperparameters `r chk._`
+  * improving the model with hyperparameters `r chk._`
+  
   
 ---
 
-# Looking Ahead
+.right[**Looking Ahead**]
 
-Tomorrow, we will discuss:
+# Tomorrow
+
+We will discuss:
 
 * Interpretation of Random Forests
 * More Advanced Visualizations (Partial Dependency Plots)
-* Cross validation
 * Tuning More than 1 Hyperparameter at a time
+* Cross validation & more (if time)
 

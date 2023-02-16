@@ -1,16 +1,23 @@
 ---
-title: "Day 1\nRecursive Partitioning & Decision Trees"
-author: "Christopher M. Loan, MS"
-date: 'February 20, 2022'
-output: xaringan::moon_reader
+title: "Workshop Day 1\nRecursive Partitioning & Decision Trees"
+author: "Christopher M. Loan"
+date: 'February 20, 2023'
+output: 
+  xaringan::moon_reader:
+    css: ["default"]
+    nature:
+      slideNumberFormat: "%current%/%total%"
 ---
 
-class: center, middle
+layout: true
+
+<div style="position: absolute;left:60px;bottom:11px;color:gray;">`r gsub('hristopher M', '', rmarkdown::metadata$author)`</div>
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+library(emojifont)
+chk._ <- emoji('white_check_mark')
 ```
-
 
 ```{r xaringanExtra-clipboard, echo=FALSE}
 htmltools::tagList(
@@ -23,9 +30,28 @@ htmltools::tagList(
 )
 ```
 
-# A Recommended Reference
+---
+
+.right[**Background**]
+
+# Workshop Progress
+
+So far, we have reviewed some `R` fundamentals. `r chk._`
+
+Next, we'll cover:
+
+  * concepts of recursive partitioning & decision trees
+  * fitting DTs 
+  * interpreting / visualizing DTs 
+  * evaluating DTs
+
+---
+
+.right[**Background**]
 
 .left[
+
+# A Recommended Reference
 
 **Strobl et al. (2009)**
 
@@ -33,7 +59,7 @@ htmltools::tagList(
 * has been cited >2,300 times (according to Google Scholar)
 * technical, but directed towards applied researchers and practitioners
 
-] 
+]
 
 ```{r include = TRUE, echo = FALSE}
 knitr::include_graphics(
@@ -45,11 +71,10 @@ knitr::include_graphics(
 
 
 ---
-class: center
 
-# An Essential Consideration in Applied Computational Research 
+.right[**Background**]
 
-.left[
+# Models & Package Defaults
 
 Software packages come with default settings
 
@@ -57,19 +82,24 @@ Be aware that:
 
 * Defaults are **rarely** the best approach (robustness, flexibility, speed)
 
-* <u>**You ALWAYS need to read the software documentation when you use something**</u>
+* You <u>**ALWAYS**</u> need to read the help documentation when using new software
 
 * This lecture will build this skill in targeted places, but it **intentionally goes with defaults due to time constraints**. 
 
-* This is very important when we "tune hyperparameters" later
-
-]
 
 ---
 
+class: center, middle
 
+# Recursive Partitioning
 
-# Recursive Partitioning: The focus on this workshop
+(a pre-requisite to decision trees)
+
+---
+
+.right[**Recursive Partitioning**]
+
+# Concepts
 
 ```{r include=FALSE}
 library(tidyverse)
@@ -89,50 +119,53 @@ ___
 
 ___ 
 
-**Decision Trees & Random Forests are**
-
-* 2 of the most prominent applications of recursive partitioning
-* the focus of the workshop
+Many possible implementations, including Decision Trees (DTs) & Random Forests (RFs)
 
 ---
-class: center, middle
 
-# What fields subsume recursive partitioning? 
-.left[
+.right[**Recursive Partitioning**]
+
+# Some Terminology
+
 * "Machine Learning" (ML) because the algorithm "learns" from the data. 
 * "supervised" because the algorithm can only learn what is **labeled** in the data (i.e., humans who make the data are "supervising")
-]
+
 ```{r include = TRUE, echo = FALSE}
 knitr::include_graphics(
   here::here(
     'imgs/AI_ML_RP.png'
   )
 )
-# .left[
-# We will **not** cover (1) Unsupervised ML, e.g., k-means clustering, or (2) Other aspects of artificial intelligence, e.g., computer vision
-# ]
 ```
 
 
 ---
 
-# Decision Trees & Random Forests
+.right[**Recursive Partitioning**]
 
-Many consider the automated interaction detection proposed in 1963 to be the seminal reference in this field.
+# Important Publications
 
-`Morgan, J. N., & Sonquist, J. A. (1963). Problems in the analysis of survey data, and a proposal. Journal of the American Statis- tical Association, 58, 415–434.`
 
-This was (in some ways) superseded by 
+*Morgan, J. N., & Sonquist, J. A. (1963). **Problems in the analysis of survey data, and a proposal**. Journal of the American Statistical Association, 58, 415–434.*
 
-`Breiman, L., Friedman, J. H., Olshen, R. A., & Stone, C. J. (1984). Classification and regression trees. New York: Chapman & Hall.`
+___
 
-The same first author later released this
+*Breiman, L., Friedman, J. H., Olshen, R. A., & Stone, C. J. (1984). **Classification and regression trees**. New York: Chapman & Hall.*
 
-`Breiman, L. (2001a). Random forests. Machine Learning, 45, 5–32.`
+___
+
+*Breiman, L. (2001a). **Random forests**. Machine Learning, 45, 5–32.*
+
+---
+class: center, middle
+
+# Decision Trees
 
 ---
 
-# Decision Trees
+.right[**Decision Trees**]
+
+# Overview
 
 Decision Trees (DTs) are a straightforward application of recursive partitioning.
 ___
@@ -142,15 +175,13 @@ ___
 *Make subgroups of the observed variables which are similar in the outcome*
 ___
 
-**Overarching concept (technical)**
-
-*Use training data to identify splitting rules which optimally divide features into non-overlapping regions; as determined via optimization of an objective function, these regions should ensure cases within each region are maximally similar with respect to the outcome*
+There are subtle differences between many implementations of DTs. We will use the `{rpart}` package because of its low barrier to entry.
 
 ---
 
-# Decision Trees
+.right[**Decision Trees**]
 
-They have many benefits: 
+# Benefits
 
 * Easy to interpret
 * Make no assumptions about distribution of data (non-parametric)
@@ -167,16 +198,9 @@ They have many benefits:
 
 ---
 
-class: middle, center
+.right[**Decision Trees**]
 
-# What is the **bare-minimum** process to fitting a decision tree?
-
-(i.e., saying *"it's okay"* to use defaults for everything)
-
----
-
-# Fitting a Decision Tree
-
+# Fitting a Model
 
 ```{r include = TRUE, echo = FALSE}
 knitr::include_graphics(
@@ -190,6 +214,8 @@ Need <u>"features" / predictor variables</u> & <u> *corresponding "response" / o
 
 ---
 
+.right[**Decision Trees**]
+
 # Designed for Prediction 
 
 ```{r include = TRUE, echo = FALSE}
@@ -201,6 +227,9 @@ knitr::include_graphics(
 ```
 
 ---
+
+.right[**Decision Trees**]
+
 # Understanding Predictions
 
 Visual structure makes understanding predictions intuitive
@@ -214,9 +243,10 @@ knitr::include_graphics(
 ```
 
 ---
-# Some Terminology
 
-In this software (`rpart`) "yes" to the splitting rule is on the left & "no" is right
+.right[**Decision Trees**]
+
+# Terminology 
 
 ```{r include = TRUE, echo = FALSE}
 knitr::include_graphics(
@@ -228,11 +258,20 @@ knitr::include_graphics(
 
 ---
 
-## Let's look at an example: 
+class: center, middle
+
+# Applications
+
+---
+
+.right[**Applications**]
+
+# First Example Dataset
 
 `?rpart.plot::ptitanic`
 
 Outcome / response variable
+
 * dichotomous (survived vs. died) 
 * this DT is a **classification tree**
 
@@ -246,24 +285,47 @@ knitr::include_graphics(
 
 ---
 
-# Setting up
+class: center, middle
 
-We need a package for actually fitting the data.
+# Aside
+
+In case anyone is unfamiliar with the sinking of the Titanic, click on the ship emoji to link to an 8 minute explanation.
+
+
+
+# [`r emoji('passenger_ship')`](https://www.youtube.com/watch?v=b0L_2jKEbA4)
+
+
+
+Or ... click the projector to see the < 2-minute titanic movie trailer
+ 
+ 
+ 
+# [`r emoji('film_projector')`](https://www.youtube.com/watch?v=I7c1etV7D7g)
+ 
+
+ 
+---
+
+.right[**Applications**]
+
+# Packages
+
+#### Fit DT
 
 ```{r}
 # install.packages('rpart')
 library(rpart)
 ```
 
-This extension to `rpart` allows simple plotting, and we'll use a built-in data set from this package for our first example (data set = `ptitanic`)
-
+#### Plot DT
 
 ```{r}
 # install.packages('rpart.plot')
 library(rpart.plot)
 ```
 
-`rsample` is a relatively minimal, but useful package to set up the data.
+#### Split Data (to evaluate later)
 
 ```{r}
 # install.packages('rsample')
@@ -271,9 +333,10 @@ library(rsample)
 ```
 
 ---
-# Setting up
 
-ADD SOME INFORMATION ON WHAT HAPPENED TO THE TITANIC
+.right[**Applications**]
+
+# Load Data
 
 ```{r}
 data(ptitanic)
@@ -289,21 +352,22 @@ training_data <- training(split_data)
 testing_data <- testing(split_data)
 ```
 
-We will start with 2 variables to predict `survival`: `age` & `sex`
-
 
 ---
+
+.right[**Applications**]
+
+# Simple Model
+
+We will start with 2 variables to predict `survival`: `age` & `sex`
+
+#### Descriptive Statistics
 
 ```{r include=FALSE}
 descriptives <- psych::describe(rpart.plot::ptitanic$age)
 ```
 
-
-# Some descriptives 
-
-In the whole sample, ~`r round(sum(ptitanic$survived == 'survived')/nrow(ptitanic)*100)`% survived the incident.
-
-Records show:
+* In the whole sample, ~`r round(sum(ptitanic$survived == 'survived')/nrow(ptitanic)*100)`% survived the incident.
 * `r sum(ptitanic$sex == 'male')` coded as male
 * `r sum(ptitanic$sex == 'female')` coded as female:
 * Age - Mean = `r round(descriptives$mean, 2)` years
@@ -311,11 +375,14 @@ Records show:
 
 ---
 
+.right[**Applications**]
+
 # Fit the decision tree
 
-Basic syntax is: `outcome_variable ~ predictors`
+Basic syntax is
 
-Let's start with a really simple model to get the hang of DTs.
+    outcome_variable ~ predictors
+Let's start with a really simple model
 
 ```{r}
 two_var_DT <- 
@@ -325,7 +392,7 @@ two_var_DT <-
   )
 ```
 
-This asks the model to build a decision tree that could predict `survival` based on these two variables in the data (coded `sex` and `age`)
+Predicting `survival` based on these two variables in the data (coded `sex` and `age`)
 
 ```{r include=FALSE}
 surv_by_sex <- 
@@ -342,16 +409,24 @@ surv_by_sex <-
 
 ---
 
-# Decision Tree Results
+class: center, middle
+
+# Interpreting Results
+
+---
+
+.right[**Interpreting Results**]
+
+### Visual Examination
 
 .left-column[
 
 #### Each node shows
-predominant predicted class
+predominant predicted class (row 1)
 
-predicted probability of survival
+predicted probability of survival (row 2)
 
-percent of total sample in this node
+percent of total sample in this node (row 3)
 
 ]
 
@@ -363,22 +438,26 @@ rpart.plot(two_var_DT, type = 4,
 ]
 ---
 
-# Decision Tree Results
+.right[**Interpreting Results**]
 
-.pull-left[
 
-Split order, Predicted probabilities, & node size give sense of the observed training data
+.left-column[
 
-* `sex` was most impacted survival
+### Visual Examination
 
-* more men than women
+Split order and predicted probabilities of survival by node are highly informative.
 
-* Men (`r surv_by_sex$male`) survived at a lower rate than women (`r surv_by_sex$female`)
+These are learned from the training data.
+
+`sex` was most impacted survival
+
+more men died than women
+
 
 ]
 
-.pull-right[
-```{r echo=FALSE}
+.right-column[
+```{r echo=FALSE, fig.height = 6}
 rpart.plot(
   two_var_DT, 
   type = 4, 
@@ -389,7 +468,9 @@ rpart.plot(
 
 ---
 
-# Zoomed in
+.right[**Interpreting Results**]
+
+### Zoomed in
 
 ```{r echo=FALSE, fig.align='center', fig.width = 10, fig.height=7}
 rpart.plot(
@@ -412,28 +493,34 @@ rpart.plot(
 
 ___
 
-### Variable importance (in this workshop)
+.right[**Interpreting Results**]
+
+### Variable importance
 
 * The `vip` package can calculate variable importance for all the models we'll use
-* Higher importance values indicate greater importance in all examples we'll discuss
-* Again, **<u>always check the help documentation</u>**
 
+* There are many metrics of variable importance, but this is a topic too large to cover in this workshop
+
+* For our purposes: higher importance values = variables which have greater predictive power on the outcome
+
+Again, when in doubt **<u>check the help documentation</u>**
+    
 
 ---
 
-# Titanic VIP
+.right[**Interpreting Results**]
 
-Once we load the library, 
+# Creating VIPs
+
+After loading the package, we can estimate a VIP in one line:
 
 ```{r, eval = FALSE, echo = T}
 library(vip)
 ```
 
-we can get a VIP for our decision tree in 1 line of code.
 
 ```{r, eval = FALSE, echo = T}
-plt <- 
-  vip(two_var_DT, include_type = TRUE)
+plt <- vip(two_var_DT, include_type = TRUE)
 ```
 
 If we want to label the axes or format, we treat it like `ggplot2` objects
@@ -449,6 +536,8 @@ plt +
 
 ---
 
+.right[**Interpreting Results**]
+
 # Titanic VIP
 
 ```{r echo = FALSE, fig.align='center', fig.width=12, fig.height=7}
@@ -463,20 +552,25 @@ vip(two_var_DT, include_type = TRUE) +
 
 ---
 
-# Visualizing the Decision Boundaries
+.right[**Interpreting Results**]
+
+# Another Vantage Point
 
 .left-column[
 
-Visually, we are asking the model to draw the fewest lines possible to get maximum separation of triangles and circles.
+The model is trying to separate circles and triangles. 
 
-First we separate men from women, then young men from old men.
+The divisions here show the most efficient divisions in our training data.
+
+I've color-coded this so we can see the accuracy
 
 ]
 
 .right-column[
 
-```{r echo=FALSE, fig.align='center', fig.height = 6}
-training_data %>% 
+```{r echo=FALSE, fig.align='center', fig.height = 5}
+tdat <- 
+  training_data %>% 
   drop_na() %>% 
   mutate(
     prediction = 
@@ -484,25 +578,29 @@ training_data %>%
         round(predict(two_var_DT, newdata = .)[,'survived']) == 1, 'survived', 'died'
       ), 
     accuracy = if_else(prediction == survived, 'accurate', 'inaccurate')
-  ) %>% 
+  ) 
+
+
   ggplot() +
   geom_jitter(
+    inherit.aes = FALSE,
+    data = tdat,
     aes(
       shape = prediction,
       x = age,
-      y = sex,
-      alpha = accuracy
+      y = if_else(sex == 'female', 1, 2),
+      color = accuracy
     ),
     size = 4, 
     width = 0,
-    height = 0.2
+    height = 0.2,
+    alpha = 0.6
   ) +
-  geom_rect(
-    inherit.aes = FALSE,
+    geom_rect(
     data = 
       tibble(
-        y = c(1.5, 0, 1.5),
-        ymax = c(3, 1.5, 3),
+        y = c(1.6, 0.6, 1.6),
+        ymax = c(2.4, 1.4, 2.4),
         x = c(0, 0, 8.5), 
         xmax = c(8.5, 80, 80),
         prediction = c('survived', 'survived', 'died')
@@ -517,13 +615,20 @@ training_data %>%
     alpha = 0.4,
     color = 'black'
   )  +
-  scale_alpha_discrete(range = c(0.9, 0.4)) +
+    scale_color_manual(values=c("#E69F00", "#999999" )) +
+    scale_y_continuous(
+      breaks = 1:2,
+      limits = c(0.5, 2.5),
+      labels = c('Male', 'Female')
+      )+
+  #scale_alpha_discrete(range = c(0.9, 0.4)) +
   theme_bw(base_size = 15) +
   labs(
     title = 'Visualization of 2-variable Decision Tree Cutpoints',
     subtitle = 'Decision tree given 2 variables: sex and age', 
     caption = 'Data source = rpart.plot::ptitanic',
-    y = element_blank()
+    y = element_blank(), 
+    shape = 'reality'
     ) +
   theme(
     plot.title.position = 'plot', 
@@ -539,16 +644,13 @@ class: center, middle
 
 ---
 
-# Evaluate Performance
+.right[**Evaluate Performance**]
 
-We can see how well the trained model performs with the withheld testing data:
-
-* pipe the data to mutate, and use `predict()`
-* specify where the piped information needs to go 
-  * `predict()` wants the model as the first argument
-  * `newdata = .`
+# Predict Unseen Outcomes
 
 Remember, the model has not seen `testing_data`
+
+We can compare predictions with `testing_data` to the known outcome in `testing_data`
 
 
 ```{r}
@@ -556,25 +658,28 @@ preds <-
   predict(
     two_var_DT, 
     newdata = testing_data,
+# Because we're doing a classification tree
     type = 'class'
     )
+
 actual <- testing_data$survived
 ```
 
 ---
 
-# Predictions with Decision Trees
+.right[**Evaluate Performance**]
 
-Let's peak at the data we made:
+# Compare Predictions to Reality
 
 ```{r}
 table(preds, actual)
 ```
 
-
 ---
 
-# Accuracy
+.right[**Evaluate Performance**]
+
+# Accuracy (%)
 
 ```{r}
 accuracy_vector <- 
@@ -588,11 +693,16 @@ round(percent_accurate)
 
 ---
 
-# In-Depth Accuracy
+.right[**Evaluate Performance**]
+
+# In-Depth Accuracy (%)
 
 ```{r include = FALSE}
 tmp_tbl <- 
-  pred_df %>% 
+  tibble(
+    survived = actual, 
+    predicted = preds,
+  ) %>% 
   count(survived, predicted) %>% 
   mutate(
     type_of_prediction = 
@@ -646,30 +756,16 @@ class: center, middle
 
 ---
 
-## Now it's your turn: 
-
-* Open `activity_1.Rmd`.
-
-* Complete `sections 1.1 - 1.5`.
-
-* Work in small groups or alone.
-
-* We'll come back together & discuss in ~20 minutes. 
-
----
-
 class: center, middle
 
-# Review `activity_1_key.Rmd`
+# DTs vs. GLMs
+(comparing VIPs and accuracy)
 
 ---
 
-# Context: DTs vs. GLMs
+.right[**DT vs. GLM**]
 
-Let's fit the same model from the activity again. 
-
-If training data differs from time to time, be sure you use `set.seed()`
-
+# Re-Fit Model from Activity
 
 ```{r}
 all_var_DT <- 
@@ -681,13 +777,13 @@ all_var_DT <-
 
 ---
 
-# Context: DTs vs. GLMs
+.right[**DT vs. GLM**]
 
-The generalized linear model (GLM) can also make predictions. 
+# Fit Logistic Regression
 
-Essentially the same as linear regression, but for dichotomous outcomes (i.e., died vs. survived)
+Conceptually the same as linear regression, but for dichotomous outcomes (i.e., died vs. survived).
 
-Let's contextualize how well this model is doing by fitting a basic logistic regression.
+Model set to predict survival with all available variables.
 
 ```{r}
 glm_comparison <-
@@ -700,87 +796,31 @@ glm_comparison <-
 
 ---
 
-# Logistic Regression Parameters
+.right[**DT vs. GLM**]
 
-The direction of effects do not conflict with the DT. 
+### VIPs
 
-On day 3, we'll dive into model interpretation more and will interpret how these effects differ from the DT
+.pull-left[
 
-```{r include = TRUE, echo = FALSE}
-glm_comparison %>% 
-  broom::tidy() %>% 
-  mutate(
-   odds_ratio = exp(coef(glm_comparison)),
-   p.value = if_else(p.value < 0.001, '<0.001', paste0(round(p.value, 3)))
-  ) %>% 
-  kbl(caption = 'Estimated Parameters', digits = 3)
+```{r fig.align='center'}
+vip(all_var_DT, include_type = TRUE) + theme_bw(base_size = 20)
 ```
 
----
+]
 
-# (extra slide if time)
+.pull-right[
 
-Exponentiate Parameters -> Odds Ratios
-
-Intercept = Odds ratio for "full statistical reference" 
-
-Full statistical reference is:
-  * `pclass` = `1st`
-  * `sex` = `female`
-  * `age` = 0 (because not mean centered)
-  * `sibsp` = 0
-  * `parch` = 0
-  
-Interpreting coefficients:
-
-From [UCLA's Statistical Methods & Data Analytics website](https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faq-how-do-i-interpret-odds-ratios-in-logistic-regression/): 
-
-*each estimated coefficient is the expected change in the log odds of [surviving] for a unit increase in the corresponding predictor variable holding the other predictor variables constant...Each exponentiated coefficient is the ratio of two odds, or the change in odds [...] for a unit increase in the corresponding predictor variable holding other variables at certain value [typically 0].*
-
----
-
-```{r include = FALSE}
-odds_ratios <- exp(coef(glm_comparison))
-f1 <- function(variable_name){paste0('~', round(odds_ratios[[variable_name]]), ' times more likely to survive than die')}
-
-f2 <- 
-  function(variable_name, print_name, reference){
-    
-    tmp <- round((odds_ratios[[variable_name]] - 1)*100) 
-    
-    paste0(
-      'the odds of ', 
-      print_name, 
-      ' surviving are ~', 
-      abs(tmp),
-      '%', 
-      if_else(sign(tmp) < 0, ' lower', ' higher'),
-      ' than the odds for ', 
-      reference
-      )
-    }
-
+```{r fig.align='center'}
+vip(glm_comparison, include_type = TRUE) + theme_bw(base_size = 20)
 ```
 
-# (extra slide if time)
-
-
-Effects:
-* Intercept group is `r f1('(Intercept)')`
-* `r f2('pclass2nd', '2nd class', '1st class')` 
-* `r f2('pclass3rd', '3rd class', '1st class')` 
-* `r f2('sexmale', 'males', 'females')` 
-* `r f2('age', 'someone 1 year older', 'someone 1 year younger')`  
-* `r f2('sibsp', 'someone with 1 more sibling or spouse on board', 'someone with 1 fewer')`
-* `r f2('parch', 'someone with 1 more parent or child on board', 'someone with 1 fewer')`
+]
 
 ---
+
+.right[**DT vs. GLM**]
 
 # Comparing Performance
-
-We can predict on unseen data to make predictions.
-
-Here is how I made predictions (refer to `.Rmd` for formatting code)
 
 ```{r}
 tmp_tbl <- 
@@ -799,6 +839,8 @@ tmp_tbl <-
 ```
 
 ---
+
+.right[**DT vs. GLM**]
 
 # Comparative Accuracy Plot
 
@@ -894,6 +936,8 @@ comp_acc_plt
 
 ---
 
+.right[**DT vs. GLM**]
+
 # In-Depth Accuracy
 
 ```{r echo = FALSE, include=TRUE}
@@ -929,25 +973,34 @@ glm_dt_tbl %>%
 
 ---
 
-# Cons
+class: center, middle
+
+# Looking Ahead
+
+---
+
+.right[**Looking Ahead**]
+
+# Overview
 
 Decision trees are great models for
 
 * quickly understanding broad strokes of data
-* interpretting complex interactions and nonlinear effects
+* capturing complex effects without user specification
+* interpreting complex interactions and nonlinear effects visually
 
 They have many issues, though:
 
 * Overfitting to the training data
 * Unstable tree structure  
 * Biased towards selecting variables with more potential split points (i.e., wide ranges)
-* Greedy algorithm 
-* it finds the best option at each step
-* branches are dependent on prior splits
+* Single variables with large effects may mask subtle effects
 
-There are numerous ways to overcome these shortcomings, though.
+**There are numerous ways to overcome these shortcomings**
 
 ---
+
+.right[**Looking Ahead**]
 
 # Improving Predictions
 
@@ -957,6 +1010,7 @@ Prediction relies on:
 2. user-specified settings
   * Referred to as **hyperparameters**
   * allows calibration of the model
+  
 3. data
 
 Thus, prediction can be improved by improving any one of those.
@@ -965,19 +1019,24 @@ Throughout the week, we will explore each of these.
 
 ---
 
+.right[**Looking Ahead**]
+
 # Schedule
 
-Feb. 21 we will improve (1) and (2)
+Tomorrow we'll cover:
 
-* explore a more robust model (random forests) 
-* improve models through modifying hyperparameters
+  * concepts of Random Forests (RFs)
+  * fitting RFs 
+  * evaluating RFs
+  * hyperparameters
+  * improving the model with hyperparameters
+  
+On Day 3 we'll cover:
 
-Feb. 22 we will
-
-* discuss cross-validation data
-* conduct hyperparameter tuning
-* reinforce skills from days 1 and 2
-
+  * Establishing benchmarks
+  * Improving predictions through tuning hyperparameters
+  * Interpreting RFs with Partial Dependency Plots (PDPs)
+  * More if time allows (e.g., cross validation, further model improvements)
 ---
 
 class: center, middle

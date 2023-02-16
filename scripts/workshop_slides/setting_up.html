@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Day 1 Introductions &amp; (abbreviated) Foundations in R</title>
+    <title>Day 1 Pre-Workshop R Refresher</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Christopher M. Loan, MS" />
+    <meta name="author" content="Christopher M. Loan" />
     <meta name="date" content="2022-02-20" />
     <script src="setting_up_files/header-attrs-2.16/header-attrs.js"></script>
     <link href="setting_up_files/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="setting_up_files/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
     <script src="setting_up_files/clipboard-2.0.6/clipboard.min.js"></script>
     <link href="setting_up_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.css" rel="stylesheet" />
     <script src="setting_up_files/xaringanExtra-clipboard-0.2.6/xaringanExtra-clipboard.js"></script>
@@ -21,10 +20,10 @@ class: center, middle, inverse, title-slide
 
 .title[
 # Day 1
-Introductions &amp; (abbreviated) Foundations in R
+Pre-Workshop R Refresher
 ]
 .author[
-### Christopher M. Loan, MS
+### Christopher M. Loan
 ]
 .date[
 ### February 20, 2022
@@ -32,11 +31,15 @@ Introductions &amp; (abbreviated) Foundations in R
 
 ---
 
+layout: true
+&lt;div style="position: absolute;left:60px;bottom:11px;color:gray;"&gt;C. Loan&lt;/div&gt;
+---
 
 
 
 
 
+.right[**Setting Expectations**]
 
 # Day 1 Agenda 
 
@@ -50,65 +53,119 @@ Introductions &amp; (abbreviated) Foundations in R
 * Lunch **(12:00 pm - 12:59 pm)**
 
 * Describing and Fitting Decision Tree Models **(1:00 pm - 4:00 pm)**
-    * Lecture / worked examples: Decision Trees
-    * Lab activity
-    * Lecture / worked examples: diving deeper
-    * Summary, cons, and avenues for model improvement
-    
+
 ---
 
-# Communications Throughout
+.right[**Setting Expectations**]
 
-I want this to be a comfortable environment for all attendees.
+# Communications
 
-I'm from another University and don't know your curricula or norms, so I want to establish that.
+I want this to be a comfortable environment for all attendees. I'm a big fan of informal 🙃 
 
-* Oregon &amp; the University of Oregon are also relatively "laid back" 
-* As long as you raise your hand, feel free to interrupt me if you have questions - no need to wait until the end!
-* the only exception will be technical issues which concern just 1 person and not the group
-* for technical issues, I'm happy to help individuals during coffee breaks and/or lunch
+Raise your hand when you have a question; I'll answer at the end of my current thought. 
 
-I'm a big fan of informal 🙃 
+Do not wait until the end of the lecture, as you'll likely be more confused later (and I promise others have the same question).
+
+If you are trying to follow along in `R` and have a technical problem that does not concern the group, please 
+
+  1. keep following along conceptually, and 
+  
+  2. ask me for help during the break!
+
+---
+
+.right[**Setting Expectations**]
+
+# Goals of the Workshop
+
+Throughout the workshop, my goal is to
+
+* demonstrate basic workflows for simple recursive partitioning models
+
+* provide an &lt;u&gt;applied workshop&lt;/u&gt;, which trades some depth for applied skills / coding
+
+* build your comfortability enough that you do not feel lost in the peer-reviewed literature.
+
+____
+
+Throughout the workshop, I expect you to:
+
+* ask questions when you're unsure
+
+* tell me when I use unfamiliar language / statistical terms
+
+* use the help documentation in `R` 
+
+    * type `?example_function_name()`, or
+    * use the RStudio interface (`help` tab located in the lower right panel)
+
+---
+
+.right[**Setting Expectations**]
+
+# Intended Workshop Outcomes
+
+I made these workshop materials to be a reference long-term. I expect you to refer to them to apply these methods. 
+
+___
+
+When applying these skills, I expect you will:
+
+* refer to these slides to get started
+* consult the the peer-reviewed literature before implementing these in research or industry
+* continuously refer to `R` help documentation for these methods as needed
+
+___
+
+I don't expect you to
+
+* follow along in `R`, unless you're comfortable doing so
+* understand all of the things I do in `R` before you try them 
+* be an expert in these methods at the end of the workshop
 
 ---
 
 class: middle, center
 
+# `R` Basics
+
+---
+
+.right[**`R` Basics**]
+
 # Packages 📦 in `R`
 
----
-# Packages 📦
+Like any software: `R` can only interact with objects, functions, data, etc. that you load into it.
 
-In `R`, objects, functions, data, and anything besides the coding language itself need to be loaded.
+You can make these yourself, but it is more common to load other people's functions, etc. 
 
-These are bundled together as "packages" and placed on CRAN* for download with the built-in `install.packages()` function.
+To conduct analyses, we load other people's work - called "packages" - mostly from CRAN (Comprehensive R Archive Network)
 
-(*CRAN = the Comprehensive R Archive Network )
+You will also need to install several packages in this workshop. You can do that with:
 
-_____
-
-By default, `R` has many functions loaded when you boot up.
-
-Without default packages (or your loaded ones)
-
-  * only `R`'s language structure would remain. 
-  * even simple functions - e.g., `max()` - would be re-written every project
-
+* `install.packages()`
+* the `RStudio` interface (`Packages tab on lower-right panel`)
 
 ---
 
-class: center, middle
+.right[**`R` Basics**]
 
 # Reading in Data `R` 💻
 
----
+#### Packaged Data
 
-# Reading in Data
+Data loaded from a package can be loaded with `data()`:
 
-* Reading in data is really easy as long as you know the file path.
-* `R` will search for your file path within the project folder. 
-* File paths can get complicated in R, but using projects makes it easier.
-* Running `getwd()` will tell you the working directory
+
+```r
+library(rpart.plot)
+ptitantic &lt;- data(ptitanic)
+```
+
+#### Local Data
+
+* if you have your own data, `R` needs to know the file path
+* use `getwd()` to check your current file path
 
 
 ```r
@@ -119,96 +176,63 @@ getwd()
 ## [1] "/Users/cloan/Documents/Workshop/Recursive-Partitioning-Workshop/scripts/workshop_slides"
 ```
 
+* Using projects (`.Rproj` files) simplifies file paths by searching within the project folder 
 
 ---
 
-# Examples
+.right[**`R` Basics**]
 
-For this workshop, all data will be pre-loaded or formatted as `.csv` files.
+# Import from `.csv`
 
-___
-
-**Packaged Data**
-
-Data loaded from a package can be loaded with `data()`:
-
-
-```r
-library(rpart.plot)
-ptitantic &lt;- data(ptitanic)
-```
-
-___
-
-**Import from `.csv`**
-
-Data loaded from a `.csv` can be loaded with `read.csv()`.
-
-I typically make a `data` folder within my `R` projects. 
+Data loaded from a `.csv` can be loaded with `read.csv()`. 
 
 
 ```r
 ex_dat &lt;- read.csv('data/example_filename.csv')
 ```
 
-The `data/` in the file name tells it that `example_file.csv` is in the `data` folder.
+Here, the `data` in the file name tells it that `example_file.csv` is in the `data` folder, separated by a slash.
+
+
+#### Trying to get ahead of some potential errors
+
+Last I knew, `R` had different defaults for which slash to use for mac (`/`) versus pc (`\`)
+
+If some file paths do not work in my code:
+
+* try switching the slash direction - (`/`) vs (`\`)
+
+* use `file.path('folder', 'path')`
+
+* ask for help
 
 ---
 
-# Importing Data
+.right[**`R` Basics**]
 
-Let's load some data from the World Bank (WB):
+# Workshop Data
 
-* The WB describes these as their "educational" data
-* I classify them as Prevention Science data, but I'm biased 🙃
-* In a folder called `data` within the project subfolder
-* called `se_asia_imputed_world_bank.csv`
+This social science data reported by the World Bank. I provide extensive documentation of this in the supplemental materials.
 
+Data is filtered to the years 2000 - 2018 &amp; countries in South East Asia
 
-**Don't forget to store the data as an object with `&lt;-`**
+* folder = `data`
+
+* file = `se_asia_imputed_world_bank.csv`
+
 
 ```r
 dat &lt;- read.csv('data/se_asia_imputed_world_bank.csv')
 ```
 
 
-```r
-# doing it this way for xaringan
-dat &lt;- read.csv(here::here('data', 'se_asia_imputed_world_bank.csv'))
-```
 
 ---
+
+.right[**`R` Basics**]
+
 
 # Inspecting data
-
-* Inspecting data is as easy as running the object name.
-* Before doing so, I am going to use `tibble()` to format the data frame slightly
-
-___
-
-## An aside re: `tibbles`
-
-* are part of the `tidyverse` framework 
-* differ very slightly from data frame (mostly beyond our scope)
-* default to only printing 10 rows, which is nice for our purposes
-
-___
-
-
-(output on next page)
-
----
-
-# Inspect 
-
-It is 152 observations (rows) of data on some Southeast Asian countries.
-
-Each observation (row) has many variables (columns). 
-
-A row represents an observation of a given country, on a given year. 
-
-All variables in that row correspond to that country and year.
-
 
 
 ```r
@@ -240,30 +264,52 @@ tibble(dat)
 
 ---
 
+.right[**Data Types &amp; Structures**]
+
+# Inspecting data
+
+It is 152 observations (rows) of data.
+
+Each observation (row) has many variables (columns) which correspond to it. 
+
+A row represents an observation of a given country in a given year. 
+
+---
+
 class: center, middle
 
 # Data Types &amp; Structures
 
-I am oversimplifying this section quite a bit. If you're curious on the details, see: https://cran.r-project.org/doc/manuals/r-release/R-intro.html
+I am oversimplifying this section a little bit. Refer the [R-documentation](https://cran.r-project.org/doc/manuals/r-release/R-intro.html) for more details 
 
 ---
 
-# Data Types in `R`
+.right[**Data Types &amp; Structures**]
 
-Computers process data based on its data type. For this workshop, you'll need to understand some data types in order to work in R:
+# Data Types
+
+`R` processes data differently based on its type
+
+For this workshop, you'll need to understand some data types in order to work in `R`. 
 
 * logical (dichotomous = TRUE/FALSE)
 * numeric / double (numeric values with decimals)
 * integer (whole numbers)
 * characters / strings (words)
 
+
 ---
 
-# Data Structures: Vectors
+.right[**Data Types &amp; Structures**]
 
-* vectors: represented as `c()`
+# Vectors
 
-  * multiple observations of one data type
+**Definition** 
+
+multiple observations of one data type e.g., `c(1, 2, 3)`
+
+**Working with vectors**
+
   * access data in vector by its position or name (if named)
   * example: 3 run times (in seconds) for 3 different complexity models
   
@@ -294,9 +340,9 @@ run_time_seconds['simple model']
 
 ---
 
+.right[**Data Types &amp; Structures**]
 
-# Data Structures: Lists
-
+.left[### Lists]
 
 .pull-left[
 
@@ -304,28 +350,31 @@ run_time_seconds['simple model']
 ```r
 example_list &lt;- 
   list(
-    model = lm(data = dat, formula = se_xpd_totl_gd_zs ~ year + country_name),
-    plot = plot(y = dat$se_xpd_totl_gd_zs, x = dat$year)
+    model = 
+      lm(data = dat, 
+         formula = se_xpd_totl_gd_zs ~ year + country_name),
+    plot = 
+      ggplot(
+        data = dat, 
+        aes(se_xpd_totl_gd_zs, year)
+        ) + 
+      geom_smooth(se = FALSE, show.legend = FALSE)
   )
 ```
-
-![](setting_up_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 
 
 ```r
 example_list[['plot']]
 ```
 
-```
-## NULL
-```
+![](setting_up_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 ]
 
 .pull-right[
-  * conceptually the same as a vector, but more flexible
-  * a way to store more general data
-  * data types do not have to be the same across
+
+(for our purposes) **a list is a vector that can hold complex data**
+  
   * we will use this to store models, plots, etc.
   * Refer to the object in the list with double brackets
 
@@ -335,67 +384,120 @@ example_list[['plot']]
 example_list[[2]]
 ```
 
-```
-## NULL
-```
+![](setting_up_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
 
 ]
 
 
 ---
 
-# Data Structures: Data Frames
+.right[**Data Types &amp; Structures**]
 
-* data.frame / tibble 
-  
-  * A table
+.left[
+
+# Data Frames
+
+
   * each cell is coded as [row_number, column_number]
   * each column can be its own data type, but must be constant within column
   * Refer to variables with `$` and name, or by position
   
+  
+]
+  
+.pull-left[
+  
 
 ```r
-# subset first 10 observations to decrease output
-iris$Species[1:10]
+iris$Species
 ```
 
 ```
-##  [1] setosa setosa setosa setosa setosa setosa setosa setosa setosa setosa
+##   [1] setosa     setosa     setosa     setosa     setosa     setosa    
+##   [7] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [13] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [19] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [25] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [31] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [37] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [43] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [49] setosa     setosa     versicolor versicolor versicolor versicolor
+##  [55] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [61] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [67] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [73] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [79] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [85] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [91] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [97] versicolor versicolor versicolor versicolor virginica  virginica 
+## [103] virginica  virginica  virginica  virginica  virginica  virginica 
+## [109] virginica  virginica  virginica  virginica  virginica  virginica 
+## [115] virginica  virginica  virginica  virginica  virginica  virginica 
+## [121] virginica  virginica  virginica  virginica  virginica  virginica 
+## [127] virginica  virginica  virginica  virginica  virginica  virginica 
+## [133] virginica  virginica  virginica  virginica  virginica  virginica 
+## [139] virginica  virginica  virginica  virginica  virginica  virginica 
+## [145] virginica  virginica  virginica  virginica  virginica  virginica 
 ## Levels: setosa versicolor virginica
 ```
 
+]
+.pull-right[
+
+
 ```r
-iris[1:10,5]
+iris[,5]
 ```
 
 ```
-##  [1] setosa setosa setosa setosa setosa setosa setosa setosa setosa setosa
+##   [1] setosa     setosa     setosa     setosa     setosa     setosa    
+##   [7] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [13] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [19] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [25] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [31] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [37] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [43] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [49] setosa     setosa     versicolor versicolor versicolor versicolor
+##  [55] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [61] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [67] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [73] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [79] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [85] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [91] versicolor versicolor versicolor versicolor versicolor versicolor
+##  [97] versicolor versicolor versicolor versicolor virginica  virginica 
+## [103] virginica  virginica  virginica  virginica  virginica  virginica 
+## [109] virginica  virginica  virginica  virginica  virginica  virginica 
+## [115] virginica  virginica  virginica  virginica  virginica  virginica 
+## [121] virginica  virginica  virginica  virginica  virginica  virginica 
+## [127] virginica  virginica  virginica  virginica  virginica  virginica 
+## [133] virginica  virginica  virginica  virginica  virginica  virginica 
+## [139] virginica  virginica  virginica  virginica  virginica  virginica 
+## [145] virginica  virginica  virginica  virginica  virginica  virginica 
 ## Levels: setosa versicolor virginica
 ```
+]
 
 ---
 
-# Data Structures: Factors
+.right[**Data Types &amp; Structures**]
 
-* factors
 
-    * a method of storing categorical data 
-    * can store numeric data with factors to make ordered categories
-    * can store character / strings to make unordered categories
-    * a factor structure is thus applied to a vector to make it a factor
-    * refer to a factor just as any other vector (position or name)
+# Factors
 
-(example coming in 2 slides)
-
+  * a method of storing categorical data (i.e., convert a vector to a factor)
+  
+  * factors are typically unordered categories (e.g., Ocean names, brands), made by converting strings / characters to factors
+  
+  * factors can be ordered too, though (e.g., Likert- / Rating-Scale; ordered factors won't be relevant for our workshop).
+  
 ---
 
-# Data Structures: Factors
+.right[**Data Types &amp; Structures**]
 
-* How `R` organizes categorical data
-* With many models, how we handle categorical data is important
-    * distributional assumptions with GLM (e.g., logistic &amp; probit regression)
-    * splitting rules with decision trees (we'll cover this later!)
-* In well-written packages, factors cue the function to properly handle categorical data
+
+# Factors
 
 Setting variables as factors is easy:
 
@@ -419,67 +521,39 @@ class(dat$country_name)
 
 ---
 
-# Data Structures: Factors
+class: center, middle
 
-* Reference category is omitted from the model
-* Dummy-codes are made with all other factor levels (i.e., 0/1 value for each level)
-* estimates are thus the difference between this group and the reference
-* By default R uses the alpha-numerically first category (i.e., "a" or "1" etc.)
+# 📊 ggplot2 refresher
 
-
-
-```r
-levels(dat$country_name)[1]
-```
-
-```
-## [1] "Cambodia"
-```
-
-Often, factor level is printed as a suffix to the variable name in output
-
-
-```r
-coef(lm(data = dat, formula = se_xpd_totl_gd_zs ~ country_name))
-```
-
-```
-##             (Intercept)   country_nameIndonesia     country_nameLao PDR 
-##               1.7628562               1.2791007               0.6238508 
-##    country_nameMalaysia country_namePhilippines   country_nameSingapore 
-##               3.7245775               1.1010791               1.3674875 
-##    country_nameThailand     country_nameVietnam 
-##               2.1637391               2.3757025
-```
+(because this workshop is very visual)
 
 ---
 
-# ggplot2
+.right[**📊 ggplot2 refresher**]
 
-GG stands for "grammar of graphics"
-
-The basic concept is:
+# Logic
 
 * observed data is mapped to several "aesthetics" 
-    * `x`, `y`, `color`, `fill`, `size`, etc.
-    * this concept is easiest to understand with an x and y axis
+    * `x-axis`, `y-axis`,`group`, `color`, `fill`, `size`, etc.
+    * this concept is easiest to understand with an `x-` and `y-axis`
+    
 * Layers which represent those aesthetics are layered on top
     * `geom_point` = scatter plot
     * `geom_smooth` = line of best fit between `y` and `x` aesthetics
     * `geom_col` = column plot
-* `ggplot2` objects are considered stacked in layers for that reason, 
-* we use `+` to link layers 
-* let's look at an example
+    
+* `ggplot2` objects are basically stacked in layers — add layers with the `+` symbol
+
 ---
 
-# Mapping Aesthetics
+.right[**📊 ggplot2 refresher**]
 
-Let's map:
+# Mapping Aesthetics
 
 * y-axis = `se_xpd_totl_gd_zs` (Government expenditure on education as percent of GDP)  
 * x-axis = `year`
 
-`ggplot2` will use observed values to choose limits to these, but no data will appear
+`ggplot2` will use data to choose limits to these, but no data will appear
 
 
 ```r
@@ -502,7 +576,7 @@ plot_mapping &lt;-
 plot_mapping
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -515,7 +589,7 @@ plot_mapping
 plot_mapping + geom_point()
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-17-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -526,7 +600,7 @@ plot_mapping + geom_point()
 plot_mapping + geom_point() + geom_smooth()
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -539,7 +613,7 @@ plot_mapping + geom_point() + geom_smooth() +
   aes(color = country_name, fill = country_name) 
 ```
 
-![](setting_up_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
+![](setting_up_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -587,7 +661,7 @@ plt_labled &lt;-
 
 ---
 
-&lt;img src="setting_up_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="setting_up_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: center, middle
@@ -598,14 +672,12 @@ class: center, middle
 class: center, middle
 
 # Activity
-
-Now, it's your turn. Open `refresher_activies.Rmd` and work section 3
-
-There are more activities after, please review the answer key after class today.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
-<script>var slideshow = remark.create();
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%/%total%"
+});
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
 });
