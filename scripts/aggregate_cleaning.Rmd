@@ -17,7 +17,6 @@ library(tidyverse)
 library(janitor)
 library(sjmisc)
 library(parallel)
-source(here::here('scripts/functions.R'))
 ```
 
 

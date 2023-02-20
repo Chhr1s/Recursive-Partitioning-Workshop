@@ -1,0 +1,202 @@
+---
+title: "Day 2 Part 1 Lab Key"
+author: "Christopher Loan"
+date: "February 21, 2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+# Section 0: Set seed
+
+Set a seed at `022023`
+
+```{r}
+set.seed(022023)
+```
+
+# Section 1: Fit Random Forest to `ptitanic` Dataset
+
+## Section 1.1: load packages
+
+Load these packages with `library()`
+
+1. `tidyverse`
+2. `rsample`
+3. `rpart.plot`
+4. `ranger`
+5. `missRanger`
+6. `vip`
+
+
+If you did not install these already, you'll have to install each of these with the `install.packages()` function. e.g., `install.packages('tidyverse')` etc.
+
+```{r}
+# data manipulation
+library(tidyverse)
+# setting up data: training / testing
+library(rsample)
+# for the data
+library(rpart.plot)
+# random forests
+library(ranger)
+# imputing data
+library(missRanger)
+# variable importance plots
+library(vip)
+```
+
+## Section 1.2: set up data
+
+
+### 1.2.1: load data
+
+load the `ptitanic` data from the `rpart.plot` package. 
+
+```{r}
+data(ptitanic)
+```
+
+### Section 1.2.2: set reference group for outcome
+
+Use `relevel()` to ensure `died` is the reference group in the `ptitanic` dataset.
+
+```{r}
+ptitanic <- 
+  ptitanic %>% 
+  mutate(
+    survived = relevel(survived, ref = 'died')
+  )
+```
+
+### Section 1.2.3: impute the missing values
+
+Good imputation practices are beyond the scope of the workshop, but let's just do a quick imputation so we do not have missing data.
+
+This is important only because `ranger()` does not handle missing data by default.
+
+Run the following code to impute with `missRanger()`:
+
+
+```{r}
+ptitanic <- missRanger::missRanger(ptitanic, pmm.k=1)
+```
+
+**NOTE:** If you get stuck here for some reason, make sure `missRanger` is installed. If that still does not work, you can use this code instead
+
+```{r eval = FALSE}
+ptitanic <- ptitanic %>% drop_na(age)
+```
+
+### Section 1.2.4: split data
+
+Use `rsample` to split the data into training and testing sets.
+
+```{r}
+split_data <- initial_split(ptitanic)
+training_data <- training(split_data)
+testing_data <- testing(split_data)
+```
+
+## Section 1.3: Fit a Random Forest
+
+Predict `survived` with all other variables in the dataset
+
+Be sure to set `importance = 'impurity'`. Using the help documentation, explain what this does in your own words.
+
+**Hint:** there are 2 ways to include all variables:
+
+* One is simply listing all of them, separated with `+` symbols. 
+* The other is a shortcut where you list the outcome, a tilde, then a period (`.`): `outcome_name ~ .`
+
+```{r}
+all_vars_RF <- 
+  ranger(
+    survived ~ ., 
+    data = training_data, 
+    importance = 'impurity'
+    )
+```
+
+## Section 1.4: Explore the model
+
+### Section 1.4.1: Look at the structure
+
+print the tree object (i.e., just run the name of the stored model).
+
+```{r}
+all_vars_RF
+```
+
+In your own words, what does out-of-bag prediction error mean? 
+
+What is the OOB prediction error in this dataset?
+
+**Hint:** remember we're predicting a dichotomous variable, so we're doing classification
+
+How many decision trees are in this random forest?
+
+#### Section 1.4.2
+
+Use `vip()` to visualize the variable importance plot for the random forest
+
+If you see the following error, be sure to add `importance = 'impurity'` into the `ranger()` call above:
+
+    Error in importance.ranger(object) : 
+      No variable importance found. Please use 'importance' option when growing the forest.
+
+```{r}
+vip(
+  all_vars_RF, 
+  include_type = TRUE
+) + 
+  theme_bw(base_size = 12) +
+  labs(
+    title = 'Variable Importance Plot for Decision Tree',
+    subtitle = 'Data from `ptitanic`',
+  ) +
+  aes(fill = 1, alpha = 0.3) +
+  theme(legend.position = 'none')
+```
+
+### Section 1.5: Evaluate Model Performance (unseen data)
+
+Use your withheld testing data to determine the percent of new predictions that are correct.
+
+```{r}
+accuracy_percentages <- 
+  testing_data %>% 
+  mutate(
+    predicted = 
+      predict(
+        all_vars_RF, 
+        data = ., 
+        )$prediction, 
+    actual = survived,
+    prediction_accuracy = 
+      if_else(
+        actual == predicted, 
+        'Correct', 
+        'Incorrect'
+        )
+  ) %>% 
+  count(prediction_accuracy) %>% 
+  mutate(
+    percent = 
+      paste0(
+        round(
+          (n / sum(n))* 100), 
+        '%'
+        )
+  ) 
+```
+
+```{r}
+accuracy_percentages
+```
+
+
+When done, return your focus to the presentation
+

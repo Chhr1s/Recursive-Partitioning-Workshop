@@ -1,0 +1,183 @@
+---
+title: "Day 3 Lab"
+author: "Christopher Loan"
+date: "2023-01-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+# Instructions:
+
+set seed to `022023`
+
+Load 
+
+* `tidyverse`
+* `rsample`
+* `ranger`
+* `dials`
+
+Import the key & se asian data as `key` and `dat`, respectively.
+
+```{r}
+
+```
+
+split the data into training and testing with `initial_split()`, `training()` and `testing()`.
+
+Make sure your split specified `country_name` as the `strata`.
+
+```{r}
+
+```
+
+
+# Goals
+
+* Establish at least one benchmark for predicting: `st_int_arvl`
+* Calculate MSE for that benchmark
+* Attempt to fit an RF which can outperform your benchmark
+
+
+`st_int_arvl`  = International tourism, number of arrivals
+
+# Choosing a Benchmark
+
+Measures of central tendency (i.e., mean, median, mode) tend to be good first-pass benchmarks. 
+
+Use this code to plot the values.
+
+```{r}
+int_arvl_plt <- 
+  sea_training %>% 
+  ggplot(
+    aes(
+      y = st_int_arvl, 
+      x = year, 
+      color = country_name
+    )
+  ) +
+  geom_point() + 
+  geom_line() 
+int_arvl_plt
+```
+
+Calculate the mean and median of `st_int_arvl` within the training data, and store them as `training_arvl_mean` and `training_arvl_median`, respectively.
+
+```{r}
+
+```
+
+
+Use `+ geom_hline(yintercept = training_arvl_mean)` to add a horizontal line at the mean. 
+
+In the same plot, add a horizontal line at the median, except add the argument `linetype = 2` to the `geom_hline()` function (this makes a dashed line to tell the difference)
+
+
+```{r}
+
+```
+
+
+Which model do you prefer as your benchmark? 
+
+**Answer will vary; there are reasonable arguments for either**
+
+Why?
+
+**Answer will vary; there are reasonable arguments for either**
+
+# Establish Ranges for Tuning
+
+store the number of <u>predictor</u> variables in the `sea_training` as a variable called `p`.
+
+*HINT:* `sea_training` contains predictors and the outcome, so be sure to subtract 1 from the number of columns in `sea_training`
+
+```{r}
+
+```
+
+# Make a maximum entropy grid
+
+Instead of searching an expanded grid, create a maximum entropy grid.
+
+Use the same minimum and maximum values we used to tune `mtry` and `num.trees` (**HINT** this will relate to the variable `p` you stored earlier)
+
+
+To keep computation time quick, set `size = 200`.
+
+(Ideally, we would use more than 200, but this is just for an example.)
+
+**NOTE:** If this still takes a long time, you can use a smaller range for the sake of the example.
+
+
+```{r}
+
+```
+
+# Fit Random Forests in a Loop
+
+Using the code we made together as an example, fit random forests in a loop. 
+
+Store OOB prediction error for each model. 
+
+```{r}
+# make empty list to store fitted RF & MSE
+rfs_tmp <- list()
+mses_tmp <- list()
+
+for (i in 1:nrow(max_entropy_grid)){
+  
+# fit RF for each hyperparameter state  
+
+rfs_tmp[[i]] <- # YOUR CODE HERE
+  
+# store MSE
+  mses_tmp[[i]] <- rfs_tmp[[i]]$prediction.error
+}
+```
+
+
+### Pull Best Value
+
+Select the model with the lowest OOB prediction error.
+
+```{r}
+
+```
+
+# Assess Fit of Best Model
+
+Using unseen testing data, calculate the MSE of your benchmark model and your tuned model. 
+
+**HINT:** Refer to the workshop slides to get code for calculating MSE.
+
+## Benchmark MSE
+
+```{r}
+
+```
+
+## Best RF MSE
+
+```{r}
+
+```
+
+## Which model performs better?
+
+The tuned model outperforms the benchmark
+
+# If time permits:
+
+Find another model predicts international arrival better than this model. 
+
+Here are a few suggestions (but there are many other possibilites)
+
+* using a larger maximum entropy grid
+* tune a wider range of hyperparameters
+* tuning additional variables
+

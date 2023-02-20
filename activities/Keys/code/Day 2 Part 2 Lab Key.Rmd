@@ -1,0 +1,348 @@
+---
+title: "Day 2 Part 2 Lab Key"
+author: "Christopher Loan"
+date: "February 21, 2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+# Run this Code to Get Set up
+
+```{r}
+set.seed(022023)
+library(tidyverse)
+library(rsample)
+library(rpart.plot)
+library(ranger)
+library(vip)
+
+key <- 
+  read.csv(here::here('data/keys', 'key_impute.csv'))
+
+dat <- 
+  read.csv(
+    here::here(
+      'data', 
+      'se_asia_imputed_world_bank.csv'
+    )
+  )
+
+sea_split <- initial_split(dat, strata = country_name, prop = 0.9)
+sea_training <- training(sea_split) 
+sea_testing <- testing(sea_split) 
+```
+
+# Begin Lab: Fitting Models
+
+Using all variables in the data, predict `bx_gsr_totl_cd`. 
+
+`bx_gsr_totl_cd` = Exports of goods, services and primary income (BoP, current US$)
+
+Because this data set has a large number of variables, do this with  `formula = bx_gsr_totl_cd ~ .` instead of manually typing all predictors.
+
+Leave all hyperparameters at their default values
+
+## Decision Tree
+
+Store the object as `all_vars_DT`.
+
+```{r}
+all_vars_DT <- 
+  rpart(
+    bx_gsr_totl_cd ~ ., 
+    data = sea_training
+    )
+```
+
+
+## Random Forest
+
+Store the object as `all_vars_RF`.
+
+Be sure to set the importance for a variable importance plot later. 
+
+```{r}
+all_vars_RF <- 
+  ranger(
+    bx_gsr_totl_cd ~ ., 
+    data = sea_training
+    )
+```
+
+# Assessing Default Models (DT & RF)
+
+## Predict Outcome for `sea_testing` with DT
+
+Use `predict()` with the `all_var_DT` and `sea_testing` to get predict the outcome (`bx_gsr_totl_cd`) on unseen data. 
+
+Store this as a vector called `DT_preds`.
+
+**HINT**  if you need the help documentation, use `?rpart:::predict.rpart` instead of `?predict`
+
+```{r}
+DT_preds <- 
+  predict(all_vars_DT, newdata = sea_testing)
+```
+
+
+## Predict Outcome for `sea_testing` with RF
+
+Use `predict()` with the `all_var_RF` and `sea_testing` to get predictions on unseen data. 
+
+Store this as a vector called `RF_preds`.
+
+**HINT**  if you need the help documentation, use `?ranger:::predict.ranger()` instead of `?predict`. The argument to input unseen data differs from DTs and RFs. 
+
+```{r}
+RF_preds <- predict(all_vars_RF, data = sea_testing)$predictions
+```
+
+# Assess Fit
+
+## Make Prediction Data Frame
+
+Name the columns the same as the vectors you made above (`DT_preds`, `RF_preds`).
+
+Store the object as `predictions_df`.
+
+```{r}
+predictions_df <- 
+  tibble(
+    preds_DT = DT_preds, 
+    preds_RF = RF_preds, 
+  )
+```
+
+Add a column to `predictions_df` which has the actual values (i.e., `sea_testing$bx_gsr_totl_cd`) name the column `actual`.
+
+```{r}
+predictions_df$actual <- sea_testing$bx_gsr_totl_cd
+```
+
+## Calculate Mean Squared Error (MSE) by Model
+
+
+Here's a function to calculate MSE from 2 vectors
+
+```{r}
+mse <- function(observed_y, predicted_y){
+    (sum(observed_y - predicted_y)^2)/length(observed_y)
+}
+```
+
+Below, I provide code to do this for the DT. 
+
+Store your final result as `default_DT_mse`
+
+```{r}
+default_DT_mse <- 
+  mse(
+    observed_y = sea_testing$bx_gsr_totl_cd,
+    predicted_y = DT_preds
+  )
+default_DT_mse
+```
+
+Repeat this for the RF; store your final result as `default_RF_mse`
+
+```{r}
+default_RF_mse <- 
+  mse(
+    observed_y = predictions_df$actual,
+    predicted_y = RF_preds
+  )
+```
+
+___
+
+# QUESTION
+
+Which model predicts `bx_gsr_totl_cd` better (i.e., with lower MSE)?
+
+___
+
+
+# Manual Tuning
+
+For this example, we'll see the impact of varying one hyperparameter (per model) on model fit, measured by mean squared error (MSE). 
+
+I provide example code for a decision tree, which you can modify for the random forest.
+
+**HINT** remember, lower MSE indicates a better model
+
+## DT
+
+I am going to assess the impact of varying `minbucket` on the accuracy of the DT. 
+
+`minbucket` = `the minimum number of observations in any terminal <leaf> node`
+
+The default is `r round(20/3)`
+
+see `?rpart.control` for more details.
+
+### Make a vector of possible `minbucket` values
+
+```{r}
+minbucket_vector <- seq(1, round(0.3*nrow(sea_training)), 1)
+```
+
+### Loop through `minbucket` values.
+
+
+```{r}
+DT_temp <- list()
+DT_mses <- vector()
+for (i in 1:length(minbucket_vector)){
+  
+  # Fit DT
+  
+  DT_temp[[i]] <- 
+    rpart(
+      data = sea_training, 
+      formula = bx_gsr_totl_cd ~ ., 
+      minbucket = minbucket_vector[[i]]
+    )
+  
+  # Get Predictions
+ 
+  temp_DT_predictions <- 
+    predict(DT_temp[[i]], newdata = sea_testing)
+  
+  # store MSEs
+  DT_mses[i] <- 
+    mse(
+      observed_y = sea_testing$bx_gsr_totl_cd, 
+      predicted_y = temp_DT_predictions
+    )
+
+}
+```
+
+### Store Results
+
+Create a data frame with `DT_mses` and their corresponding `minbucket` values.
+
+```{r}
+## create a table
+DT_mse_df <- 
+  tibble(
+    DT_mses = DT_mses, 
+    minbucket_vector = minbucket_vector
+  )
+```
+
+### Plot Results
+
+Using the prior data frame, plot `DT_mses` on the `y-axis` and `minbucket` on the x-axis
+
+```{r}
+minimum_MSE_DT <- which.min(DT_mse_df$DT_mses)
+best_minbucket <-  DT_mse_df$minbucket_vector[minimum_MSE_DT]
+
+ggplot(
+  data = DT_mse_df,
+    aes( 
+      x = minbucket_vector,
+      y = DT_mses
+      )
+  ) + 
+  geom_point() + 
+  geom_line() 
+```
+
+
+## RF
+
+You will assess the impact of varying `mtry` on predictions. (500 is the default)
+
+### Make a vector of possible `mtry` values
+
+run this code to make several possible `mtry` values
+
+```{r}
+mtry_vector <- seq(1, ncol(sea_testing)-1, 1)
+```
+
+### Loop through `num.trees_vector` values, fitting an RF
+
+```{r}
+RF_temp <- list()
+RF_mses <- vector()
+for (i in 1:length(mtry_vector)){
+  
+  # Fit RF 
+  
+  ### REPLACE THIS WITH CODE TO FIT RANDOM FOREST
+  
+  RF_temp[[i]] <- 
+    ranger(
+      data = sea_training, 
+      formula = bx_gsr_totl_cd ~ ., 
+      mtry = mtry_vector[[i]]
+    )
+  
+  # Get Predictions
+  temp_RF_predictions <- 
+    predict(RF_temp[[i]], data = sea_testing)$predictions
+  
+  # Store MSEs
+  
+  RF_mses[i] <- 
+    mse(
+      observed_y = sea_testing$bx_gsr_totl_cd, 
+      predicted_y = temp_RF_predictions
+    )
+
+}
+```
+
+### Store Results
+
+Create a data frame with `RF_mses` and their corresponding `mtry` values.
+
+```{r}
+## create a table
+RF_mse_df <- 
+  tibble(
+    RF_mses = RF_mses, 
+    mtry_vector = mtry_vector
+  )
+```
+
+### Plot Results
+
+Using the prior data frame, plot `RF_mses` on the `y-axis` and `mtry` on the x-axis
+
+```{r}
+minimum_MSE <- which.min(RF_mse_df$RF_mses)
+best_mtry <-  RF_mse_df$mtry_vector[minimum_MSE]
+
+ggplot(
+  data = RF_mse_df,
+    aes( 
+      x = mtry_vector,
+      y = RF_mses
+      )
+  ) + 
+  geom_point() + 
+  geom_line() 
+```
+
+# Questions
+
+* what is the optimal value of `minbucket` for the DT and the corresponding MSE?
+* what is the optimal value of `mtry` for the RF and the corresponding MSE??
+* what is the lowest MSE we observed today? 
+
+# Finished Early?
+
+If you finish early, try this again and try to find an even lower MSE. 
+
+You could do this with:
+
+* tuning a different hyperparameter
+* tuning a wider range of hyperparameters
+* tuning multiple hyperparameters.
