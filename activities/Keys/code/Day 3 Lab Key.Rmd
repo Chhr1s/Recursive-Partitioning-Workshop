@@ -46,7 +46,7 @@ split the data into training and testing with `initial_split()`, `training()` an
 Make sure your split specified `country_name` as the `strata`.
 
 ```{r}
-sea_split <- initial_split(dat, strata = country_name)
+sea_split <- initial_split(dat, strata = country_name, prop = 0.9)
 sea_training <- training(sea_split) 
 sea_testing <- testing(sea_split) 
 ```
@@ -127,9 +127,9 @@ Instead of searching an expanded grid, create a maximum entropy grid.
 Use the same minimum and maximum values we used to tune `mtry` and `num.trees`
 
 
-To keep computation time quick, set `size = 200`.
+To keep computation time quick, set `size = 500`.
 
-(Ideally, we would use more than 200, but this is just for an example.)
+(Ideally, we would use more than 500, but this is just for an example.)
 
 **NOTE:** If this still takes a long time, you can use a smaller range for the sake of the example.
 
@@ -141,7 +141,7 @@ max_entropy_grid <-
     trees(range = c(p*10, p*50)),
     # param object 2: `mtry`
     mtry(range = c(2, round(p/2))),
-    size = 200
+    size = 500
   )
 ```
 
@@ -189,7 +189,7 @@ Using unseen testing data, calculate the MSE of your benchmark model and your tu
 
 ```{r}
 mse <- function(observed_y, predicted_y){
-    (sum(observed_y - predicted_y)^2)/length(observed_y)
+  mean((observed_y - predicted_y)^2)
 }
 ```
 

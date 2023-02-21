@@ -30,7 +30,7 @@ On Day 1, we discussed:
   * interpreting / visualizing DTs `r chk._`
   * evaluating DTs `r chk._`
   
-----
+---
 
 # Looking Ahead
 
@@ -458,7 +458,7 @@ Here's a function to calculate MSE from 2 vectors
 
 ```{r}
 mse <- function(observed_y, predicted_y){
-    (sum(observed_y - predicted_y)^2)/length(observed_y)
+  mean((observed_y - predicted_y)^2)
 }
 ```
 

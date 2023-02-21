@@ -87,11 +87,7 @@ Here's a description of the files:
     * the `janitor_version` correspond to the variable names (i.e., column names) in the `se_asia_imputed_world_bank.csv` file.
 * `se_asia_imputed_world_bank.csv` 
     * yearly observations of several variables
-    * variables with minimal missingness were retained
-    * the few missing values relied on simple median imputing
-    * these are not optimal imputation conditions
-    * there is actually some missing data still in the file, but this is only if all years were empty for a given country 
-
+    * variables with minimal missingness were imputed; see the cleaning data file provided in the OneDrive link
 
 ---
 
@@ -191,9 +187,7 @@ It is also very hard to see data for every country.
 formatting 
 
 * let's divide this plot up by `country_name`
-* this helps for 2 reasons:
-    * it allows you to see each country's trajectory
-    * we can get a guess as to where the missingness is.
+* this allows you to see each country's trajectory
 * we do this by "facet wrapping", which makes the same plot within a group several times
 * add this code to the end of your plot: ` + facet_wrap(vars(country_name))`
 

@@ -483,6 +483,8 @@ rpart.plot(
 
 ---
 
+.right[**Interpreting Results**]
+
 # Variable Importance
 
 * Variable importance give the relative contribution of each variable to the model. 
@@ -491,7 +493,7 @@ rpart.plot(
 * Interpretation of VI magnitudes depends on the measure.
 * This is beyond the scope of this workshop.
 
-___
+---
 
 .right[**Interpreting Results**]
 
@@ -619,7 +621,7 @@ tdat <-
     scale_y_continuous(
       breaks = 1:2,
       limits = c(0.5, 2.5),
-      labels = c('Male', 'Female')
+      labels = c('Female', 'Male')
       )+
   #scale_alpha_discrete(range = c(0.9, 0.4)) +
   theme_bw(base_size = 15) +

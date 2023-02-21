@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Workshop Day 2 Random Forests</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Christopher M. Loan" />
+    <meta name="date" content="2023-02-21" />
+    <script src="day_2_slides_files/header-attrs-2.16/header-attrs.js"></script>
+    <link href="day_2_slides_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <script src="day_2_slides_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="day_2_slides_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Workshop Day 2
+Random Forests
+]
+.author[
+### Christopher M. Loan
+]
+.date[
+### February 21, 2023
+]
+
+---
+
+
+layout: true
+&lt;div style="position: absolute;left:60px;bottom:11px;color:gray;"&gt;C. Loan&lt;/div&gt;
+---
+
+
+
+.right[**Background**]
+
+# Workshop Progress
+
+On Day 1, we discussed:
+  * concepts of recursive partitioning &amp; decision trees (DTs) ✅
+  * fitting DTs ✅
+  * interpreting / visualizing DTs ✅
+  * evaluating DTs ✅
+  
+---
+
+# Looking Ahead
+
+#### Today, we'll cover:
+
+  * concepts of Random Forests (RFs)
+  * fitting RFs 
+  * evaluating RFs
+  * hyperparameters
+  * improving the model with hyperparameters
+  
+---
+
+.right[**Background**]
+
+# Set up 
+
+
+```r
+set.seed(022023)
+library(tidyverse)
+library(ranger)
+library(rsample)
+library(vip)
+library(dials)
+outcome_next_year &lt;- 'se_xpd_totl_gd_zs'
+```
+
+---
+
+.right[**Background**]
+
+# Load Data
+
+There are protocols for missing data in RFs
+
+* `{ranger}` does not embed these methods 
+* we will not talk about them due to time constrants
+
+
+```r
+ptitanic &lt;- 
+  drop_na(rpart.plot::ptitanic)
+
+ptitanic$survived &lt;- 
+  relevel(ptitanic$survived, ref = 'died')
+
+split_data &lt;- initial_split(ptitanic)
+training_data &lt;- training(split_data) 
+testing_data &lt;- testing(split_data)
+```
+
+---
+
+class: center, middle
+
+# Random Forests
+
+---
+
+.right[**Random Forests**]
+
+# Underlying Logic
+
+Random forests (RFs) are an *ensemble* method designed to improve several shortcomings of decision trees. 
+
+&lt;u&gt;Ensemble&lt;/u&gt;: *a group of items viewed as a whole rather than individually*
+
+The logic is relatively simple
+
+  * Re-sample (with replacement) the dataset many times to create many copies
+  
+  * Fit a decision tree with a random subset of variables at each split point
+  
+  * Repeat many times
+
+___
+
+**Let's look at some diagrams**
+
+---
+class: center, middle
+
+# Bootstrapping
+
+&lt;img src="../../../imgs/bootstraping.png" width="1536" /&gt;
+
+
+---
+
+class: center, middle
+
+# Subsetting Predictors (at each split)
+
+&lt;img src="../../../imgs/subsetting_predictors.png" width="960" /&gt;
+
+---
+
+.right[**Random Forests**]
+.left[
+
+# The Value of Variation
+
+Trees which comprise the RF can vary greatly compared to a traditional DT on the same sample 
+
+RFs achieve this by
+  * Using a bootstrapped sample for each tree
+  * Leveraging only a subset of variables at each DT's splits
+  
+**In essence, many *similar yet distinct* decision trees work better together than a single decision tree**
+
+]
+.center[
+
+🌲 = 🙂 
+
+`\(\Sigma\)` 🌳, 🌲, 🌳, 🌲, 🌴, 🌲, 🌲, 🌳, 🎋, 🎋... (500th tree) = 😃
+
+]
+---
+
+.right[**Random Forests**]
+
+# Connecting to Decision Trees
+
+&lt;u&gt;**B**&lt;/u&gt;ootstrap &lt;u&gt;**AG**&lt;/u&gt;gregated predictions are called &lt;u&gt;**bag**&lt;/u&gt;ged predictions
+
+If the RFs considered all variables at all splits: RF = bootstrap aggregated ("bagged") decision trees.
+
+* Resampling is done with replacement, which results in some non-selected cases
+* These cases are called the out-of-bag (OOB) sample
+* The OOB sample can be used to test prediction accuracy
+* OOB Error can thus be a measure of accuracy / error
+
+---
+
+.right[**Random Forests**]
+
+# Benefits
+
+All of the benefits of decision trees (except the easy-to-interpret visual structure)
+
+Useful when number of predictors &gt; number of observed units
+
+Established protocols for variable importance 
+
+Not subject to ordering effects like other algorithmic approaches (e.g., step-wise regression)
+
+---
+
+.right[**Random Forests**]
+
+.left[
+
+# Predictions
+
+Predictions are essentially a "voting" system.
+
+Each of (e.g.) 500 trees predict an outcome with new data, independently
+
+Typically, each tree gets a weight of `\(\frac{1}{ntree}\)`
+
+The final prediction is the weighted average of all trees
+
+]
+
+.center[
+`\(prediction_{total} = \Sigma(\frac{1}{ntree} * prediction_{indiviual})\)`
+]
+
+---
+
+class: middle, center
+
+# Applications
+
+---
+
+.right[**Applications**]
+
+# Bare minimum
+
+The bare minimum to fit an RF with `{ranger}`
+
+
+```r
+ ranger(
+    formula = survived ~ ., 
+    data = training_data
+    )
+```
+
+However, adding `importance = 'impurity'` helps us not repeat a step later.
+
+
+```r
+rf_1 &lt;- 
+  ranger(
+    formula = survived ~ ., 
+    data = training_data,
+    importance = 'impurity'
+    )
+```
+
+
+---
+
+.right[**Applications**]
+
+# Variable Importance Plot
+
+.left-column[
+
+The VIP from the RF is very similar to the VIP from the DT
+
+
+
+```r
+vip(rf_1) 
+```
+
+(The above code will make a VIP, but the one I present alongside this is stylized)
+
+]
+
+.right-column[
+![](day_2_slides_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+]
+
+---
+
+.right[**Applications**]
+
+## Accuracy
+
+
+```r
+actual &lt;- testing_data$survived
+
+predicted_class &lt;- 
+  predict(rf_1, data = testing_data)$predictions
+
+accuracy &lt;- 
+  ifelse(predicted_class == actual, 'correct', 'incorrect')
+
+accuracy_percentage &lt;- table(accuracy)/length(accuracy)*100
+
+accuracy_percentage
+```
+
+```
+## accuracy
+##   correct incorrect 
+##   77.8626   22.1374
+```
+
+---
+
+.right[**Applications**]
+
+## In-Depth Accuracy
+
+&lt;table&gt;
+&lt;caption&gt;Model Performance by Type of Accuracy  (deleting missing cases)&lt;/caption&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Type of Accuracy &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; percent &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; false negative &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 7% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; false positive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 39 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 15% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; true negative &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 133 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 51% &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; true positive &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 71 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 27% &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+---
+class: center, middle
+
+# Activity
+
+---
+
+class: center, middle
+
+# Model Improvement
+---
+
+.right[**Model Improvement**]
+
+# Hyperparameters
+
+Hyperparameters = &lt;u&gt;Analyst-specified&lt;/u&gt; parameters
+
+* Specified by analyst
+* These parameters can be thought of as the "settings" of your model 
+* Different settings are better for different circumstances
+
+Hyperparameters influence &lt;u&gt;model-estimated&lt;/u&gt; parameters
+
+* Learned from the data
+* *Conceptually* similar to regression coefficients
+
+---
+
+.right[**Model Improvement**]
+
+# RF Hyperparameters
+
+RFs have several hyperparameters.
+
+To start, let's focus on:
+
+* `mtry` - the number of variables to choose from at each split
+* `ntree` - the number of decision trees to grow
+
+There are many others though (e.g.,`max.depth`, `min.node.size`).
+
+See `?ranger` for the full list.
+
+---
+
+.right[**Model Improvement**]
+
+# Tuning
+
+The process of modifying these is called hyperparameter "tuning"
+
+"Hyperparameter optimization (HPO)" may be used interchangeably with tuning, though some take this to imply automated tuning procedures
+
+We'll evaluate the influence of changing hyperparameters on the model (today) before getting into more formal tuning approaches (tomorrow).
+
+---
+
+.right[**Model Improvement**]
+
+# An Analogy 
+
+Another analogy comes from calibrating any machine.
+
+For example, consider a camera 📷
+
+* You can change the lens, film, aperture, focal distance etc., (hyperparameters)
+* The camera will allow light onto the film and store the emergent pattern (parameters)
+* Clear pictures do not always occur with the same settings
+* Different input data (scale/lighting/etc.) are best captured with different settings
+* You can use input data to automatically tune hyperparameters
+    * Same concept as "auto-focusing" cameras
+    * Beyond the scope of this workshop
+
+---
+
+.right[**Model Improvement**]
+
+## Assessing the Quality of "hyperparameter state"
+
+A given combination of all hyperparameters is the &lt;u&gt;"hyperparameter state"&lt;/u&gt; for a model
+
+All theoretically possible combinations of of hyperparameters is the &lt;u&gt;"hyperparameter space"&lt;/u&gt; for a model
+
+___
+
+The process of choosing the best hyperparameters state is always the same.
+
+1. Set an objective function — some measure of model error / accuracy
+2. Find the minimum
+
+---
+
+.right[**Model Improvement**]
+
+.left[
+
+# Mean Squared Error (MSE)
+
+The choice of objective function is too deep of a dive for this workshop.
+
+Some circumstances necessitate different objective functions based on analyst goals.
+
+Like always, we need to check the default of what `ranger()` provides with `?ranger()`.
+
+___
+
+The help documentation `ranger()` says the objective function is  `prediction.error`.
+
+By default `prediction.error` is
+  * mean squared error (MSE; for regression)
+  * fraction of missclassified samples (for classification)
+]
+
+___
+
+.center[
+`\(MSE = \frac{1}{n}\Sigma(Y_{observed} - Y_{predicted})^2\)`
+]
+
+---
+
+.right[**Model Improvement**]
+
+# MSE in R
+
+Here's a function to calculate MSE from 2 vectors
+
+
+```r
+mse &lt;- function(observed_y, predicted_y){
+  mean((observed_y - predicted_y)^2)
+}
+```
+
+---
+
+.right[**Model Improvement**]
+
+# Manually finding the minimum
+
+There are complex ways to find the best minimum, we will talk about some tomorrow
+
+For now, let's
+  
+  * create a list of possible hyperparameter values for `num.trees`
+  * fit a random forest with each of those values
+  * select the value with the best OOB prediction error
+  * repeat for `mtry`
+
+---
+.right[**Model Improvement**]
+
+## Real-World Data
+
+We've outgrown the titanic example at this point. There are so few variables available, making demonstrating tuning less meaningful.
+
+Let's load the WB South East Asia Data.
+
+
+```r
+key &lt;- 
+  read.csv(here::here('data/keys', 'key_impute.csv'))
+
+dat &lt;- 
+  read.csv(
+    here::here(
+    'data', 
+    'se_asia_imputed_world_bank.csv'
+    ))
+
+sea_split &lt;- initial_split(dat, strata = country_name, prop = 0.9)
+sea_training &lt;- training(sea_split) 
+sea_testing &lt;- testing(sea_split) 
+```
+
+---
+
+.right[**Model Improvement**]
+
+# Varying `num.trees`
+
+First we make a vector of the `tree_sizes` we want to use:
+
+
+```r
+tree_sizes &lt;- 
+  seq(from = 300, to = 5000, by = 100)
+```
+
+use a loop to fit `ranger()` to all values of `num.trees`
+
+
+```r
+rfs_num_tree &lt;- list()
+mses_num_tree &lt;- vector()
+
+for (i in 1:length(tree_sizes)){
+  rfs_num_tree[[i]] &lt;- 
+    ranger(
+      outcome_next_year ~ ., 
+      data = sea_training,
+      num.trees = tree_sizes[[i]]
+    )
+  mses_num_tree[i] &lt;- rfs_num_tree[[i]]$prediction.error
+}
+```
+
+---
+
+.right[**Model Improvement**]
+
+# Varying `num.trees`
+
+
+
+&lt;img src="day_2_slides_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+.right[**Model Improvement**]
+
+# Varying `mtry`
+
+
+```r
+mtry_values &lt;- 
+  seq(1, ncol(sea_testing)-1, 1)
+
+rfs_mtry &lt;- list()
+mses_mtry &lt;- vector()
+
+for (i in 1:length(mtry_values)){
+  rfs_mtry[[i]] &lt;- 
+    ranger(
+      outcome_next_year ~ ., 
+      data = sea_training,
+      mtry = mtry_values[[i]]
+    )
+  mses_mtry[i] &lt;- rfs_mtry[[i]]$prediction.error
+}
+```
+
+---
+
+.right[**Model Improvement**]
+
+# Varying `mtry`
+
+
+
+
+&lt;img src="day_2_slides_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+.right[**Model Improvement**]
+
+# Select Best-Fitting Hyperparameters
+
+
+```r
+best_num.trees &lt;- tree_sizes[which.min(mses_num_tree)]
+# default is 500
+best_num.trees 
+```
+
+```
+## [1] 2200
+```
+
+```r
+best_mtry &lt;- mtry_values[which.min(mses_mtry)]
+# default is 5
+best_mtry
+```
+
+```
+## [1] 6
+```
+
+---
+
+.right[**Model Improvement**]
+
+# Re-fit Model with Hyperparameters
+
+
+```r
+manually_tuned_rf &lt;- 
+  ranger(
+    outcome_next_year ~ ., 
+    data = sea_training,
+    num.trees = best_num.trees,
+    mtry = best_mtry, 
+    importance = 'permutation'
+  )
+```
+
+---
+
+.right[**Model Improvement**]
+
+# Manually Tuning Overlaid (`num.trees`)
+
+&lt;img src="day_2_slides_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Manually Tuning Overlaid (`mtry`)
+
+&lt;img src="day_2_slides_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+.right[**Model Improvement**]
+
+# Why such minimal improvements?
+
+We found the best hyperparameter value, **assuming the other hyperparameters were constant**.
+
+In other words, we should have tuned both hyperparameters together.
+
+This is because hyperparameters may influence one another directly or indirectly.
+
+Tomorrow we'll tune both hyperparameters together 😄
+
+---
+
+class:center,middle
+
+# Variable Importance
+
+---
+
+.right[**Variable Importance**]
+# Tables
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; order &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; indicator_name &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Government expenditure on education, total (% of GDP) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Fixed telephone subscriptions &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; School enrollment, preprimary (% gross) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Industry (including construction), value added (% of GDP) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Exports of goods, services and primary income (BoP, current US$) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Imports of goods, services and primary income (BoP, current US$) &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Primary education, pupils &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Probability of dying among children ages 5-9 years (per 1,000) &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;tfoot&gt;
+&lt;tr&gt;
+&lt;td style = 'padding: 0; border:0;' colspan='100%'&gt;&lt;sup&gt;a&lt;/sup&gt; Outcome is Government expenditure on education, total (% of GDP) in the upcoming year&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tfoot&gt;
+&lt;/table&gt;
+
+---
+
+.right[**Variable Importance**]
+
+# Plot
+
+&lt;img src="day_2_slides_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: center, middle
+
+# Activity
+
+---
+
+class: center, middle
+
+# Looking Ahead
+
+---
+
+.right[**Looking Ahead**]
+
+# Interpretation: Expectation
+
+Historically, researchers have criticized RFs and other ensemble methods of being "black boxes" because
+* branching diagrams (as with DTs) are easy to interpret
+* RFs are 500+ DTs (on bootstrapped samples, with a subset of variables)
+
+How would you go about disentangling effects?  
+
+&lt;img src="../../../imgs/black_box.png" width="960" /&gt;
+
+---
+
+.right[**Looking Ahead**]
+
+# Interpretation: Reality 
+
+Keep in mind that prediction - not interpretation - was the original goal of RFs
+
+That said:
+
+* Several methods have been developed to interpret ensemble models
+* Predicted outcomes / probabilities at various levels of covariates make models easy to interpret 
+
+
+&lt;img src="../../../imgs/unboxing.png" width="960" /&gt;
+
+---
+
+.right[**Looking Ahead**]
+
+# Workshop Progress
+
+### Yesterday
+
+  * concepts of recursive partitioning &amp; decision trees (DTs) ✅
+  * fitting DTs ✅
+  * interpreting / visualizing DTs ✅
+  * evaluating DTs ✅
+
+### Today
+  
+  * concepts of Random Forests (RFs) ✅
+  * fitting RFs ✅
+  * evaluating RFs ✅
+  * hyperparameters ✅
+  * improving the model with hyperparameters ✅
+  
+  
+---
+
+.right[**Looking Ahead**]
+
+# Tomorrow
+
+We will discuss:
+
+* Interpretation of Random Forests
+* More Advanced Visualizations (Partial Dependency Plots)
+* Tuning More than 1 Hyperparameter at a time
+* Cross validation &amp; more (if time)
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"slideNumberFormat": "%current%/%total%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
